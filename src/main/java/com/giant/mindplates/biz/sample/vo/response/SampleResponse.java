@@ -6,6 +6,6 @@ import lombok.Data;
 @Builder
 @Data
 public class SampleResponse {
-	private String name;
-	private String phone;
+    private String name;
+    private String phone;
 }

@@ -1,7 +1,17 @@
 spring:
   profiles:
-    active: dev
-   
+    active: default
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mindplates.com:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
+    username: shareplates
+    password: dhao1234
+
 ---
 spring:
   profiles: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mindplates.com:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
+    username: shareplates
+    password: dhao1234
