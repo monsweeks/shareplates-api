@@ -1,8 +1,10 @@
 package com.giant.mindplates.biz.organization.entity;
 
 import com.giant.mindplates.framework.model.AbstractEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import javax.persistence.*;
 @Entity
 @Builder
 @Table(name = "organization")
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class Organization extends AbstractEntity {
 
