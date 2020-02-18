@@ -19,6 +19,8 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
+mindplates:
+  url: http://localhost:3000
 
 ---
 spring:
@@ -28,3 +30,5 @@ spring:
     url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
     username: shareplates
     password: dhao1234
+mindplates:
+  url: http://mindplates.com
