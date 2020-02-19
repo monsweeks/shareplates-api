@@ -19,6 +19,10 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
+  redis:
+    host: mindplates.com
+    port: 6379
+    password: dhao1234
 mindplates:
   url: http://localhost:3000
 
