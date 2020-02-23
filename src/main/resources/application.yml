@@ -30,9 +30,12 @@ spring:
     username: shareplates
     password: enterpr1se!
     default-encoding: UTF-8
-mindplates:
+shareplates:
+  corsUrl : http://localhost:3000
+  url: http://www.mindplates.com
   mail:
-    senderName: ryongs@mindplates.com
+    senderName: noreply@mindplates.com
+
 
 ---
 spring:
@@ -49,5 +52,5 @@ spring:
     username: shareplates
     password: enterpr1se!
     default-encoding: UTF-8
-mindplates:
+shareplates:
   url: http://mindplates.com

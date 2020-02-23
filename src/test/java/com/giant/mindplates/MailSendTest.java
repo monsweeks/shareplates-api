@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 public class MailSendTest {
 	
-	@Value("${mindplates.mail.senderName}")
+	@Value("${shareplates.mail.senderName}")
 	private String mailSender;
 	
 	@Autowired
