@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MailHandler {
+	
+	@Value("${mindplates.mail.senderName}")
+	private String mailSender;
 	
 	@Autowired
     private JavaMailSender javaMailSender;
@@ -29,6 +33,7 @@ public class MailHandler {
         helper.setTo(receiver);
         helper.setSubject(subject);
         helper.setText(contents);
+        helper.setFrom(mailSender);
 
         javaMailSender.send(msg);
 	}
@@ -41,6 +46,7 @@ public class MailHandler {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver);
         helper.setSubject(subject);
+        helper.setFrom(mailSender);
 
         // true = text/html
         helper.setText(contents, true);

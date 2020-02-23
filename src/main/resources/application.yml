@@ -1,5 +1,8 @@
+mindplates:
+  mail:
+   senderName: ryongs@mindplates.com
+
 spring:
-   
   profiles:
     active: default
   datasource:
