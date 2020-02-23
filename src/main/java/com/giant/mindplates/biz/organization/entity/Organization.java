@@ -1,13 +1,20 @@
 package com.giant.mindplates.biz.organization.entity;
 
-import com.giant.mindplates.framework.model.AbstractEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.giant.mindplates.common.data.domain.CommonEntity;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
-
-import javax.persistence.*;
 
 @Entity
 @Builder
@@ -15,7 +22,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Organization extends AbstractEntity {
+public class Organization extends CommonEntity {
 
     @Id
     @Column(name = "id")
