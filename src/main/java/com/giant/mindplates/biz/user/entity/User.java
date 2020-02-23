@@ -56,4 +56,7 @@ public class User extends CommonEntity {
 
     @Column(name = "picture_path")
     private String picturePath;
+
+    @Column(name = "activation_token")
+    private String activationToken;
 }

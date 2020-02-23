@@ -23,8 +23,19 @@ spring:
     host: mindplates.com
     port: 6379
     password: dhao1234
-mindplates:
-  url: http://localhost:3000
+  mail:
+    host: mindplates.com
+    port: 20000
+    protocol: smtp
+    username: shareplates
+    password: enterpr1se!
+    default-encoding: UTF-8
+shareplates:
+  corsUrl : http://localhost:3000
+  url: http://www.mindplates.com
+  mail:
+    senderName: noreply@mindplates.com
+
 
 ---
 spring:
@@ -34,5 +45,12 @@ spring:
     url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
     username: shareplates
     password: dhao1234
-mindplates:
+  mail:
+    host: 192.168.56.102
+    port: 20000
+    protocol: smtp
+    username: shareplates
+    password: enterpr1se!
+    default-encoding: UTF-8
+shareplates:
   url: http://mindplates.com
