@@ -22,10 +22,11 @@ spring:
         enable_lazy_load_no_trans: true
   mail:
     host: mindplates.com
-    port: 25
+    port: 20000
     protocol: smtp
+    username: shareplates
+    password: enterpr1se!
     default-encoding: UTF-8
-    
 
 ---
 spring:
@@ -35,3 +36,10 @@ spring:
     url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
     username: shareplates
     password: dhao1234
+  mail:
+    host: 192.168.56.102
+    port: 20000
+    protocol: smtp
+    username: shareplates
+    password: enterpr1se!
+    default-encoding: UTF-8
