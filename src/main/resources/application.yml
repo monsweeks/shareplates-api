@@ -1,4 +1,5 @@
 spring:
+   
   profiles:
     active: default
   datasource:
@@ -19,6 +20,12 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
+  mail:
+    host: mindplates.com
+    port: 25
+    protocol: smtp
+    default-encoding: UTF-8
+    
 
 ---
 spring:
