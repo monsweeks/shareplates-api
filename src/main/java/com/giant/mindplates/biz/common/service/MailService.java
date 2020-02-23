@@ -13,13 +13,13 @@ import java.io.*;
 
 public class MailService {
 
-    @Value("${spring.info.origin}")
-    private String origin;
+    @Value("${shareplates.url}")
+    private String url;
 
     @Autowired
     private MailHandler mailHandler;
 
-    private String getActivationMailContent(String fileName, String origin, String token) throws IOException {
+    private String getActivationMailContent(String fileName, String url, String token) throws IOException {
 
         ClassPathResource resource = new ClassPathResource("mail/" + fileName);
 
@@ -35,11 +35,11 @@ public class MailService {
         }
 
         // TODO 템플릿 엔진으로 변경하면 좋을 듯
-        return sb.toString().replaceAll("__origin__", this.origin).replaceAll("__token__", token);
+        return sb.toString().replaceAll("__origin__", url).replaceAll("__token__", token);
     }
 
     public void sendUserActivationMail(String email, String token) throws IOException, MessagingException {
-        mailHandler.sendEmail(email, "SHAREPLATES 계정 활성화", getActivationMailContent("activate.html", this.origin, token), "logo.png", "logo");
+        mailHandler.sendEmail(email, "SHAREPLATES 계정 활성화", getActivationMailContent("activate.html", this.url, token), "logo.png", "logo");
     }
 
 

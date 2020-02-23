@@ -1,5 +1,4 @@
 spring:
-   
   profiles:
     active: default
   datasource:
@@ -20,6 +19,10 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
+  redis:
+    host: mindplates.com
+    port: 6379
+    password: dhao1234
   mail:
     host: mindplates.com
     port: 20000
@@ -27,8 +30,12 @@ spring:
     username: shareplates
     password: enterpr1se!
     default-encoding: UTF-8
-  info:
-    origin: http://www.mindplates.com
+shareplates:
+  corsUrl : http://localhost:3000
+  url: http://www.mindplates.com
+  mail:
+    senderName: noreply@mindplates.com
+
 
 ---
 spring:
@@ -45,3 +52,5 @@ spring:
     username: shareplates
     password: enterpr1se!
     default-encoding: UTF-8
+shareplates:
+  url: http://mindplates.com

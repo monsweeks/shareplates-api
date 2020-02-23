@@ -21,9 +21,6 @@ public class UserController {
     @Autowired
     MailService mailService;
 
-    @Value("${spring.info.origin}")
-    private String origin;
-
     @PostMapping("")
     public User create(@Valid @RequestBody User user) throws Exception {
 

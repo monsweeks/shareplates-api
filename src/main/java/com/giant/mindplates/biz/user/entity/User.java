@@ -1,14 +1,21 @@
 package com.giant.mindplates.biz.user.entity;
 
-import com.giant.mindplates.framework.model.AbstractEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.giant.mindplates.common.data.domain.CommonEntity;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Builder
@@ -16,7 +23,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class User extends AbstractEntity {
+public class User extends CommonEntity {
 
     @Id
     @Column(name = "id")

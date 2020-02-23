@@ -1,6 +1,7 @@
 package com.giant.mindplates.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,8 +14,11 @@ import java.io.IOException;
 
 @Component
 public class MailHandler {
+	
+	@Value("${shareplates.mail.senderName}")
+	private String mailSender;
 
-    @Autowired
+	@Autowired
     private JavaMailSender javaMailSender;
 
     @Async
@@ -24,7 +28,9 @@ public class MailHandler {
         MimeMessageHelper helper = new MimeMessageHelper(msg, false);
         helper.setTo(receiver);
         helper.setSubject(subject);
-        helper.setText(contents, true);
+        helper.setText(contents);
+        helper.setFrom(mailSender);
+
         javaMailSender.send(msg);
     }
 
@@ -34,6 +40,9 @@ public class MailHandler {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver);
         helper.setSubject(subject);
+        helper.setFrom(mailSender);
+
+        // true = text/html
         helper.setText(contents, true);
         ClassPathResource resource = new ClassPathResource("mail/" + fileName);
         helper.addInline(attachedResoucreName, resource);

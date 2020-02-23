@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public User create(User user) {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         user.setActivateYn(false);
         user.setDeleteYn(false);
         user.setUseYn(true);
@@ -47,7 +47,6 @@ public class UserService {
     public User get(String email) {
         return userRepository.findByEmail(email);
     }
-
 
 
     public void delete(long id) {
