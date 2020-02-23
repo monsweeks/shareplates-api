@@ -27,6 +27,8 @@ spring:
     username: shareplates
     password: enterpr1se!
     default-encoding: UTF-8
+  info:
+    origin: http://www.mindplates.com
 
 ---
 spring:

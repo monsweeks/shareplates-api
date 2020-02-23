@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -19,7 +21,19 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User save(User user) {
+    public User create(User user) {
+        Date now = new Date();
+        user.setActivateYn(false);
+        user.setDeleteYn(false);
+        user.setUseYn(true);
+        user.setCreationDate(now);
+        user.setLastUpdateDate(now);
+
+        UUID uuid = UUID.randomUUID();
+        String uuidString = uuid.toString();
+        String tokenString = uuidString.replaceAll("-", "");
+        user.setActivationToken(tokenString);
+
         userRepository.saveAndFlush(user);
         user.setLastUpdatedBy(user.getId());
         user.setCreatedBy(user.getId());
@@ -28,6 +42,10 @@ public class UserService {
 
     public User get(long id) {
         return userRepository.findById(id).get();
+    }
+
+    public User get(String email) {
+        return userRepository.findByEmail(email);
     }
 
 
