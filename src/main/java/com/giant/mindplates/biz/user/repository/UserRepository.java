@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail (String email);
-    User findByActivationTokenAAndActivateYn (String acticationToken, Boolean activateYn);
+    User findByActivationTokenAndActivateYn (String activationToken, Boolean activateYn);
 }
 
