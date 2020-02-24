@@ -39,18 +39,39 @@ shareplates:
 
 ---
 spring:
-  profiles: dev
+  profiles:
+    active: production
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
     username: shareplates
     password: dhao1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    generate-ddl: true
+    show-sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibernate:
+        format_sql: true
+        enable_lazy_load_no_trans: true
+  redis:
+    host: mindplates.com
+    port: 6379
+    password: dhao1234
   mail:
     host: 192.168.56.102
-    port: 20000
-    protocol: smtp
-    username: shareplates
-    password: enterpr1se!
-    default-encoding: UTF-8
+      port: 20000
+      protocol: smtp
+      username: shareplates
+      password: enterpr1se!
+      default-encoding: UTF-8
 shareplates:
-  url: http://mindplates.com
+  corsUrl : http://localhost:3000
+  url: http://www.mindplates.com
+  mail:
+    senderName: noreply@mindplates.com
