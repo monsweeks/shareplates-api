@@ -50,7 +50,7 @@ public class UserService {
     }
 
     public User getUserByActivationToken(String token, Boolean activationYn) {
-        return userRepository.findByActivationTokenAAndActivateYn(token, activationYn);
+        return userRepository.findByActivationTokenAndActivateYn(token, activationYn);
     }
 
     public User updateUserActivationYn(User user, Boolean activationYn) {
