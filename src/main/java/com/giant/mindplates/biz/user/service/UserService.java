@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -15,24 +17,53 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> listAll() {
+    public List<User> selectUserList() {
         return userRepository.findAll();
     }
 
-    public User save(User user) {
+    public User createUser(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        user.setActivateYn(false);
+        user.setDeleteYn(false);
+        user.setUseYn(true);
+        user.setCreationDate(now);
+        user.setLastUpdateDate(now);
+        // TODO 패스워드 암호화 필요
+
+        UUID uuid = UUID.randomUUID();
+        String uuidString = uuid.toString();
+        String tokenString = uuidString.replaceAll("-", "");
+        user.setActivationToken(tokenString);
+
         userRepository.saveAndFlush(user);
         user.setLastUpdatedBy(user.getId());
         user.setCreatedBy(user.getId());
         return userRepository.save(user);
     }
 
-    public User get(long id) {
+    public User selcetUser(long id) {
         return userRepository.findById(id).get();
     }
 
+    public User selectUser(String email) {
+        return userRepository.findByEmail(email);
+    }
 
+    public User getUserByActivationToken(String token, Boolean activationYn) {
+        return userRepository.findByActivationTokenAndActivateYn(token, activationYn);
+    }
 
-    public void delete(long id) {
+    public User updateUserActivationYn(User user, Boolean activationYn) {
+        user.setActivateYn(activationYn);
+        return userRepository.save(user);
+    }
+
+    public User updateUserActivateMailSendResult(User user, Boolean result) {
+        user.setActivateMailSendResult(result);
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(long id) {
         userRepository.deleteById(id);
     }
 
