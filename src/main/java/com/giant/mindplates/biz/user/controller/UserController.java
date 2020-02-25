@@ -1,20 +1,29 @@
 package com.giant.mindplates.biz.user.controller;
 
-import com.giant.mindplates.biz.common.service.MailService;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.biz.user.service.UserService;
+import com.giant.mindplates.common.mail.MailService;
 import com.giant.mindplates.framework.annotation.AdminOnly;
 import com.giant.mindplates.framework.annotation.DisableLogin;
 import com.giant.mindplates.framework.exception.BizException;
 import com.giant.mindplates.util.SessionUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -35,11 +44,7 @@ public class UserController {
     @PostMapping("")
     public User create(@Valid @RequestBody User user) throws Exception {
 
-        User existUser = userService.selectUser(user.getEmail());
-
-        if (existUser != null) {
-            throw new BizException(messageSourceAccessor.getMessage("error.alreadyRegisterdEmail"));
-        }
+        userService.selectUserByEmail(user.getEmail());
 
         userService.createUser(user);
         // TODO 실패했을 경우, 실패 내역을 입력하고, 재발송이나, 어드민 알림 등의 기능을 추가해야 함
@@ -57,7 +62,16 @@ public class UserController {
     @DisableLogin
     @GetMapping("/exists")
     public Boolean existEmail(@RequestParam String email) {
-        return userService.selectsExistEmail(email);
+        return userService.checkEmail(email);
+    }
+
+    @GetMapping("/my")
+    public User my(HttpServletRequest request) {
+        Long userId = sessionUtil.getUserId(request);
+        if (userId == null) {
+            throw new BizException(messageSourceAccessor.getMessage("error.badRequest"));
+        }
+        return userService.selectUser(userId);
     }
 
     @DisableLogin
@@ -83,7 +97,6 @@ public class UserController {
         if (user.getActivateYn()) {
             throw new BizException(messageSourceAccessor.getMessage("error.alreadyActivatedUser"));
         }
-
         return userService.updateUserActivationYn(user, true);
     }
 
@@ -95,9 +108,9 @@ public class UserController {
 
     @DisableLogin
     @PostMapping("/login")
-    public Boolean login(@RequestParam String email, @RequestParam String password, HttpServletRequest request) throws NoSuchAlgorithmException {
+    public Boolean login(@RequestBody Map<String, String> account, HttpServletRequest request) throws NoSuchAlgorithmException {
 
-        User user = userService.login(email, password);
+        User user = userService.login(account.get("email"), account.get("password"));
         if (user != null) {
             sessionUtil.login(request, user.getId());
             return true;

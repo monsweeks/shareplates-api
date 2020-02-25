@@ -1,4 +1,4 @@
-package com.giant.mindplates.biz.common.service;
+package com.giant.mindplates.common.mail;
 
 import com.giant.mindplates.util.MailHandler;
 import org.springframework.beans.factory.annotation.Autowired;

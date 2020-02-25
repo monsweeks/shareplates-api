@@ -52,4 +52,17 @@ public class SessionUtil {
 
     }
 
+    public Long getUserId(HttpServletRequest request) {
+        Long id = null;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object value = session.getAttribute("id");
+            if (value != null) {
+                id = (Long)value;
+            }
+        }
+
+        return id;
+    }
+
 }
