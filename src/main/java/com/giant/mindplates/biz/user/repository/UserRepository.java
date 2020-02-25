@@ -7,6 +7,7 @@ import com.giant.mindplates.biz.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail (String email);
-    Optional<User> findByActivationTokenAndActivateYn (String activationToken, Boolean activateYn);
+	User findByActivationToken (String activationToke);
+    Long countByEmailAndUseYn(String email, Boolean useYn);
 }
 
