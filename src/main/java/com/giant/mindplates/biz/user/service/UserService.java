@@ -26,6 +26,13 @@ public class UserService {
     public List<User> selectUserList() {
         return userRepository.findAll();
     }
+    public Boolean selectsExistEmail(String email) {
+        if (userRepository.countByEmailAndUseYn(email, true) > 0L) {
+            return true;
+        }
+
+        return false;
+    }
 
     public User createUser(User user) throws NoSuchAlgorithmException {
         LocalDateTime now = LocalDateTime.now();
@@ -61,8 +68,8 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User getUserByActivationToken(String token, Boolean activationYn) {
-        return userRepository.findByActivationTokenAndActivateYn(token, activationYn);
+    public User getUserByActivationToken(String token) {
+        return userRepository.findByActivationToken(token);
     }
 
     public User updateUserActivationYn(User user, Boolean activationYn) {

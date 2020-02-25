@@ -17,10 +17,10 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	@Value("${shareplates.corsUrl}")
-	private String corsUrl;
+    @Value("${shareplates.corsUrl}")
+    private String corsUrl;
 
-	@Autowired
+    @Autowired
     SessionUtil sessionUtil;
 
     @Autowired
@@ -28,10 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
-
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-
-        source.setBasename("classpath:/message/message");
+        source.setBasename("classpath:/messages/message");
         source.setDefaultEncoding("UTF-8");
         source.setCacheSeconds(60);
         source.setUseCodeAsDefaultMessage(true);
@@ -69,7 +67,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeChangeInterceptor());
         registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/test/**/");
+                .excludePathPatterns("/test/**/")
+                .excludePathPatterns("/error");
     }
 
 }
