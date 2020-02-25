@@ -41,6 +41,10 @@ public class User extends CommonEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @JsonIgnore
+    @Column(name = "salt", nullable = false)
+    private String salt;
+
     @NotBlank
     @Length(min = 2, max = 100)
     @Column(name = "password", nullable = false)

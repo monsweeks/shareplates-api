@@ -2,10 +2,13 @@ package com.giant.mindplates.biz.user.service;
 
 import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.biz.user.repository.UserRepository;
+import com.giant.mindplates.util.EncryptUtil;
+import com.giant.mindplates.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -17,18 +20,34 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EncryptUtil encryptUtil;
+
     public List<User> selectUserList() {
         return userRepository.findAll();
     }
+    public Boolean selectsExistEmail(String email) {
+        if (userRepository.countByEmailAndUseYn(email, true) > 0L) {
+            return true;
+        }
 
-    public User createUser(User user) {
+        return false;
+    }
+
+    public User createUser(User user) throws NoSuchAlgorithmException {
         LocalDateTime now = LocalDateTime.now();
         user.setActivateYn(false);
         user.setDeleteYn(false);
         user.setUseYn(true);
         user.setCreationDate(now);
         user.setLastUpdateDate(now);
-        // TODO 패스워드 암호화 필요
+
+        String plainText = user.getPassword();
+        byte[] saltBytes = encryptUtil.getSaltByteArray();
+        String salt = encryptUtil.getSaltString(saltBytes);
+        user.setSalt(salt);
+        String encryptedText = encryptUtil.getEncrypt(plainText, saltBytes);
+        user.setPassword(encryptedText);
 
         UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
@@ -49,13 +68,27 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User getUserByActivationToken(String token, Boolean activationYn) {
-        return userRepository.findByActivationTokenAndActivateYn(token, activationYn);
+    public User getUserByActivationToken(String token) {
+        return userRepository.findByActivationToken(token);
     }
 
     public User updateUserActivationYn(User user, Boolean activationYn) {
         user.setActivateYn(activationYn);
         return userRepository.save(user);
+    }
+
+    public User login(String email, String password) throws NoSuchAlgorithmException {
+        User user = userRepository.findByEmail(email);
+
+        String salt = user.getSalt();
+        byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
+        String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
+
+        if (user.getPassword().equals(encryptedText)) {
+            return user;
+        } else {
+            return null;
+        }
     }
 
     public User updateUserActivateMailSendResult(User user, Boolean result) {
