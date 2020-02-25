@@ -41,24 +41,8 @@ server:
   servlet:
     session:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
-
-
 shareplates:
   corsUrl : http://localhost:3000
   url: http://www.mindplates.com
   mail:
     senderName: noreply@mindplates.com
-
-
----
-spring:
-  profiles:
-    active: production
-  datasource:
-    url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
-  redis:
-    host: 192.168.56.101
-  mail:
-    host: 192.168.56.102
-shareplates:
-  corsUrl : http://localhost:3000
