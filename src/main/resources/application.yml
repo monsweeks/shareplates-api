@@ -53,3 +53,12 @@ shareplates:
   url: http://www.mindplates.com
   mail:
     senderName: noreply@mindplates.com
+
+---
+spring:
+  profiles: production
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
+  mail:
+    host: 192.168.56.102
