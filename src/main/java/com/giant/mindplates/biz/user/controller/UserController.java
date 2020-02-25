@@ -1,20 +1,26 @@
 package com.giant.mindplates.biz.user.controller;
 
-import com.giant.mindplates.biz.common.service.MailService;
-import com.giant.mindplates.biz.user.entity.User;
-import com.giant.mindplates.biz.user.service.UserService;
-import com.giant.mindplates.framework.annotation.DisableLogin;
-import com.giant.mindplates.util.SessionUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.giant.mindplates.biz.user.entity.User;
+import com.giant.mindplates.biz.user.service.UserService;
+import com.giant.mindplates.common.mail.MailService;
+import com.giant.mindplates.framework.annotation.DisableLogin;
+import com.giant.mindplates.util.SessionUtil;
 
 @RestController
 @RequestMapping("/api/users")
@@ -34,11 +40,7 @@ public class UserController {
     @PostMapping("")
     public User create(@Valid @RequestBody User user) throws Exception {
 
-        User existUser = userService.selectUser(user.getEmail());
-
-        if (existUser != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다.");
-        }
+        userService.selectUserByEmail(user.getEmail());
 
         userService.createUser(user);
         // TODO 실패했을 경우, 실패 내역을 입력하고, 재발송이나, 어드민 알림 등의 기능을 추가해야 함
@@ -54,8 +56,7 @@ public class UserController {
 
     @GetMapping("/exists")
     public Boolean existEmail(@RequestParam String email) {
-        User existUser = userService.selectUser(email);
-        return existUser != null;
+        return userService.checkEmail(email);
     }
 
     @GetMapping("/activations")
@@ -65,10 +66,8 @@ public class UserController {
 
     @PutMapping("/activations")
     public User setUserActivation(@RequestParam String token) {
-        User user = this.getUserByActivationToken(token);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "올바르지 않은 요청입니다.");
-        }
+        User user = userService.getUserByActivationToken(token,false);
+        
         return userService.updateUserActivationYn(user, true);
     }
 

@@ -1,9 +1,12 @@
 package com.giant.mindplates.biz.user.repository;
-import com.giant.mindplates.biz.user.entity.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.giant.mindplates.biz.user.entity.User;
+
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail (String email);
-    User findByActivationTokenAndActivateYn (String activationToken, Boolean activateYn);
+    Optional<User> findByEmail (String email);
+    Optional<User> findByActivationTokenAndActivateYn (String activationToken, Boolean activateYn);
 }
 
