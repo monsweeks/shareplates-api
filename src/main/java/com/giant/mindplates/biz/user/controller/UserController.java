@@ -2,6 +2,7 @@ package com.giant.mindplates.biz.user.controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -64,6 +65,15 @@ public class UserController {
         return userService.checkEmail(email);
     }
 
+    @GetMapping("/my")
+    public User my(HttpServletRequest request) {
+        Long userId = sessionUtil.getUserId(request);
+        if (userId == null) {
+            throw new BizException(messageSourceAccessor.getMessage("error.badRequest"));
+        }
+        return userService.selectUser(userId);
+    }
+
     @DisableLogin
     @GetMapping("/activations")
     public User getUserByActivationToken(@RequestParam String token) {
@@ -98,9 +108,9 @@ public class UserController {
 
     @DisableLogin
     @PostMapping("/login")
-    public Boolean login(@RequestParam String email, @RequestParam String password, HttpServletRequest request) throws NoSuchAlgorithmException {
+    public Boolean login(@RequestBody Map<String, String> account, HttpServletRequest request) throws NoSuchAlgorithmException {
 
-        User user = userService.login(email, password);
+        User user = userService.login(account.get("email"), account.get("password"));
         if (user != null) {
             sessionUtil.login(request, user.getId());
             return true;

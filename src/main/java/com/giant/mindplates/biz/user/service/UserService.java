@@ -62,7 +62,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User selcetUser(long id) {
+    public User selectUser(long id) {
         return userRepository.findById(id).get();
     }
 

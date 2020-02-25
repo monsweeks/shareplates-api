@@ -72,4 +72,12 @@ public class User extends CommonEntity {
     @JsonIgnore
     @Column(name = "activate_mail_send_result")
     private Boolean activateMailSendResult;
+
+    @JsonIgnore
+    @Column(name = "recovery_token")
+    private String recoveryToken;
+
+    @JsonIgnore
+    @Column(name = "recovery_mail_send_result")
+    private Boolean recoveryMailSendResult;
 }
