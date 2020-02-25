@@ -1,17 +1,19 @@
 package com.giant.mindplates.biz.user.service;
 
-import com.giant.mindplates.biz.user.entity.User;
-import com.giant.mindplates.biz.user.repository.UserRepository;
-import com.giant.mindplates.util.EncryptUtil;
-import com.giant.mindplates.util.SessionUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.giant.mindplates.biz.user.entity.User;
+import com.giant.mindplates.biz.user.repository.UserRepository;
+import com.giant.mindplates.common.exception.ServiceException;
+import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
+import com.giant.mindplates.util.EncryptUtil;
 
 @Service
 @Transactional
@@ -64,8 +66,14 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public User selectUser(String email) {
-        return userRepository.findByEmail(email);
+    public void selectUserByEmail(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+        	throw new ServiceException(ServiceExceptionCode.EXIST_EMAIL);
+    	});
+    }
+    
+    public boolean checkEmail(String email) {
+    	return userRepository.findByEmail(email).isPresent();
     }
 
     public User getUserByActivationToken(String token) {
@@ -78,17 +86,14 @@ public class UserService {
     }
 
     public User login(String email, String password) throws NoSuchAlgorithmException {
-        User user = userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).filter(user -> {
 
-        String salt = user.getSalt();
-        byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
-        String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
-
-        if (user.getPassword().equals(encryptedText)) {
-            return user;
-        } else {
-            return null;
-        }
+            String salt = user.getSalt();
+            byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
+            String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
+        	
+        	return user.getPassword().equals(encryptedText);
+        }).orElse(null);
     }
 
     public User updateUserActivateMailSendResult(User user, Boolean result) {
