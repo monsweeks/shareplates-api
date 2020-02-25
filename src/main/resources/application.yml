@@ -37,11 +37,16 @@ spring:
         nodes: mindplates.com:6379
       flush-mode: on-save # Sessions flush mode.
       namespace: spring:session # Namespace for keys used to store sessions.
+  messages:
+    basename: message/message
+    encoding: UTF-8
 server:
   servlet:
     session:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
 shareplates:
+  locale:
+    default: ko
   corsUrl : http://localhost:3000
   url: http://www.mindplates.com
   mail:

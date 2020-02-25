@@ -3,12 +3,17 @@ package com.giant.mindplates.biz.user.controller;
 import com.giant.mindplates.biz.common.service.MailService;
 import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.biz.user.service.UserService;
+import com.giant.mindplates.framework.annotation.DisableLogin;
+import com.giant.mindplates.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
@@ -19,6 +24,12 @@ public class UserController {
 
     @Autowired
     MailService mailService;
+
+    @Autowired
+    SessionUtil sessionUtil;
+
+    @Autowired
+    MessageSourceAccessor messageSourceAccessor;
 
     @PostMapping("")
     public User create(@Valid @RequestBody User user) throws Exception {
@@ -64,6 +75,25 @@ public class UserController {
     @GetMapping("")
     public List<User> list() {
         return userService.selectUserList();
+    }
+
+    @DisableLogin
+    @PostMapping("/login")
+    public Boolean login(@RequestParam String email, @RequestParam String password,  HttpServletRequest request) throws NoSuchAlgorithmException {
+
+        User user = userService.login(email, password);
+        if (user != null) {
+            sessionUtil.login(request, user.getId());
+            return true;
+        }
+
+        return false;
+    }
+
+    @DisableLogin
+    @GetMapping("/logout")
+    public void logout( HttpServletRequest request) {
+        sessionUtil.logout(request);
     }
 
 }
