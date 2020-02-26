@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Length;
 
 import com.giant.mindplates.common.data.domain.CommonEntity;
@@ -41,43 +41,44 @@ public class User extends CommonEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @JsonIgnore
     @Column(name = "salt", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String salt;
 
     @NotBlank
     @Length(min = 2, max = 100)
     @Column(name = "password", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "activate_yn", nullable = false)
     private Boolean activateYn;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "use_yn", nullable = false)
     private Boolean useYn;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "delete_yn", nullable = false)
     private Boolean deleteYn;
 
     @Column(name = "picture_path")
     private String picturePath;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "activation_token")
     private String activationToken;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "activate_mail_send_result")
     private Boolean activateMailSendResult;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "recovery_token")
     private String recoveryToken;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "recovery_mail_send_result")
     private Boolean recoveryMailSendResult;
 }

@@ -17,10 +17,10 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	@Value("${shareplates.corsUrl}")
-	private String corsUrl;
+    @Value("${shareplates.corsUrl}")
+    private String corsUrl;
 
-	@Autowired
+    @Autowired
     SessionUtil sessionUtil;
 
     @Autowired
@@ -61,7 +61,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(this.corsUrl).allowCredentials(true);
+                .allowedOrigins(this.corsUrl).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
     }
 
     @Override
