@@ -18,13 +18,16 @@ import com.giant.mindplates.util.SessionUtil;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	@Value("${shareplates.corsUrl}")
-	private String corsUrl;
+
 	
 	@Value("${spring.profiles.active}")
 	private String activeProfile;
 
-	@Autowired
+    @Value("${shareplates.corsUrl}")
+    private String corsUrl;
+
+
+    @Autowired
     SessionUtil sessionUtil;
 
     @Autowired
@@ -65,7 +68,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(this.corsUrl).allowCredentials(true);
+                .allowedOrigins(this.corsUrl).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
     }
     
     @Override
