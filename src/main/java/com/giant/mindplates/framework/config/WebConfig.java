@@ -20,6 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Value("${shareplates.corsUrl}")
 	private String corsUrl;
+	
+	@Value("${spring.profiles.active}")
+	private String activeProfile;
 
 	@Autowired
     SessionUtil sessionUtil;
@@ -32,7 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
 
-        source.setBasename("classpath:/message/message");
+        source.setBasename("classpath:/messages/message");
         source.setDefaultEncoding("UTF-8");
         source.setCacheSeconds(60);
         source.setUseCodeAsDefaultMessage(true);
@@ -68,7 +71,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
-        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor))
+        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/test/**/")
                 .excludePathPatterns("/swagger-ui.html")

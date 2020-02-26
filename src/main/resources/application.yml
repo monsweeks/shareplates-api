@@ -38,7 +38,7 @@ spring:
       flush-mode: on-save # Sessions flush mode.
       namespace: spring:session # Namespace for keys used to store sessions.
   messages:
-    basename: message/message
+    basename: messages/message
     encoding: UTF-8
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
@@ -48,11 +48,13 @@ spring:
      file-size-threshold: 2KB
      max-file-size: 200MB
      max-request-size: 215MB
-     
+
+logging:  level:     com.giant.mindplates: debug
+             
      
 file:
   upload-dir: d:/fileupload/
-  allowed-extension: txt,abc
+  allowed-extension: txt,pdf
 
 shareplates:
   locale:
@@ -72,15 +74,12 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
-    username: shareplates
-    password: dhao1234
   mail:
     host: 192.168.56.102
-    port: 20000
-    protocol: smtp
-    username: shareplates
-    password: enterpr1se!
-    default-encoding: UTF-8
 file:
   upload-dir: /data/upload
+  
+logging:
+  level: 
+    com.giant.mindplates: error
    

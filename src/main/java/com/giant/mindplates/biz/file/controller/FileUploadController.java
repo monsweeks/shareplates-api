@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,13 +18,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.giant.mindplates.biz.file.entity.UploadedFileInfo;
 import com.giant.mindplates.biz.file.service.FileUploadService;
 import com.giant.mindplates.biz.file.vo.UploadFileResponse;
+import com.giant.mindplates.common.exception.file.FileAlreadyExistException;
+import com.giant.mindplates.common.exception.file.FileExtensionException;
+import com.giant.mindplates.framework.annotation.AdminOnly;
+import com.giant.mindplates.framework.config.FileConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,39 +41,76 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class FileUploadController {
 	
-	@Value("${file.allowed-extension}")
-	private String allowedExtension;
-
-	
 	@Autowired
     private FileUploadService fileStorageService;
 	
+	@Autowired
+    private FileConfig fileConfig;
+	
+	@Autowired
+    MessageSourceAccessor messageSourceAccessor;
+	
+	@AdminOnly
+	@GetMapping("/uploadAllFiles")
+	public List<UploadedFileInfo> uploaedFileList(){
+		
+		log.debug("admin only");
+		return fileStorageService.selectFileList();
+		
+	}
+	
+	@GetMapping("/uploadFiles")
+	public List<UploadedFileInfo> uploaedFileListByUserId(HttpServletRequest req){
+		
+		log.debug("admin only");
+		return fileStorageService.selectFileListByUserId(req);
+		
+	}
+	
     @PostMapping("/uploadFile")
-    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
+    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest req) {
 
-    	String fileName = fileStorageService.storeFile(file);
-
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
+		String fileName = file.getName();
+		String result = "";
+		try {
+			
+			fileName = fileStorageService.storeFile(file, req);
+			result = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/file/downloadFile/")
                 .path(fileName)
                 .toUriString();
+		}
+		catch(FileAlreadyExistException ex) {
+			result = messageSourceAccessor.getMessage("error.fileuploadAlreadyExists") ;
+			log.error("fail to store file : {}", ex);
+		}
+		catch(FileExtensionException ex) {
+			String[] args = {fileConfig.getAllowedExtension()};
+			result = messageSourceAccessor.getMessage("error.fileuploadextension",  args);
+			log.error("fail to store file : {}", ex);
+		}
+		catch(Exception ex) {
+			result = messageSourceAccessor.getMessage("error.fileuploadfail");
+			log.error("fail to store file : {}", ex);
+		}
 
-        return new UploadFileResponse(fileName, fileDownloadUri,file.getContentType(), file.getSize());
+        return new UploadFileResponse(fileName, result);
     }
 
-    @PostMapping("/uploadMultipleFiles")
-    public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+	@RequestMapping(value = "/uploadMultipleFiles", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE } )
+    public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, HttpServletRequest req) {
     	
         return Arrays.asList(files)
                 .stream()
-                .map(file -> uploadFile(file))
+                .map(file -> uploadFile(file, req))
                 .collect(Collectors.toList());
     }
+
 
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource(fileName);
+        Resource resource = fileStorageService.loadFileAsResource(fileName, request);
 
         // Try to determine file's content type
         String contentType = null;

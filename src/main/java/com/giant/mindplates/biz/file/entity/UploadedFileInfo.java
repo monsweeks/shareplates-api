@@ -31,21 +31,22 @@ public class UploadedFileInfo extends CommonEntity {
     Long id;
     
     @NotBlank
-    @Length(min = 2, max = 100)
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @NotBlank
-    @Length(min = 2, max = 200)
-    @Column(name = "file_name", nullable = false)
-    private String file_name;
-
-    @NotBlank
-    @Column(name = "file_size", nullable = false)
-    private String file_size;
+    @Column(name = "owner", nullable = false)
+    private String owner;
     
     @NotBlank
-    @Column(name = "file_type", nullable = false)
-    private String file_type;
+    @Length(min = 2, max = 400)
+    @Column(name = "name", nullable = false)
+    private String name;
+    
+    @Column(name = "size", nullable = false)
+    private Long size;
+
+    @Column(name = "use_yn", nullable = false)
+    private Boolean useYn;
+    
+    @Column(name = "share_yn", nullable = false)
+    private Boolean shareYn;
+
     
 }
