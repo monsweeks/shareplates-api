@@ -1,0 +1,19 @@
+package com.giant.mindplates.biz.file.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+@Builder
+@AllArgsConstructor
+@Getter
+@Setter
+public class UploadFileResponse {
+	
+	private String fileName;
+    private String fileDownloadUri;
+    private String fileType;
+    private long size;
+
+}
