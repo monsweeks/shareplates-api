@@ -9,13 +9,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.biz.user.service.UserService;
@@ -120,7 +114,7 @@ public class UserController {
     }
 
     @DisableLogin
-    @GetMapping("/logout")
+    @DeleteMapping("/logout")
     public void logout(HttpServletRequest request) {
         sessionUtil.logout(request);
     }
