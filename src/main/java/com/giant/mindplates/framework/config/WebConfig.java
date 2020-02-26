@@ -31,7 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
 
-        source.setBasename("classpath:/message/message");
+        source.setBasename("classpath:/messages/message");
         source.setDefaultEncoding("UTF-8");
         source.setCacheSeconds(60);
         source.setUseCodeAsDefaultMessage(true);
