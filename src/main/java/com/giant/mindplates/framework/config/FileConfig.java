@@ -2,17 +2,16 @@ package com.giant.mindplates.framework.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Setter
+@Getter
 @ConfigurationProperties(prefix = "file")
 public class FileConfig {
 	
 	private String uploadDir;
-
-    public String getUploadDir() {
-        return uploadDir;
-    }
-
-    public void setUploadDir(String uploadDir) {
-        this.uploadDir = uploadDir;
-    }
+	private String allowedExtension;
 
 }

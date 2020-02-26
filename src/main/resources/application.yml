@@ -1,11 +1,3 @@
-shareplates:
-  locale:
-    default: ko
-  corsUrl : http://localhost:3000
-  url: http://www.mindplates.com
-  mail:
-    senderName: noreply@mindplates.com
-
 spring:
   profiles:
     active: default
@@ -56,16 +48,23 @@ spring:
      file-size-threshold: 2KB
      max-file-size: 200MB
      max-request-size: 215MB
-
-## File Storage Properties
-# All files uploaded through the REST API will be stored in this directory
+     
+     
 file:
-  upload-dir: /Users/callicoder/uploads
+  upload-dir: d:/fileupload/
+  allowed-extension: txt,abc
+
+shareplates:
+  locale:
+    default: ko
+  corsUrl : http://localhost:3000
+  url: http://www.mindplates.com
+  mail:
+    senderName: noreply@mindplates.com
 server:
   servlet:
     session:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
-
 
 ---
 spring:
@@ -73,6 +72,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
+    username: shareplates
+    password: dhao1234
   mail:
     host: 192.168.56.102
     port: 20000
@@ -80,3 +81,6 @@ spring:
     username: shareplates
     password: enterpr1se!
     default-encoding: UTF-8
+file:
+  upload-dir: /data/upload
+   

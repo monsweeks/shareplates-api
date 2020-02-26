@@ -1,4 +1,4 @@
-package com.giant.mindplates.biz.file.entity;
+package com.giant.mindplates.biz.file.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

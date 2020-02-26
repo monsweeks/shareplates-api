@@ -15,12 +15,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.giant.mindplates.biz.file.repository.FileRepository;
 import com.giant.mindplates.common.exception.file.FileStorageException;
 import com.giant.mindplates.common.exception.file.MyFileNotFoundException;
 import com.giant.mindplates.framework.config.FileConfig;
 
 @Service
 public class FileUploadService {
+	
+	
+	@Autowired
+	private FileRepository fileRepository;
 	
 	private final Path fileStorageLocation;
 	

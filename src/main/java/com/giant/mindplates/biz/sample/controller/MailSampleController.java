@@ -13,7 +13,6 @@ import com.giant.mindplates.util.MailHandler;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-
 @Profile("default")
 @RestController
 @RequestMapping("/mail/sample")
