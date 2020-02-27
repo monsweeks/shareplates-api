@@ -38,14 +38,24 @@ spring:
       flush-mode: on-save # Sessions flush mode.
       namespace: spring:session # Namespace for keys used to store sessions.
   messages:
-    basename: message/message
+    basename: messages/message
     encoding: UTF-8
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
-server:
   servlet:
-    session:
-      timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
+    multipart:
+     enabled: true
+     file-size-threshold: 2KB
+     max-file-size: 200MB
+     max-request-size: 215MB
+
+logging:  level:     com.giant.mindplates: debug
+             
+     
+file:
+  upload-dir: d:/fileupload/
+  allowed-extension: txt,pdf
+
 shareplates:
   locale:
     default: ko
@@ -53,6 +63,10 @@ shareplates:
   url: http://www.mindplates.com
   mail:
     senderName: noreply@mindplates.com
+server:
+  servlet:
+    session:
+      timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
 
 ---
 spring:
@@ -62,3 +76,10 @@ spring:
     url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
   mail:
     host: 192.168.56.102
+file:
+  upload-dir: /data/upload
+  
+logging:
+  level: 
+    com.giant.mindplates: error
+   

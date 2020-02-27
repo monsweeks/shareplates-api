@@ -34,6 +34,7 @@ public class SessionUtil {
         HttpSession session = request.getSession(false);
         return session != null && "Y".equals(session.getAttribute("adminYn"));
     }
+    
     public void login(HttpServletRequest request, Long id) {
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -43,6 +44,7 @@ public class SessionUtil {
         session.setAttribute("id", id);
 
     }
+    
 
     public void logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);

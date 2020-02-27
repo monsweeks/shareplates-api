@@ -62,8 +62,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User selectUser(long id) {
-        return userRepository.findById(id).get();
+    public User selectUser(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public void selectUserByEmail(String email) {

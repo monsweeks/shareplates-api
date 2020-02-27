@@ -2,9 +2,15 @@ package com.giant.mindplates;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import com.giant.mindplates.framework.config.FileConfig;
+
+@EnableConfigurationProperties({
+    FileConfig.class
+})
 @EnableAsync
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer {

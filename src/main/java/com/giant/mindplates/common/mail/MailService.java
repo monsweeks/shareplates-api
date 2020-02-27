@@ -10,7 +10,6 @@ import javax.mail.MessagingException;
 import java.io.*;
 
 @Service
-
 public class MailService {
 
     @Value("${shareplates.url}")

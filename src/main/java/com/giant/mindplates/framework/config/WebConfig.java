@@ -1,7 +1,9 @@
 package com.giant.mindplates.framework.config;
 
-import com.giant.mindplates.framework.interceptor.LoginCheckInterceptor;
-import com.giant.mindplates.util.SessionUtil;
+import com.giant.mindplates.biz.organization.entity.Organization;
+import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.common.bean.InitService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,17 +16,29 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import com.giant.mindplates.framework.interceptor.LoginCheckInterceptor;
+import com.giant.mindplates.util.SessionUtil;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+
+	
+	@Value("${spring.profiles.active}")
+	private String activeProfile;
+
     @Value("${shareplates.corsUrl}")
     private String corsUrl;
+
 
     @Autowired
     SessionUtil sessionUtil;
 
     @Autowired
     MessageSourceAccessor messageSourceAccessor;
+
+    @Autowired
+    OrganizationService organizationService;
 
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
@@ -58,16 +72,24 @@ public class WebConfig implements WebMvcConfigurer {
         return messageSourceAccessor;
     }
 
+
+    @Bean
+    public InitService initService() {
+        InitService initService = new InitService(organizationService);
+        initService.init();
+        return initService;
+    };
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(this.corsUrl).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
     }
-
+    
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
-        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor))
+        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/test/**/")
                 .excludePathPatterns("/swagger-ui.html")

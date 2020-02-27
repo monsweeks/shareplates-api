@@ -1,14 +1,19 @@
 package com.giant.mindplates.biz.user.controller;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.giant.mindplates.biz.organization.entity.Organization;
+import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.biz.topic.entity.Topic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.giant.mindplates.biz.user.entity.User;
@@ -24,6 +29,9 @@ import com.giant.mindplates.util.SessionUtil;
 public class UserController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    OrganizationService organizationService;
 
     @Autowired
     MailService mailService;
@@ -59,13 +67,21 @@ public class UserController {
         return userService.checkEmail(email);
     }
 
-    @GetMapping("/my")
-    public User my(HttpServletRequest request) {
+    @DisableLogin
+    @GetMapping("/my-info")
+    public Map my(HttpServletRequest request) {
+        Map<String, Object> info = new HashMap();
+
         Long userId = sessionUtil.getUserId(request);
-        if (userId == null) {
-            throw new BizException(messageSourceAccessor.getMessage("error.badRequest"));
+        if (userId != null) {
+            User user = userService.selectUser(userId);
+            info.put("user", user);
         }
-        return userService.selectUser(userId);
+
+        List<Organization> organizations = organizationService.selectUserOrganizationList(userId);
+        info.put("organizations", organizations);
+
+        return info;
     }
 
     @DisableLogin
