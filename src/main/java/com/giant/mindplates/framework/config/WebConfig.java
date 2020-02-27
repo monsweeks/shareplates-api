@@ -1,7 +1,5 @@
 package com.giant.mindplates.framework.config;
 
-import com.giant.mindplates.framework.interceptor.LoginCheckInterceptor;
-import com.giant.mindplates.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,11 +12,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import com.giant.mindplates.framework.interceptor.LoginCheckInterceptor;
+import com.giant.mindplates.util.SessionUtil;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+
+	
+	@Value("${spring.profiles.active}")
+	private String activeProfile;
+
     @Value("${shareplates.corsUrl}")
     private String corsUrl;
+
 
     @Autowired
     SessionUtil sessionUtil;
@@ -63,11 +70,11 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(this.corsUrl).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
     }
-
+    
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
-        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor))
+        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/test/**/")
                 .excludePathPatterns("/swagger-ui.html")
