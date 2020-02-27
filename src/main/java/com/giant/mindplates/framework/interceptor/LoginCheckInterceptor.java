@@ -45,13 +45,6 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
         if (disableLogin != null) {
             return true;
         }
-        
-        if(activeProfile.contentEquals("default")){
-        	sessionUtil.login(request, 1L);
-        	HttpSession sess = request.getSession(false);
-        	sess.setAttribute("adminYn", "Y");
-        	        	
-        }
 
         if (!sessionUtil.isLogin(request)) {
             throw new AuthenticationException(messageSourceAccessor.getMessage("error.sessionExpired"));

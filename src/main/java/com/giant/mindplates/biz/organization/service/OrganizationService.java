@@ -6,30 +6,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional
-
 public class OrganizationService {
 
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    public List<Organization> listAll() {
+    public Organization selectOrganization(long id) {
+        return organizationRepository.findById(id).orElse(null);
+    }
+
+    public List<Organization> selectUserOrganizationList(Long userId) {
+        List<Organization> organizations = new ArrayList<>();
+        organizations.addAll(organizationRepository.findPublicOrganization());
+        organizations.addAll(organizationRepository.findUserOrganization(true, userId));
+        return organizations;
+    }
+
+    public List<Organization> selectOrganizationList() {
         return organizationRepository.findAll();
     }
 
-    public void save(Organization organization) {
+    public Organization createOrganization(Organization organization) {
+        return organizationRepository.save(organization);
+    }
+
+    public void updateOrganization(Organization organization) {
         organizationRepository.save(organization);
     }
 
-    public Organization get(long id) {
-        return organizationRepository.findById(id).get();
+    public void deleteOrganization(long id) {
+        Organization organization = selectOrganization(id);
+        organization.setUseYn(false);
     }
 
-    public void delete(long id) {
-        organizationRepository.deleteById(id);
+    public Long selectPublicOrganizationCount() {
+        return organizationRepository.countByUseYnTrueAndPublicYnTrue();
     }
+
+
 
 }
