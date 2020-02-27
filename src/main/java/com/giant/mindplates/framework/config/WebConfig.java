@@ -1,5 +1,9 @@
 package com.giant.mindplates.framework.config;
 
+import com.giant.mindplates.biz.organization.entity.Organization;
+import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.common.bean.InitService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +37,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     MessageSourceAccessor messageSourceAccessor;
 
+    @Autowired
+    OrganizationService organizationService;
+
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
 
@@ -64,6 +71,14 @@ public class WebConfig implements WebMvcConfigurer {
         MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource());
         return messageSourceAccessor;
     }
+
+
+    @Bean
+    public InitService initService() {
+        InitService initService = new InitService(organizationService);
+        initService.init();
+        return initService;
+    };
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
-@Table(name = "UploadFile")
+@Table(name = "file_info")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
