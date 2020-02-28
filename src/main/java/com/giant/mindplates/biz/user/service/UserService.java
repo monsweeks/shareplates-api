@@ -13,7 +13,7 @@ import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.biz.user.repository.UserRepository;
 import com.giant.mindplates.common.exception.ServiceException;
 import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
-import com.giant.mindplates.util.EncryptUtil;
+import com.giant.mindplates.common.util.EncryptUtil;
 
 @Service
 @Transactional
@@ -36,7 +36,7 @@ public class UserService {
         return false;
     }
 
-    public User createUser(User user) throws NoSuchAlgorithmException {
+    public User createUser(User user) {
         LocalDateTime now = LocalDateTime.now();
         user.setActivateYn(false);
         user.setDeleteYn(false);

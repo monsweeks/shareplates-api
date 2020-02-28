@@ -21,12 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.giant.mindplates.biz.file.entity.UploadedFileInfo;
 import com.giant.mindplates.biz.file.repository.FileRepository;
-import com.giant.mindplates.common.exception.file.FileAlreadyExistException;
-import com.giant.mindplates.common.exception.file.FileExtensionException;
-import com.giant.mindplates.common.exception.file.FileStorageException;
-import com.giant.mindplates.common.exception.file.MyFileNotFoundException;
+import com.giant.mindplates.common.exception.ServiceException;
+import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
+import com.giant.mindplates.common.util.SessionUtil;
 import com.giant.mindplates.framework.config.FileConfig;
-import com.giant.mindplates.util.SessionUtil;
+import com.giant.mindplates.framework.session.vo.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,8 +47,8 @@ public class FileUploadService {
         return fileRepository.findAll();
     }
 	
-	public List<UploadedFileInfo> selectFileListByUserId(HttpServletRequest req) {
-        return fileRepository.findByOwner( sessionUtil.getUserId(req).toString() );
+	public List<UploadedFileInfo> selectFileListByUserId(UserInfo userInfo) {
+        return fileRepository.findByOwner( String.valueOf(userInfo.getId()) );
     }
 	
 	
@@ -63,8 +62,7 @@ public class FileUploadService {
 		try {
 			Files.createDirectories(this.fileStorageLocation);
 		} catch (Exception ex) {
-			throw new FileStorageException("Could not create the directory where the uploaded files will be stored.",
-					ex);
+			throw new ServiceException(ServiceExceptionCode.FILE_UPLOAD_FAIL);
 		}
 	}
 
@@ -72,20 +70,16 @@ public class FileUploadService {
 
 
 		if (!allowedExtionis.stream().anyMatch(p -> file.getOriginalFilename().endsWith(p)))
-			throw new FileExtensionException("Could not store file. It's not allowed file Extension");
+			throw new ServiceException(ServiceExceptionCode.FILE_NOT_ALLOW_EXTENTION, (String[]) allowedExtionis.toArray());
 		
 		if (Files.exists(this.fileStorageLocation.resolve(sessionUtil.getUserId(req).toString() + "/" + file.getOriginalFilename())))
-			throw new FileAlreadyExistException("Could not store file. this file has already exist.");
+			throw new ServiceException(ServiceExceptionCode.FILE_ALREADY_EXIST);
 
 		Path targetLocation = null;
 		// Normalize file name
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
 		try {
-			// Check if the file's name contains invalid characters
-			if (fileName.contains("..")) {
-				throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
-			}
 			
 			Path userUploadDir =  this.fileStorageLocation.resolve(sessionUtil.getUserId(req).toString());
 			if(!Files.exists(userUploadDir))
@@ -99,33 +93,29 @@ public class FileUploadService {
 			saveStoredFileInfo(file, req);
 			
 			return fileName;
-		} catch (IOException ex) {
-			throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
-			
 		} catch (Exception ex) {
-			
 			try {
 				Files.deleteIfExists(targetLocation);
 			} catch (IOException e) {
-				//nothing to do
+				log.error("File delete error", e);
 			}
-			throw new RuntimeException("Could not save file info to database, filename : " + fileName + ". Please try again!", ex);
+			throw new ServiceException(ServiceExceptionCode.FILE_UPLOAD_FAIL);
 			
 		}
 		
 	}
 
-	public Resource loadFileAsResource(String fileName, HttpServletRequest req ) {
+	public Resource loadFileAsResource(String fileName, UserInfo userInfo ) {
 		try {
-			Path filePath = this.fileStorageLocation.resolve(sessionUtil.getUserId(req)+ "/" + fileName).normalize();
+			Path filePath = this.fileStorageLocation.resolve(userInfo.getId()+ "/" + fileName).normalize();
 			Resource resource = new UrlResource(filePath.toUri());
 			if (resource.exists()) {
 				return resource;
 			} else {
-				throw new MyFileNotFoundException("File not found " + fileName);
+				throw new ServiceException(ServiceExceptionCode.FILE_NOT_FOUND);
 			}
 		} catch (MalformedURLException ex) {
-			throw new MyFileNotFoundException("File not found " + fileName, ex);
+			throw new ServiceException(ServiceExceptionCode.FILE_NOT_FOUND);
 		}
 	}
 	

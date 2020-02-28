@@ -8,21 +8,27 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.giant.mindplates.biz.organization.entity.Organization;
-import com.giant.mindplates.biz.organization.service.OrganizationService;
-import com.giant.mindplates.biz.topic.entity.Topic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.giant.mindplates.biz.organization.entity.Organization;
+import com.giant.mindplates.biz.organization.service.OrganizationService;
 import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.biz.user.service.UserService;
 import com.giant.mindplates.common.mail.MailService;
+import com.giant.mindplates.common.util.SessionUtil;
 import com.giant.mindplates.framework.annotation.AdminOnly;
 import com.giant.mindplates.framework.annotation.DisableLogin;
 import com.giant.mindplates.framework.exception.BizException;
-import com.giant.mindplates.util.SessionUtil;
+import com.giant.mindplates.framework.session.vo.UserInfo;
 
 @RestController
 @RequestMapping("/api/users")
@@ -44,7 +50,7 @@ public class UserController {
 
     @DisableLogin
     @PostMapping("")
-    public User create(@Valid @RequestBody User user) throws Exception {
+    public User create(@Valid @RequestBody User user) {
 
         userService.selectUserByEmail(user.getEmail());
 
@@ -69,16 +75,13 @@ public class UserController {
 
     @DisableLogin
     @GetMapping("/my-info")
-    public Map my(HttpServletRequest request) {
-        Map<String, Object> info = new HashMap();
+    public Map my(UserInfo userInfo) {
+        Map<String, Object> info = new HashMap<>();
 
-        Long userId = sessionUtil.getUserId(request);
-        if (userId != null) {
-            User user = userService.selectUser(userId);
-            info.put("user", user);
-        }
+        User user = userService.selectUser(userInfo.getId());
+        info.put("user", user);
 
-        List<Organization> organizations = organizationService.selectUserOrganizationList(userId);
+        List<Organization> organizations = organizationService.selectUserOrganizationList(userInfo.getId());
         info.put("organizations", organizations);
 
         return info;

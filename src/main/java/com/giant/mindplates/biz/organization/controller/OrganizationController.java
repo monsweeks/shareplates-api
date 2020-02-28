@@ -1,17 +1,18 @@
 package com.giant.mindplates.biz.organization.controller;
 
-import com.giant.mindplates.biz.organization.entity.Organization;
-import com.giant.mindplates.biz.organization.service.OrganizationService;
-import com.giant.mindplates.framework.annotation.DisableLogin;
-import com.giant.mindplates.util.SessionUtil;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import com.giant.mindplates.biz.organization.entity.Organization;
+import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.common.util.SessionUtil;
+import com.giant.mindplates.framework.annotation.DisableLogin;
+import com.giant.mindplates.framework.session.vo.UserInfo;
 
 @RestController
 @RequestMapping("/api/organizations")
@@ -30,9 +31,8 @@ public class OrganizationController {
 
     @DisableLogin
     @GetMapping("/my")
-    public List<Organization> selectUserOrganizationList(HttpServletRequest request) {
-        Long userId = sessionUtil.getUserId(request);
-        return organizationService.selectUserOrganizationList(userId);
+    public List<Organization> selectUserOrganizationList(UserInfo userInfo) {
+        return organizationService.selectUserOrganizationList(userInfo.getId());
     }
 
 }
