@@ -70,7 +70,7 @@ public class FileUploadService {
 
 
 		if (!allowedExtionis.stream().anyMatch(p -> file.getOriginalFilename().endsWith(p)))
-			throw new ServiceException(ServiceExceptionCode.FILE_NOT_ALLOW_EXTENTION, (String[]) allowedExtionis.toArray());
+			throw new ServiceException(ServiceExceptionCode.FILE_NOT_ALLOW_EXTENTION, new String[] {String.join(",", allowedExtionis)});
 		
 		if (Files.exists(this.fileStorageLocation.resolve(sessionUtil.getUserId(req).toString() + "/" + file.getOriginalFilename())))
 			throw new ServiceException(ServiceExceptionCode.FILE_ALREADY_EXIST);
