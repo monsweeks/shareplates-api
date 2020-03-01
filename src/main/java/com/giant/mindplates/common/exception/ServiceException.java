@@ -8,8 +8,14 @@ import lombok.Getter;
 public class ServiceException extends CommonException{
 
 	private ServiceExceptionCode serviceExceptionCode;
+	private String[] messageParameters;
 	
 	public ServiceException(ServiceExceptionCode serviceExceptionCode) {
 		this.serviceExceptionCode = serviceExceptionCode;
+	}
+	
+	public ServiceException(ServiceExceptionCode serviceExceptionCode, String[] messageParameters) {
+		this.serviceExceptionCode = serviceExceptionCode;
+		this.messageParameters = messageParameters;
 	}
 }

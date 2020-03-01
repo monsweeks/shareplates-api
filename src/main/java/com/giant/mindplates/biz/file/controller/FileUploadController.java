@@ -27,10 +27,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.giant.mindplates.biz.file.entity.UploadedFileInfo;
 import com.giant.mindplates.biz.file.service.FileUploadService;
 import com.giant.mindplates.biz.file.vo.UploadFileResponse;
-import com.giant.mindplates.common.exception.file.FileAlreadyExistException;
-import com.giant.mindplates.common.exception.file.FileExtensionException;
 import com.giant.mindplates.framework.annotation.AdminOnly;
 import com.giant.mindplates.framework.config.FileConfig;
+import com.giant.mindplates.framework.session.vo.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,10 +59,10 @@ public class FileUploadController {
 	}
 	
 	@GetMapping("/uploadFiles")
-	public List<UploadedFileInfo> uploaedFileListByUserId(HttpServletRequest req){
+	public List<UploadedFileInfo> uploaedFileListByUserId(UserInfo userInfo){
 		
 		log.debug("admin only");
-		return fileStorageService.selectFileListByUserId(req);
+		return fileStorageService.selectFileListByUserId(userInfo);
 		
 	}
 	
@@ -72,28 +71,13 @@ public class FileUploadController {
 
 		String fileName = file.getName();
 		String result = "";
-		try {
 			
-			fileName = fileStorageService.storeFile(file, req);
-			result = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/file/downloadFile/")
-                .path(fileName)
-                .toUriString();
-		}
-		catch(FileAlreadyExistException ex) {
-			result = messageSourceAccessor.getMessage("error.fileuploadAlreadyExists") ;
-			log.error("fail to store file : {}", ex);
-		}
-		catch(FileExtensionException ex) {
-			String[] args = {fileConfig.getAllowedExtension()};
-			result = messageSourceAccessor.getMessage("error.fileuploadextension",  args);
-			log.error("fail to store file : {}", ex);
-		}
-		catch(Exception ex) {
-			result = messageSourceAccessor.getMessage("error.fileuploadfail");
-			log.error("fail to store file : {}", ex);
-		}
-
+		fileName = fileStorageService.storeFile(file, req);
+		result = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/file/downloadFile/")
+            .path(fileName)
+            .toUriString();
+		
         return new UploadFileResponse(fileName, result);
     }
 
@@ -108,9 +92,9 @@ public class FileUploadController {
 
 
     @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request, UserInfo userInfo) {
         // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource(fileName, request);
+        Resource resource = fileStorageService.loadFileAsResource(fileName, userInfo);
 
         // Try to determine file's content type
         String contentType = null;

@@ -1,23 +1,25 @@
 package com.giant.mindplates.framework.config;
 
-import com.giant.mindplates.biz.organization.entity.Organization;
-import com.giant.mindplates.biz.organization.service.OrganizationService;
-import com.giant.mindplates.common.bean.InitService;
-import io.swagger.models.auth.In;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.common.bean.InitService;
+import com.giant.mindplates.common.util.SessionUtil;
 import com.giant.mindplates.framework.interceptor.LoginCheckInterceptor;
-import com.giant.mindplates.util.SessionUtil;
+import com.giant.mindplates.framework.resolver.MethodArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -96,6 +98,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/webjars/**")
                 .excludePathPatterns("/swagger-resources/**")
                 .excludePathPatterns("/error");
+    }
+    
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+    	resolvers.add(new MethodArgumentResolver());
     }
 
 }

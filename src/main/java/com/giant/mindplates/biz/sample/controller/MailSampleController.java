@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.giant.mindplates.util.MailHandler;
+import com.giant.mindplates.common.mail.MailService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MailSampleController {
 	
 	@Autowired
-	private MailHandler mailHandler;
+	private MailService mailService;
 
     @PostMapping("send")
     public String sampleMvcRestController(@RequestParam(required = true, defaultValue = "mostgreat@gmail.com") String receiver, 
@@ -25,7 +25,7 @@ public class MailSampleController {
     	
     	
     	try {
-			mailHandler.sendEmail(receiver, subject, contents);
+    		mailService.sendEmail(receiver, subject, contents);
 		} catch (Exception e) {
 			log.error("Fail to send email : {}", e.getMessage());			
 		} 
