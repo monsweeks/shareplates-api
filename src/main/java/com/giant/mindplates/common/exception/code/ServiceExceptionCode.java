@@ -11,9 +11,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public enum ServiceExceptionCode {
 
-	BAD_REQUEST(HttpStatus.BAD_REQUEST, "request.error.msg"),
-	EXIST_EMAIL(HttpStatus.CONFLICT, "mail.exist.msg");
+	//요청
+	BAD_REQUEST(HttpStatus.BAD_REQUEST, "common.error.badRequest"),
+	//이메일
+	EXIST_EMAIL(HttpStatus.CONFLICT, "user.error.alreadyRegisterd"),	
 	
+	//세션
+	UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "session.error.expired"),
+	
+	//파일
+	FILE_ALREADY_EXIST(HttpStatus.CONFLICT, "file.error.uploadAlreadyExists"),
+	FILE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "file.error.uploadfail"),
+	FILE_NOT_ALLOW_EXTENTION(HttpStatus.NOT_ACCEPTABLE, "file.error.uploadextension"),
+	FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "file.error.resourceNotFound"),
+	;
 	private HttpStatus code;
 	private String messageCode;
 }

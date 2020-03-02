@@ -1,4 +1,4 @@
-package com.giant.mindplates.util;
+package com.giant.mindplates.common.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

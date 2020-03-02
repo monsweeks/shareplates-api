@@ -2,15 +2,15 @@ package com.giant.mindplates.framework.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.giant.mindplates.common.exception.ServiceException;
+import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
+import com.giant.mindplates.common.util.SessionUtil;
 import com.giant.mindplates.framework.annotation.DisableLogin;
-import com.giant.mindplates.framework.exception.AuthenticationException;
-import com.giant.mindplates.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,11 +45,10 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
         if (disableLogin != null) {
             return true;
         }
-
-        if (!sessionUtil.isLogin(request)) {
-            throw new AuthenticationException(messageSourceAccessor.getMessage("error.sessionExpired"));
-        }
-
+        
+        if(!sessionUtil.isLogin(request))
+        	throw new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER);
+        
         return true;
     }
 

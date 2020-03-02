@@ -1,22 +1,21 @@
 package com.giant.mindplates.biz.user.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.Length;
-
+import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.common.data.domain.CommonEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.Length;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -25,6 +24,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class User extends CommonEntity {
+
+    public User(Long id, String email, String name) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+    }
 
     @Id
     @Column(name = "id")
@@ -59,10 +64,6 @@ public class User extends CommonEntity {
     @Column(name = "use_yn", nullable = false)
     private Boolean useYn;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "delete_yn", nullable = false)
-    private Boolean deleteYn;
-
     @Column(name = "picture_path")
     private String picturePath;
 
@@ -81,4 +82,18 @@ public class User extends CommonEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "recovery_mail_send_result")
     private Boolean recoveryMailSendResult;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SELECT)
+    @JoinTable(
+            name = "organization_user",
+            inverseJoinColumns = @JoinColumn(name = "organization_id"),
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    List<Organization> organizations = new ArrayList<>();
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "allow_search__yn")
+    private Boolean allowSearchYn;
 }
