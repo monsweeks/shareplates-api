@@ -69,12 +69,13 @@ public class SessionUtil {
         if (session != null) {
             return  (UserInfo) session.getAttribute("userInfo");
         }else {
-        	throw new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER);
+            // 로그인 안된 사용자도 접근할 수 있도록 없으면 없는대로 내려주도록 변경
+        	return null;
         }
     	
     }
 
-    public Long getUserId(HttpServletRequest request) {
+    public static Long getUserId(HttpServletRequest request) {
         Long id = null;
         HttpSession session = request.getSession(false);
         if (session != null) {

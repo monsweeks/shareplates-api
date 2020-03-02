@@ -27,6 +27,10 @@ public class OrganizationService {
         return organizations;
     }
 
+    public List<Organization> selectPublicOrganizationList() {
+        return organizationRepository.findPublicOrganization();
+    }
+
     public List<Organization> selectOrganizationList() {
         return organizationRepository.findAll();
     }

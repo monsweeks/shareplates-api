@@ -17,8 +17,7 @@ public class CommonAuditorAware implements AuditorAware<Long>{
 	@Override
 	public Optional<Long> getCurrentAuditor() {
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-		
-		return Optional.ofNullable(SessionUtil.getUserInfo(request).getId());
+		return Optional.ofNullable(SessionUtil.getUserId(request));
 	}
 
 }

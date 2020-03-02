@@ -28,6 +28,15 @@ public class UserService {
     public List<User> selectUserList() {
         return userRepository.findAll();
     }
+
+    public List<User> selectUserList(Long organizationId, String condition) {
+        if (organizationId == null) {
+            return userRepository.selectByName(condition);
+        }
+
+        return userRepository.selectByOrganization(organizationId, condition);
+    }
+
     public Boolean selectsExistEmail(String email) {
         if (userRepository.countByEmailAndUseYn(email, true) > 0L) {
             return true;
@@ -39,10 +48,10 @@ public class UserService {
     public User createUser(User user) {
         LocalDateTime now = LocalDateTime.now();
         user.setActivateYn(false);
-        user.setDeleteYn(false);
         user.setUseYn(true);
         user.setCreationDate(now);
         user.setLastUpdateDate(now);
+        user.setAllowSearchYn(true);
 
         String plainText = user.getPassword();
         byte[] saltBytes = encryptUtil.getSaltByteArray();

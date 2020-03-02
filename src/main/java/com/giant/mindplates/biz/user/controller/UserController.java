@@ -1,24 +1,5 @@
 package com.giant.mindplates.biz.user.controller;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.service.OrganizationService;
 import com.giant.mindplates.biz.user.entity.User;
@@ -29,6 +10,16 @@ import com.giant.mindplates.framework.annotation.AdminOnly;
 import com.giant.mindplates.framework.annotation.DisableLogin;
 import com.giant.mindplates.framework.exception.BizException;
 import com.giant.mindplates.framework.session.vo.UserInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -73,16 +64,26 @@ public class UserController {
         return userService.checkEmail(email);
     }
 
+    @GetMapping("")
+    public List<User> search(@RequestParam Long organizationId, @RequestParam String condition) {
+        return userService.selectUserList(organizationId, condition);
+    }
+
     @DisableLogin
     @GetMapping("/my-info")
     public Map my(UserInfo userInfo) {
         Map<String, Object> info = new HashMap<>();
 
-        User user = userService.selectUser(userInfo.getId());
-        info.put("user", user);
+        if (userInfo == null) {
+            info.put("user", null);
+            info.put("organizations", organizationService.selectPublicOrganizationList());
+        } else {
+            User user = userService.selectUser(userInfo.getId());
+            info.put("user", user);
+            List<Organization> organizations = organizationService.selectUserOrganizationList(userInfo.getId());
+            info.put("organizations", organizations);
+        }
 
-        List<Organization> organizations = organizationService.selectUserOrganizationList(userInfo.getId());
-        info.put("organizations", organizations);
 
         return info;
     }
@@ -114,7 +115,7 @@ public class UserController {
     }
 
     @AdminOnly
-    @GetMapping("")
+    @GetMapping("/all")
     public List<User> list() {
         return userService.selectUserList();
     }
