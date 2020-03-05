@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TopicRepository extends JpaRepository<Topic, Long> {
 
+    Long countByOrganizationIdAndName(Long organizationId, String name);
+
 }
 

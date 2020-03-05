@@ -41,6 +41,10 @@ public class TopicService {
         return topicRepository.findById(id).orElse(null);
     }
 
+    public Boolean checkName(long organizationId, String name) {
+        return topicRepository.countByOrganizationIdAndName(organizationId, name) > 0;
+    }
+
     public void deleteTopic(long id) {
         Topic topic = topicRepository.findById(id).orElse(null);
         if (topic != null) {
