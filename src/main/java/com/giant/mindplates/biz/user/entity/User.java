@@ -25,10 +25,21 @@ import java.util.List;
 @Data
 public class User extends CommonEntity {
 
-    public User(Long id, String email, String name) {
+    public interface ValidationCreate {
+
+    }
+
+    public interface ValidationUpdate {
+
+    }
+
+    public User(Long id, String email, String name, String info, String dateTimeFormat, String language ) {
         this.id = id;
         this.email = email;
         this.name = name;
+        this.info = info;
+        this.dateTimeFormat = dateTimeFormat;
+        this.language = language;
     }
 
     @Id
@@ -36,13 +47,13 @@ public class User extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     Long id;
 
-    @NotBlank
-    @Length(min = 2, max = 100)
+    @NotBlank(groups = ValidationCreate.class)
+    @Length(min = 2, max = 100, groups = ValidationCreate.class)
     @Column(name = "email", nullable = false)
     private String email;
 
-    @NotBlank
-    @Length(min = 2, max = 100)
+    @NotBlank(groups = {ValidationCreate.class, ValidationUpdate.class})
+    @Length(min = 2, max = 100, groups = {ValidationCreate.class, ValidationUpdate.class})
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -50,7 +61,7 @@ public class User extends CommonEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String salt;
 
-    @NotBlank
+    @NotBlank(groups = ValidationCreate.class)
     @Length(min = 2, max = 100)
     @Column(name = "password", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -64,8 +75,14 @@ public class User extends CommonEntity {
     @Column(name = "use_yn", nullable = false)
     private Boolean useYn;
 
-    @Column(name = "picture_path")
-    private String picturePath;
+    @Column(columnDefinition = "text", name = "info")
+    private String info;
+
+    @Column(name = "date_time_format")
+    private String dateTimeFormat;
+
+    @Column(name = "language")
+    private String language;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "activation_token")

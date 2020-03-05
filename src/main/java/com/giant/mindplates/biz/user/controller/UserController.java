@@ -12,11 +12,13 @@ import com.giant.mindplates.framework.exception.BizException;
 import com.giant.mindplates.framework.session.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,13 +90,23 @@ public class UserController {
         return info;
     }
 
+    @PutMapping("/my-info")
+    public User updateMyInfo(@Validated(User.ValidationUpdate.class) @RequestBody User user, HttpServletRequest request) {
+        Long userId = SessionUtil.getUserId(request);
+        if (!user.getId().equals(userId)) {
+            throw new BizException(messageSourceAccessor.getMessage("common.error.badRequest"));
+        }
+
+        return userService.updateUser(user);
+    }
+
     @DisableLogin
     @GetMapping("/activations")
     public User getUserByActivationToken(@RequestParam String token) {
 
         User user = userService.getUserByActivationToken(token);
         if (user == null) {
-            throw new BizException(messageSourceAccessor.getMessage("error.badRequest"));
+            throw new BizException(messageSourceAccessor.getMessage("common.error.badRequest"));
         }
 
         return user;
@@ -105,7 +117,7 @@ public class UserController {
     public User setUserActivation(@RequestParam String token) {
         User user = this.getUserByActivationToken(token);
         if (user == null) {
-            throw new BizException(messageSourceAccessor.getMessage("error.badRequest"));
+            throw new BizException(messageSourceAccessor.getMessage("common.error.badRequest"));
         }
 
         if (user.getActivateYn()) {
