@@ -94,6 +94,18 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUser(User user) {
+        User userInfo = this.selectUser(user.getId());
+        userInfo.setName(user.getName());
+        userInfo.setDateTimeFormat(user.getDateTimeFormat());
+        userInfo.setInfo(user.getInfo());
+        userInfo.setLanguage(user.getLanguage());
+        userInfo.setLastUpdatedBy(user.getId());
+        userInfo.setLastUpdateDate(LocalDateTime.now());
+
+        return userRepository.save(userInfo);
+    }
+
     public User login(String email, String password) throws NoSuchAlgorithmException {
         return userRepository.findByEmail(email).filter(user -> {
 

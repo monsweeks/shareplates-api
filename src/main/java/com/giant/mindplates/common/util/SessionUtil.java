@@ -79,9 +79,9 @@ public class SessionUtil {
         Long id = null;
         HttpSession session = request.getSession(false);
         if (session != null) {
-            Object value = session.getAttribute("id");
-            if (value != null) {
-                id = (Long)value;
+            UserInfo userInfo = (UserInfo)session.getAttribute("userInfo");
+            if (userInfo != null) {
+                id = userInfo.getId();
             }
         }
 
