@@ -24,6 +24,9 @@ public enum ServiceExceptionCode {
 	FILE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "file.error.uploadfail"),
 	FILE_NOT_ALLOW_EXTENTION(HttpStatus.NOT_ACCEPTABLE, "file.error.uploadextension"),
 	FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "file.error.resourceNotFound"),
+	
+	//토픽
+	TOPIC_ALREADY_EXISTS(HttpStatus.CONFLICT, "topic.error.exists"),
 	;
 	private HttpStatus code;
 	private String messageCode;
