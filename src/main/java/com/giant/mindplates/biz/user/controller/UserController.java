@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,13 +90,20 @@ public class UserController {
     }
 
     @PutMapping("/my-info")
-    public User updateMyInfo(@Validated(User.ValidationUpdate.class) @RequestBody User user, HttpServletRequest request) {
+    public Map updateMyInfo(@Validated(User.ValidationUpdate.class) @RequestBody User user, HttpServletRequest request) {
+        Map<String, Object> info = new HashMap<>();
         Long userId = SessionUtil.getUserId(request);
         if (!user.getId().equals(userId)) {
             throw new BizException(messageSourceAccessor.getMessage("common.error.badRequest"));
         }
 
-        return userService.updateUser(user);
+        userService.updateUser(user);
+        List<Organization> organizations = organizationService.selectUserOrganizationList(userId);
+
+        info.put("user", user);
+        info.put("organizations", organizations);
+
+        return info;
     }
 
     @DisableLogin
