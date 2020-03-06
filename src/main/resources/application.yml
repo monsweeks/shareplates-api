@@ -49,8 +49,11 @@ spring:
      max-file-size: 200MB
      max-request-size: 215MB
 
-logging:  level:     com.giant.mindplates: debug
-             
+logging:
+  level: 
+    com.giant.mindplates: debug
+    
+         
      
 file:
   upload-dir: c:/fileupload/
