@@ -37,6 +37,10 @@ public class UserService {
         return userRepository.selectByOrganization(organizationId, condition);
     }
 
+    public List<User> selectTopicUserList(Long topicId) {
+        return userRepository.selectTopicUserList(topicId);
+    }
+
     public Boolean selectsExistEmail(String email) {
         if (userRepository.countByEmailAndUseYn(email, true) > 0L) {
             return true;

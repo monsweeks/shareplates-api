@@ -7,6 +7,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.giant.mindplates.common.data.domain.CommonEntity;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class TopicUser extends CommonEntity{
 	@EmbeddedId
 	private TopicUserId topicUserId;
 
+	@JsonIgnore
 	@MapsId("topicId")
 	@ManyToOne
 	@JoinColumn(name="topic_id", referencedColumnName = "id")
