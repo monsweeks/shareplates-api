@@ -19,7 +19,6 @@ import lombok.Setter;
 @EntityListeners(value = { AuditingEntityListener.class })
 @Getter
 @Setter
-//TODO Session 객체 생성 시 Auditor구현 필요
 public class CommonEntity {
 
 	@CreatedDate
