@@ -1,11 +1,10 @@
 package com.giant.mindplates.biz.topic.vo.response;
 
-import java.util.List;
-
-import org.springframework.hateoas.RepresentationModel;
-
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.hateoas.RepresentationModel;
+
+import java.util.List;
 
 @Builder
 @Data
@@ -19,5 +18,7 @@ public class GetTopicsResponse extends RepresentationModel<GetTopicsResponse> {
 		private long id;
 		private String name;
 		private String summary;
+		private Integer iconIndex;
+		private Boolean privateYn;
 	}
 }

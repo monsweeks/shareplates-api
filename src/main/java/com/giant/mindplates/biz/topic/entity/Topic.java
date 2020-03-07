@@ -51,14 +51,17 @@ public class Topic extends CommonEntity {
     private Boolean useYn;
     
     @Column(name = "organization_id")
-    private long organizationId;
+    private Long organizationId;
     
     @Column(name = "icon_index")
-    private int iconIndex;
+    private Integer iconIndex;
 
     @ManyToOne
     @JoinColumn(name="owner_user_id")
     private User owner;
+
+    @Column(name = "private_yn")
+    private Boolean privateYn;
 
     @ManyToOne
     @JoinColumn(name="organization_id", insertable = false, updatable = false)
