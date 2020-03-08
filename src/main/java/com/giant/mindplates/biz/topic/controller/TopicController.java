@@ -53,4 +53,9 @@ public class TopicController {
         return info;
     }
 
+    @DeleteMapping("/{topicId}")
+    public void deleteTopic(@PathVariable Long topicId ) {
+        topicService.deleteTopic(topicId);
+    }
+
 }
