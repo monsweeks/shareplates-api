@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,10 @@ import com.giant.mindplates.biz.topic.vo.response.CreateTopicResponse;
 import com.giant.mindplates.biz.topic.vo.response.GetTopicsResponse;
 import com.giant.mindplates.biz.user.service.UserService;
 
+import lombok.extern.java.Log;
+
+
+@Log
 @RestController
 @RequestMapping("/api/topics")
 public class TopicController {
@@ -57,7 +62,9 @@ public class TopicController {
     }
 
     @GetMapping("")
-    public GetTopicsResponse getTopics() {
+    public GetTopicsResponse getTopics(@RequestParam Long organizationId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction) {
+        log.info(organizationId.toString());
+        log.info(searchWord);
         return topicService.selectTopicList();
     }
 
@@ -68,6 +75,11 @@ public class TopicController {
         info.put("topic", topicService.selectTopic(topicId));
         info.put("topicUsers", userService.selectTopicUserList(topicId));
         return info;
+    }
+
+    @DeleteMapping("/{topicId}")
+    public void deleteTopic(@PathVariable Long topicId ) {
+        topicService.deleteTopic(topicId);
     }
 
 }

@@ -29,7 +29,7 @@ public class TopicService {
 
     public GetTopicsResponse selectTopicList() {
         return GetTopicsResponse.builder()
-                .topics(topicRepository.findAll().stream().map(topic
+                .topics(topicRepository.findAllByUseYnTrue().stream().map(topic
                         -> GetTopicsResponse.Topic.builder()
                         .id(topic.getId())
                         .summary(topic.getSummary())
@@ -76,7 +76,7 @@ public class TopicService {
     }
 
     public Topic selectTopic(long id) {
-        return topicRepository.findById(id).orElse(null);
+        return topicRepository.findByIdAndUseYnTrue(id).orElse(null);
     }
 
     public Boolean checkName(long organizationId, String name) {
@@ -85,7 +85,7 @@ public class TopicService {
 
     public void deleteTopic(long id) {
         Topic topic = topicRepository.findById(id).orElse(null);
-        if (topic != null) {
+        if (topic == null) {
             throw new BizException(messageSourceAccessor.getMessage("error.resourceNotFound"));
         } else {
             topic.setUseYn(false);
