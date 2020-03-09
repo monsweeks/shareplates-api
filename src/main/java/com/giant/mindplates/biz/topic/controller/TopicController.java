@@ -6,6 +6,7 @@ import com.giant.mindplates.biz.topic.vo.request.CreateTopicReqeust;
 import com.giant.mindplates.biz.topic.vo.response.CreateTopicResponse;
 import com.giant.mindplates.biz.topic.vo.response.GetTopicsResponse;
 import com.giant.mindplates.biz.user.service.UserService;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+
+@Log
 @RestController
 @RequestMapping("/api/topics")
 public class TopicController {
@@ -40,7 +43,9 @@ public class TopicController {
     }
 
     @GetMapping("")
-    public GetTopicsResponse getTopics() {
+    public GetTopicsResponse getTopics(@RequestParam Long organizationId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction) {
+        log.info(organizationId.toString());
+        log.info(searchWord);
         return topicService.selectTopicList();
     }
 
