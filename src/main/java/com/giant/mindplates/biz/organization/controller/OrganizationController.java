@@ -1,18 +1,17 @@
 package com.giant.mindplates.biz.organization.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.biz.organization.vo.request.CreateOrganizationRequest;
+import com.giant.mindplates.biz.organization.vo.response.CreateOrganizationResponse;
 import com.giant.mindplates.common.util.SessionUtil;
 import com.giant.mindplates.framework.annotation.DisableLogin;
 import com.giant.mindplates.framework.session.vo.UserInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/organizations")
@@ -24,15 +23,24 @@ public class OrganizationController {
     SessionUtil sessionUtil;
 
     @PostMapping("")
-    public Organization create(Organization organization) {
-        organizationService.createOrganization(organization);
-        return organization;
+    public CreateOrganizationResponse create(@RequestBody CreateOrganizationRequest createOrganizationRequest) {
+        organizationService.createOrganization(createOrganizationRequest);
+        Link link = new Link("/organizations", "organizations");
+
+        return CreateOrganizationResponse.builder()
+                .build()
+                .add(link);
     }
 
     @DisableLogin
     @GetMapping("/my")
+    public List<Organization> selectUserAndPublicOrganizationList(UserInfo userInfo) {
+        return organizationService.selectUserOrganizationList(userInfo.getId(), true);
+    }
+
+    @GetMapping("")
     public List<Organization> selectUserOrganizationList(UserInfo userInfo) {
-        return organizationService.selectUserOrganizationList(userInfo.getId());
+        return organizationService.selectUserOrganizationList(userInfo.getId(), false);
     }
 
 }

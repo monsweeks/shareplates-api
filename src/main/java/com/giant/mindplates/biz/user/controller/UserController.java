@@ -81,7 +81,7 @@ public class UserController {
         } else {
             User user = userService.selectUser(userInfo.getId());
             info.put("user", user);
-            List<Organization> organizations = organizationService.selectUserOrganizationList(userInfo.getId());
+            List<Organization> organizations = organizationService.selectUserOrganizationList(userInfo.getId(), true);
             info.put("organizations", organizations);
         }
 
@@ -98,7 +98,7 @@ public class UserController {
         }
 
         userService.updateUser(user);
-        List<Organization> organizations = organizationService.selectUserOrganizationList(userId);
+        List<Organization> organizations = organizationService.selectUserOrganizationList(userId, true);
 
         info.put("user", user);
         info.put("organizations", organizations);

@@ -49,14 +49,9 @@ public class Organization extends CommonEntity {
     @Column(name = "public_yn", nullable = false)
     private Boolean publicYn;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "organization", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SELECT)
-    @JoinTable(
-            name = "organization_user",
-            inverseJoinColumns = @JoinColumn(name = "user_id"),
-            joinColumns = @JoinColumn(name = "organization_id")
-    )
-    List<User> users = new ArrayList<>();
+
+    List<OrganizationUser> users = new ArrayList<>();
 
 }

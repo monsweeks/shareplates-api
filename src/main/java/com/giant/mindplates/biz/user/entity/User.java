@@ -100,16 +100,6 @@ public class User extends CommonEntity {
     @Column(name = "recovery_mail_send_result")
     private Boolean recoveryMailSendResult;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SELECT)
-    @JoinTable(
-            name = "organization_user",
-            inverseJoinColumns = @JoinColumn(name = "organization_id"),
-            joinColumns = @JoinColumn(name = "user_id")
-    )
-    List<Organization> organizations = new ArrayList<>();
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "allow_search__yn")
     private Boolean allowSearchYn;
