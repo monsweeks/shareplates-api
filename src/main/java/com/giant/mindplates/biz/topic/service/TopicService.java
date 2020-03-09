@@ -40,7 +40,7 @@ public class TopicService {
                 .build();
     }
 
-    public void createTopic(CreateTopicReqeust createTopicRequest) {
+    public com.giant.mindplates.biz.topic.vo.Topic createTopic(CreateTopicReqeust createTopicRequest) {
 
         if (checkName(createTopicRequest.getOrganizationId(), createTopicRequest.getName()))
             throw new ServiceException(ServiceExceptionCode.TOPIC_ALREADY_EXISTS);
@@ -66,6 +66,13 @@ public class TopicService {
         topic.setTopicUser(topicUsers);
 
         topicRepository.save(topic);
+        
+        return com.giant.mindplates.biz.topic.vo.Topic.builder()
+                .name(topic.getName())
+                .summary(topic.getSummary())
+                .iconIndex(topic.getIconIndex())
+                .privateYn(topic.getPrivateYn())
+        		.build();
     }
 
     public Topic selectTopic(long id) {
