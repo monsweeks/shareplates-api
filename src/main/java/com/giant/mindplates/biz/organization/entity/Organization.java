@@ -48,6 +48,5 @@ public class Organization extends CommonEntity {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "organization", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SELECT)
-
     List<OrganizationUser> users = new ArrayList<>();
 }

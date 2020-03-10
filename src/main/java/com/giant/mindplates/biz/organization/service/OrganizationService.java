@@ -3,10 +3,13 @@ package com.giant.mindplates.biz.organization.service;
 import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.entity.OrganizationUser;
 import com.giant.mindplates.biz.organization.repository.OrganizationRepository;
+import com.giant.mindplates.biz.organization.vo.OrganizationRole;
 import com.giant.mindplates.biz.organization.vo.OrganizationStats;
 import com.giant.mindplates.biz.organization.vo.request.CreateOrganizationRequest;
 import com.giant.mindplates.biz.user.entity.User;
+import com.giant.mindplates.framework.exception.BizException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +24,21 @@ public class OrganizationService {
     @Autowired
     private OrganizationRepository organizationRepository;
 
+    @Autowired
+    private MessageSourceAccessor messageSourceAccessor;
+
     public Organization selectOrganization(long id) {
         return organizationRepository.findById(id).orElse(null);
+    }
+
+    public OrganizationRole selectOrganizationRole(long id) {
+        Organization organization = organizationRepository.findById(id).orElse(null);
+
+        if (organization == null) {
+            throw new BizException(messageSourceAccessor.getMessage("error.resourceNotFound"));
+        }
+
+        return new OrganizationRole(organization);
     }
 
     public List<Organization> selectUserOrganizationList(Long userId, Boolean includePublic) {

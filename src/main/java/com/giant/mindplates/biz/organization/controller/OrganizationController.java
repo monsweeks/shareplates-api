@@ -2,6 +2,7 @@ package com.giant.mindplates.biz.organization.controller;
 
 import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.biz.organization.vo.OrganizationRole;
 import com.giant.mindplates.biz.organization.vo.OrganizationStats;
 import com.giant.mindplates.biz.organization.vo.request.CreateOrganizationRequest;
 import com.giant.mindplates.biz.organization.vo.response.CreateOrganizationResponse;
@@ -28,6 +29,11 @@ public class OrganizationController {
         return organizationService.selectOrganizationStatList(userInfo.getId());
     }
 
+    @GetMapping("/{organizationId}")
+    public OrganizationRole getOrganization(@PathVariable Long organizationId) {
+        return organizationService.selectOrganizationRole(organizationId);
+    }
+
     @PostMapping("")
     public CreateOrganizationResponse create(@RequestBody CreateOrganizationRequest createOrganizationRequest) {
         organizationService.createOrganization(createOrganizationRequest);
@@ -36,6 +42,11 @@ public class OrganizationController {
         return CreateOrganizationResponse.builder()
                 .build()
                 .add(link);
+    }
+
+    @PutMapping("/{organizationId}")
+    public CreateOrganizationResponse update(@RequestBody CreateOrganizationRequest createOrganizationRequest) {
+        return null;
     }
 
     @DisableLogin
