@@ -2,6 +2,7 @@ package com.giant.mindplates.biz.organization.controller;
 
 import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.service.OrganizationService;
+import com.giant.mindplates.biz.organization.vo.OrganizationStats;
 import com.giant.mindplates.biz.organization.vo.request.CreateOrganizationRequest;
 import com.giant.mindplates.biz.organization.vo.response.CreateOrganizationResponse;
 import com.giant.mindplates.common.util.SessionUtil;
@@ -22,6 +23,11 @@ public class OrganizationController {
     @Autowired
     SessionUtil sessionUtil;
 
+    @GetMapping("")
+    public List<OrganizationStats> selectUserOrganizationList(UserInfo userInfo) {
+        return organizationService.selectOrganizationStatList(userInfo.getId());
+    }
+
     @PostMapping("")
     public CreateOrganizationResponse create(@RequestBody CreateOrganizationRequest createOrganizationRequest) {
         organizationService.createOrganization(createOrganizationRequest);
@@ -38,9 +44,5 @@ public class OrganizationController {
         return organizationService.selectUserOrganizationList(userInfo.getId(), true);
     }
 
-    @GetMapping("")
-    public List<Organization> selectUserOrganizationList(UserInfo userInfo) {
-        return organizationService.selectUserOrganizationList(userInfo.getId(), false);
-    }
 
 }

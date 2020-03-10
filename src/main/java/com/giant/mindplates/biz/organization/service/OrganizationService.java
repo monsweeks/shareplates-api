@@ -3,6 +3,7 @@ package com.giant.mindplates.biz.organization.service;
 import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.entity.OrganizationUser;
 import com.giant.mindplates.biz.organization.repository.OrganizationRepository;
+import com.giant.mindplates.biz.organization.vo.OrganizationStats;
 import com.giant.mindplates.biz.organization.vo.request.CreateOrganizationRequest;
 import com.giant.mindplates.biz.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,10 @@ public class OrganizationService {
         }
         organizations.addAll(organizationRepository.findUserOrganization(true, userId));
         return organizations;
+    }
+
+    public List<OrganizationStats> selectOrganizationStatList(Long userId) {
+        return organizationRepository.findOrganizationStat(true, userId);
     }
 
     public List<Organization> selectPublicOrganizationList() {
