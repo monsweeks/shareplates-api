@@ -1,21 +1,25 @@
 package com.giant.mindplates.biz.topic.service;
 
-import com.giant.mindplates.biz.topic.entity.Topic;
-import com.giant.mindplates.biz.topic.entity.TopicUser;
-import com.giant.mindplates.biz.topic.entity.TopicUserId;
-import com.giant.mindplates.biz.topic.repository.TopicRepository;
-import com.giant.mindplates.biz.topic.vo.request.CreateTopicReqeust;
-import com.giant.mindplates.biz.topic.vo.response.GetTopicsResponse;
-import com.giant.mindplates.common.exception.ServiceException;
-import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
-import com.giant.mindplates.framework.exception.BizException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.giant.mindplates.biz.topic.entity.Topic;
+import com.giant.mindplates.biz.topic.entity.TopicUser;
+import com.giant.mindplates.biz.topic.entity.TopicUserId;
+import com.giant.mindplates.biz.topic.repository.TopicRepository;
+import com.giant.mindplates.biz.topic.repository.TopicUserRepository;
+import com.giant.mindplates.biz.topic.vo.request.CreateTopicReqeust;
+import com.giant.mindplates.biz.topic.vo.request.UpdateTopicRequest;
+import com.giant.mindplates.biz.topic.vo.response.GetTopicsResponse;
+import com.giant.mindplates.common.code.StatusCode;
+import com.giant.mindplates.common.exception.ServiceException;
+import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
+import com.giant.mindplates.framework.exception.BizException;
 
 @Service
 @Transactional
@@ -23,6 +27,9 @@ public class TopicService {
 
     @Autowired
     private TopicRepository topicRepository;
+    
+    @Autowired
+    private TopicUserRepository topicUserRepository;
 
     @Autowired
     private MessageSourceAccessor messageSourceAccessor;
@@ -69,9 +76,51 @@ public class TopicService {
         
         return com.giant.mindplates.biz.topic.vo.Topic.builder()
                 .name(topic.getName())
+                .id(topic.getId())
                 .summary(topic.getSummary())
                 .iconIndex(topic.getIconIndex())
                 .privateYn(topic.getPrivateYn())
+                .statusCode(StatusCode.CREATE)
+        		.build();
+    }
+    
+    public void deleteTopicUser(UpdateTopicRequest updateTopicRequest) {
+    	topicUserRepository.deleteByTopicId(updateTopicRequest.getId());
+    }
+
+    public com.giant.mindplates.biz.topic.vo.Topic updateTopic(UpdateTopicRequest updateTopicRequest) {   	
+    	
+        Topic topic = Topic.builder()
+        		.id(updateTopicRequest.getId())
+        		.name(updateTopicRequest.getName())
+                .summary(updateTopicRequest.getSummary())
+                .iconIndex(updateTopicRequest.getIconIndex())
+                .organizationId(updateTopicRequest.getOrganizationId())
+                .privateYn(updateTopicRequest.isPrivateYn())
+                .useYn(true)
+                .build();
+
+        List<TopicUser> topicUsers = updateTopicRequest.getUsers().stream().map(user
+                -> TopicUser.builder()
+                .topic(topic)
+                .topicUserId(TopicUserId.builder()
+                        .userId(user.getId())
+                        .topicId(updateTopicRequest.getId())
+                        .build())
+                .build())
+                .collect(Collectors.toList());
+
+        topic.setTopicUser(topicUsers);
+
+        topicRepository.save(topic);
+        
+        return com.giant.mindplates.biz.topic.vo.Topic.builder()
+                .id(topic.getId())
+                .name(topic.getName())
+                .summary(topic.getSummary())
+                .iconIndex(topic.getIconIndex())
+                .privateYn(topic.getPrivateYn())
+                .statusCode(StatusCode.UPDATE)
         		.build();
     }
 

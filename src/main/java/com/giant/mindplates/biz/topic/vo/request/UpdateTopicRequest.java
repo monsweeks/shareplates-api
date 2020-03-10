@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class CreateTopicReqeust {
+public class UpdateTopicRequest {
 	
 	private String name;
 	private String summary;
