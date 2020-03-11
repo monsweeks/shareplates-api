@@ -91,13 +91,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
-//        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
-//                .addPathPatterns("/**")
-//                .excludePathPatterns("/test/**/")
-//                .excludePathPatterns("/swagger-ui.html")
-//                .excludePathPatterns("/webjars/**")
-//                .excludePathPatterns("/swagger-resources/**")
-//                .excludePathPatterns("/error");
+        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
+                .addPathPatterns("/**")
+                .excludePathPatterns("/test/**/")
+                .excludePathPatterns("/swagger-ui.html")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/swagger-resources/**")
+                .excludePathPatterns("/error");
     }
     
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

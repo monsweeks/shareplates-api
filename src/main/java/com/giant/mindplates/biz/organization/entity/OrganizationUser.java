@@ -35,5 +35,4 @@ public class OrganizationUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organization_id")
     private Organization organization;
-
 }

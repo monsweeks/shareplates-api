@@ -46,7 +46,7 @@ public class Organization extends CommonEntity {
     @Column(name = "public_yn", nullable = false)
     private Boolean publicYn;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "organization", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     List<OrganizationUser> users = new ArrayList<>();
 }

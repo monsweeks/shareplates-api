@@ -1,13 +1,12 @@
 package com.giant.mindplates.biz.organization.controller;
 
-import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.service.OrganizationService;
 import com.giant.mindplates.biz.organization.vo.OrganizationRole;
 import com.giant.mindplates.biz.organization.vo.OrganizationStats;
 import com.giant.mindplates.biz.organization.vo.request.CreateOrganizationRequest;
+import com.giant.mindplates.biz.organization.vo.request.UpdateOrganizationRequest;
 import com.giant.mindplates.biz.organization.vo.response.CreateOrganizationResponse;
 import com.giant.mindplates.common.util.SessionUtil;
-import com.giant.mindplates.framework.annotation.DisableLogin;
 import com.giant.mindplates.framework.session.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -24,16 +23,35 @@ public class OrganizationController {
     @Autowired
     SessionUtil sessionUtil;
 
+    /**
+     * 사용자가 포함된 ORG의 목록 조회
+     *
+     * @param userInfo
+     * @return
+     */
     @GetMapping("")
-    public List<OrganizationStats> selectUserOrganizationList(UserInfo userInfo) {
-        return organizationService.selectOrganizationStatList(userInfo.getId());
+    public List<OrganizationStats> selectUserOrganizationStatList(UserInfo userInfo) {
+        return organizationService.selectUserOrganizationStatList(userInfo.getId());
     }
 
+    /**
+     * ORG 정보 조회
+     *
+     * @param organizationId
+     * @param userInfo
+     * @return
+     */
     @GetMapping("/{organizationId}")
-    public OrganizationRole getOrganization(@PathVariable Long organizationId) {
-        return organizationService.selectOrganizationRole(organizationId);
+    public OrganizationRole getOrganization(@PathVariable Long organizationId, UserInfo userInfo) {
+        return organizationService.selectOrganizationRole(organizationId, userInfo);
     }
 
+    /**
+     * ORG 생성
+     *
+     * @param createOrganizationRequest
+     * @return
+     */
     @PostMapping("")
     public CreateOrganizationResponse create(@RequestBody CreateOrganizationRequest createOrganizationRequest) {
         organizationService.createOrganization(createOrganizationRequest);
@@ -44,15 +62,39 @@ public class OrganizationController {
                 .add(link);
     }
 
+    /**
+     * ORG 수정
+     *
+     * @param updateOrganizationRequest
+     * @return
+     */
     @PutMapping("/{organizationId}")
-    public CreateOrganizationResponse update(@RequestBody CreateOrganizationRequest createOrganizationRequest) {
-        return null;
+    public CreateOrganizationResponse update(@RequestBody UpdateOrganizationRequest updateOrganizationRequest, UserInfo userInfo) {
+        organizationService.updateOrganization(updateOrganizationRequest, userInfo);
+
+        Link link = new Link("/organizations", "organizations");
+
+        return CreateOrganizationResponse.builder()
+                .build()
+                .add(link);
     }
 
-    @DisableLogin
-    @GetMapping("/my")
-    public List<Organization> selectUserAndPublicOrganizationList(UserInfo userInfo) {
-        return organizationService.selectUserOrganizationList(userInfo.getId(), true);
+
+    /**
+     * ORG 삭제
+     * @param organizationId
+     * @param userInfo
+     * @return
+     */
+    @DeleteMapping("/{organizationId}")
+    public CreateOrganizationResponse update(@PathVariable Long organizationId, UserInfo userInfo) {
+        organizationService.deleteOrganization(organizationId, userInfo);
+
+        Link link = new Link("/organizations", "organizations");
+
+        return CreateOrganizationResponse.builder()
+                .build()
+                .add(link);
     }
 
 

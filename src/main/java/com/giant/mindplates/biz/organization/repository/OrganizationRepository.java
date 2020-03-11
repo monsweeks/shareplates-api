@@ -21,7 +21,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
             "FROM OrganizationUser ou INNER JOIN ou.user u INNER JOIN ou.organization o " +
             "WHERE o.useYn = :useYn AND o.id IN (SELECT iou.organization.id FROM OrganizationUser iou WHERE iou.user.id = :userId)" +
             "GROUP BY o.id, o.name, o.publicYn")
-    List<OrganizationStats> findOrganizationStat(@Param("useYn") Boolean useYn, @Param("userId") Long userId);
+    List<OrganizationStats> findUserOrganizationStat(@Param("useYn") Boolean useYn, @Param("userId") Long userId);
 
 }
 
