@@ -13,6 +13,7 @@ import com.giant.mindplates.common.exception.ServiceException;
 import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
 import com.giant.mindplates.framework.session.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,8 +70,8 @@ public class OrganizationService {
         return organizations;
     }
 
-    public List<OrganizationStats> selectUserOrganizationStatList(Long userId) {
-        return organizationRepository.findUserOrganizationStat(true, userId);
+    public List<OrganizationStats> selectUserOrganizationStatList(Long userId, String searchWord, String order, String direction) {
+        return organizationRepository.findUserOrganizationStat(userId, searchWord, true, direction.equals("asc") ? Sort.by(order).ascending() : Sort.by(order).descending());
     }
 
     public List<Organization> selectPublicOrganizationList() {

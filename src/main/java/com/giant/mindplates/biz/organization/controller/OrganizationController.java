@@ -30,8 +30,8 @@ public class OrganizationController {
      * @return
      */
     @GetMapping("")
-    public List<OrganizationStats> selectUserOrganizationStatList(UserInfo userInfo) {
-        return organizationService.selectUserOrganizationStatList(userInfo.getId());
+    public List<OrganizationStats> selectUserOrganizationStatList(@RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, UserInfo userInfo) {
+        return organizationService.selectUserOrganizationStatList(userInfo.getId(), searchWord, order, direction);
     }
 
     /**
