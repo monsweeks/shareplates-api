@@ -1,7 +1,5 @@
 package com.giant.mindplates.biz.organization.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.common.data.domain.CommonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -49,14 +46,7 @@ public class Organization extends CommonEntity {
     @Column(name = "public_yn", nullable = false)
     private Boolean publicYn;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
-    @JoinTable(
-            name = "organization_user",
-            inverseJoinColumns = @JoinColumn(name = "user_id"),
-            joinColumns = @JoinColumn(name = "organization_id")
-    )
-    List<User> users = new ArrayList<>();
-
+    List<OrganizationUser> users = new ArrayList<>();
 }

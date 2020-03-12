@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface TopicRepository extends JpaRepository<Topic, Long> {
 
     Long countByOrganizationIdAndName(Long organizationId, String name);
+    Long countByOrganizationId(Long organizationId);
     List<Topic> findAllByUseYnTrue();
     Optional<Topic> findByIdAndUseYnTrue(Long id);
 

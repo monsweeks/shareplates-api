@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Long countByEmailAndUseYn(String email, Boolean useYn);
 
-    @Query("SELECT new User(u.id, u.email, u.name, u.info, u.dateTimeFormat, u.language) FROM User u INNER JOIN u.organizations o WHERE o.useYn = 1 AND u.useYn = 1 AND u.allowSearchYn = 1 AND o.id = :organizationId AND (u.name LIKE CONCAT('%' ,:condition) OR u.email LIKE CONCAT('%' ,:condition) )")
+    @Query("SELECT new User(u.id, u.email, u.name, u.info, u.dateTimeFormat, u.language) FROM OrganizationUser ou INNER JOIN ou.organization o INNER JOIN ou.user u WHERE o.useYn = 1 AND u.useYn = 1 AND u.allowSearchYn = 1 AND o.id = :organizationId AND (u.name LIKE CONCAT('%' ,:condition) OR u.email LIKE CONCAT('%' ,:condition) )")
     List<User> selectByOrganization(@Param("organizationId") Long organizationId, @Param("condition") String condition);
 
     @Query("SELECT new User(u.id, u.email, u.name, u.info, u.dateTimeFormat, u.language) FROM User u WHERE u.useYn = 1 AND u.allowSearchYn = 1 AND (u.name LIKE CONCAT(:condition, '%') OR u.email LIKE CONCAT(:condition, '%') )")
