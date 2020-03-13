@@ -1,5 +1,6 @@
 package com.giant.mindplates.biz.topic.controller;
 
+import com.giant.mindplates.biz.organization.service.OrganizationService;
 import com.giant.mindplates.biz.topic.entity.Topic;
 import com.giant.mindplates.biz.topic.service.TopicService;
 import com.giant.mindplates.biz.topic.vo.SimpleTopic;
@@ -31,6 +32,11 @@ public class TopicController {
     UserService userService;
 
     @Autowired
+    OrganizationService organizationService;
+
+
+
+    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
     public void pubTopic(SimpleTopic simpleTopic) {
@@ -46,13 +52,19 @@ public class TopicController {
     @GetMapping("")
     public TopicsResponse selectTopicList(@RequestParam Long organizationId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, HttpServletRequest request) {
         Long userId = SessionUtil.getUserId(request);
-        topicService.checkOrgIncludesUser(organizationId, userId);
+        organizationService.checkOrgIncludesUser(organizationId, userId);
         return new TopicsResponse(topicService.selectTopicList(userId, organizationId, searchWord, order, direction));
+    }
+
+    @GetMapping("/{topicId}")
+    public TopicResponse selectTopic(@PathVariable Long topicId, UserInfo userInfo) {
+        topicService.checkUserHasTopicReadRole(topicId, userInfo.getId());
+        return new TopicResponse(topicService.selectTopic(topicId));
     }
 
     @PostMapping("")
     public TopicResponse createTopic(@RequestBody TopicRequest topicRequest, UserInfo userInfo) {
-        topicService.checkOrgIncludesUser(topicRequest.getOrganizationId(), userInfo.getId());
+        organizationService.checkOrgIncludesUser(topicRequest.getOrganizationId(), userInfo.getId());
         Topic topic = topicService.createTopic(new Topic(topicRequest));
         SimpleTopic simpleTopic = new SimpleTopic(topic, StatusCode.CREATE);
         pubTopic(simpleTopic);
@@ -60,7 +72,7 @@ public class TopicController {
         return TopicResponse.builder().build().add(link);
     }
 
-    @PutMapping("")
+    @PutMapping("/{topicId}")
     public TopicResponse updateTopic(@RequestBody TopicRequest topicRequest, UserInfo userInfo) {
         topicService.checkUserHasTopicWriteRole(topicRequest.getId(), userInfo.getId());
         Topic topic = topicService.updateTopic(new Topic(topicRequest));
@@ -69,18 +81,12 @@ public class TopicController {
         return TopicResponse.builder().build().add(link);
     }
 
-
-    @GetMapping("/{topicId}")
-    public TopicResponse selectTopic(@PathVariable Long topicId, UserInfo userInfo) {
-        topicService.checkUserHasTopicReadRole(topicId, userInfo.getId());
-        Topic topic = topicService.selectTopic(topicId);
-        return new TopicResponse(topic);
-    }
-
     @DeleteMapping("/{topicId}")
-    public void deleteTopic(@PathVariable Long topicId, UserInfo userInfo) {
+    public TopicResponse deleteTopic(@PathVariable Long topicId, UserInfo userInfo) {
         topicService.checkUserHasTopicWriteRole(topicId, userInfo.getId());
         topicService.deleteTopic(topicId);
+        Link link = new Link("/topics", "topics");
+        return TopicResponse.builder().build().add(link);
     }
 
 }

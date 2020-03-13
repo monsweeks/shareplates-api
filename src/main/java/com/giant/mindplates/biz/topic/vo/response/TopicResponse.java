@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
     private Integer iconIndex;
     private Boolean privateYn;
     private List<TopicResponse.User> users;
+    private LocalDateTime creationDate;
 
     public TopicResponse(Topic topic) {
         this.id = topic.getId();
@@ -33,6 +35,7 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
         this.organizationName = topic.getOrganization().getName();
         this.iconIndex = topic.getIconIndex();
         this.privateYn = topic.getPrivateYn();
+        this.creationDate = topic.getCreationDate();
         this.users = topic.getTopicUsers().stream().map(topicUser
                 -> User.builder()
                 .id(topicUser.getUser().getId())
@@ -40,8 +43,6 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
                 .name(topicUser.getUser().getName())
                 .info(topicUser.getUser().getInfo())
                 .build()).collect(Collectors.toList());
-
-
     }
 
     @Builder

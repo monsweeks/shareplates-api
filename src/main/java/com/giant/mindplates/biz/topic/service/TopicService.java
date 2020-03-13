@@ -60,25 +60,6 @@ public class TopicService {
         throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
     }
 
-    public void checkOrgIncludesUser(Long organizationId, Long userId) {
-        Organization organization = organizationService.selectOrganization(organizationId);
-
-        if (organization == null) {
-            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
-        }
-
-        if (organization.getPublicYn()) {
-            return;
-        }
-
-        boolean isIncludeUser = organization.getUsers().stream().filter(organizationUser -> organizationUser.getUser().getId().equals(userId)).count() > 0;
-        if (isIncludeUser) {
-            return;
-        }
-
-        throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-    }
-
     public List<Topic> selectTopicList(Long userId, Long organizationId, String searchWord, String order, String direction) {
         return topicRepository.findTopicList(userId, organizationId, searchWord, direction.equals("asc") ? Sort.by(order).ascending() : Sort.by(order).descending());
     }
