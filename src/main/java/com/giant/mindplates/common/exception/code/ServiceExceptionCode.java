@@ -13,6 +13,7 @@ public enum ServiceExceptionCode {
     //공통
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "common.resource.not.found"),
     RESOURCE_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "common.not.authorized"),
+    RESOURCE_NOT_ENOUGH_AUTHORIZED(HttpStatus.FORBIDDEN, "common.not.enough.authorized"),
 
     //요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "common.error.badRequest"),
@@ -30,7 +31,7 @@ public enum ServiceExceptionCode {
 
     //토픽
     TOPIC_ALREADY_EXISTS(HttpStatus.CONFLICT, "topic.error.exists"),
-
+    TOPIC_NO_USER_ASSIGNED(HttpStatus.BAD_REQUEST, "topic.error.no.user.assigned"),
     //ORG
     NO_MANAGER_ASSIGNED(HttpStatus.BAD_REQUEST, "organization.no.manager.assigned"),
     NO_EMPTY_ORGANIZATION(HttpStatus.BAD_REQUEST, "organization.no.empty.organization"),

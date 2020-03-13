@@ -1,31 +1,23 @@
 package com.giant.mindplates.biz.topic.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.giant.mindplates.biz.topic.entity.Topic;
+import com.giant.mindplates.biz.topic.service.TopicService;
+import com.giant.mindplates.biz.topic.vo.SimpleTopic;
+import com.giant.mindplates.biz.topic.vo.request.TopicRequest;
+import com.giant.mindplates.biz.topic.vo.response.TopicResponse;
+import com.giant.mindplates.biz.topic.vo.response.TopicsResponse;
+import com.giant.mindplates.biz.user.service.UserService;
+import com.giant.mindplates.common.code.StatusCode;
+import com.giant.mindplates.common.util.SessionUtil;
+import com.giant.mindplates.framework.annotation.DisableLogin;
+import com.giant.mindplates.framework.session.vo.UserInfo;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.giant.mindplates.biz.topic.service.TopicService;
-import com.giant.mindplates.biz.topic.vo.Topic;
-import com.giant.mindplates.biz.topic.vo.request.CreateTopicReqeust;
-import com.giant.mindplates.biz.topic.vo.request.UpdateTopicRequest;
-import com.giant.mindplates.biz.topic.vo.response.CreateTopicResponse;
-import com.giant.mindplates.biz.topic.vo.response.GetTopicsResponse;
-import com.giant.mindplates.biz.topic.vo.response.UpdateTopicResponse;
-import com.giant.mindplates.biz.user.service.UserService;
-
-import lombok.extern.java.Log;
+import javax.servlet.http.HttpServletRequest;
 
 
 @Log
@@ -40,62 +32,54 @@ public class TopicController {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
-    
-    @GetMapping("/name")
-    public Boolean checkName(@RequestParam Long organizationId, @RequestParam String name) {
-        return topicService.checkName(organizationId, name);
+
+    public void pubTopic(SimpleTopic simpleTopic) {
+        simpMessagingTemplate.convertAndSend("/sub/simpleTopic", simpleTopic);
+    }
+
+    @GetMapping("/exist")
+    public Boolean selectTopicNameExist(@RequestParam Long organizationId, @RequestParam String name) {
+        return topicService.selectIsTopicNameExist(organizationId, name);
+    }
+
+    @DisableLogin
+    @GetMapping("")
+    public TopicsResponse selectTopicList(@RequestParam Long organizationId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, HttpServletRequest request) {
+        Long userId = SessionUtil.getUserId(request);
+        topicService.checkOrgIncludesUser(organizationId, userId);
+        return new TopicsResponse(topicService.selectTopicList(userId, organizationId, searchWord, order, direction));
     }
 
     @PostMapping("")
-    public CreateTopicResponse create(@RequestBody CreateTopicReqeust createTopicRequest) {
-    	Topic topic = topicService.createTopic(createTopicRequest);
-    	
-    	fireTopic(topic);
-
+    public TopicResponse createTopic(@RequestBody TopicRequest topicRequest, UserInfo userInfo) {
+        topicService.checkOrgIncludesUser(topicRequest.getOrganizationId(), userInfo.getId());
+        Topic topic = topicService.createTopic(new Topic(topicRequest));
+        SimpleTopic simpleTopic = new SimpleTopic(topic, StatusCode.CREATE);
+        pubTopic(simpleTopic);
         Link link = new Link("/topics", "topics");
-
-        return CreateTopicResponse.builder()
-                .build()
-                .add(link);
-
+        return TopicResponse.builder().build().add(link);
     }
-    
+
     @PutMapping("")
-    public UpdateTopicResponse updateTopic(@RequestBody UpdateTopicRequest updateTopicRequest) {
-    	topicService.deleteTopicUser(updateTopicRequest);
-    	Topic topic = topicService.updateTopic(updateTopicRequest);
-    	
-    	fireTopic(topic);
-
+    public TopicResponse updateTopic(@RequestBody TopicRequest topicRequest, UserInfo userInfo) {
+        topicService.checkUserHasTopicWriteRole(topicRequest.getId(), userInfo.getId());
+        Topic topic = topicService.updateTopic(new Topic(topicRequest));
+        pubTopic(new SimpleTopic(topic, StatusCode.UPDATE));
         Link link = new Link("/topics", "topics");
-        
-        return UpdateTopicResponse.builder()
-                .build()
-                .add(link);
-    }
-    
-    public void fireTopic(Topic topic) {
-    	simpMessagingTemplate.convertAndSend("/sub/topic", topic);
+        return TopicResponse.builder().build().add(link);
     }
 
-    @GetMapping("")
-    public GetTopicsResponse getTopics(@RequestParam Long organizationId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction) {
-        log.info(organizationId.toString());
-        log.info(searchWord);
-        return topicService.selectTopicList();
-    }
 
     @GetMapping("/{topicId}")
-    public Map getTopic(@PathVariable Long topicId) {
-        Map<String, Object> info = new HashMap<>();
-        // TODO 사용자가 토픽을 조회할 수 있느 권한 (토픽이 프라이빗이면 본인만, 토픽이 퍼블릿이면 토픽의 ORG에 지금 사용자가 포함되어 있는지 확인)
-        info.put("topic", topicService.selectTopic(topicId));
-        info.put("topicUsers", userService.selectTopicUserList(topicId));
-        return info;
+    public TopicResponse selectTopic(@PathVariable Long topicId, UserInfo userInfo) {
+        topicService.checkUserHasTopicReadRole(topicId, userInfo.getId());
+        Topic topic = topicService.selectTopic(topicId);
+        return new TopicResponse(topic);
     }
 
     @DeleteMapping("/{topicId}")
-    public void deleteTopic(@PathVariable Long topicId ) {
+    public void deleteTopic(@PathVariable Long topicId, UserInfo userInfo) {
+        topicService.checkUserHasTopicWriteRole(topicId, userInfo.getId());
         topicService.deleteTopic(topicId);
     }
 

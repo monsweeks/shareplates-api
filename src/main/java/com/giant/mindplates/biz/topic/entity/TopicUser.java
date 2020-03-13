@@ -1,34 +1,32 @@
 package com.giant.mindplates.biz.topic.entity;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.common.data.domain.CommonEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
 @Entity
 @Builder
-@Table(name = "topic_user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TopicUser extends CommonEntity{	
+@Table(name = "topic_user", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "topic_id"})})
+public class TopicUser extends CommonEntity {
 
-	@EmbeddedId
-	private TopicUserId topicUserId;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    Long id;
 
-	@JsonIgnore
-	@MapsId("topicId")
-	@ManyToOne
-	@JoinColumn(name="topic_id", referencedColumnName = "id")
-	private Topic topic;	
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "topic_id")
+    private Topic topic;
 }

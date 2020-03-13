@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT new User(u.id, u.email, u.name, u.info, u.dateTimeFormat, u.language) FROM User u WHERE u.useYn = 1 AND u.allowSearchYn = 1 AND (u.name LIKE CONCAT(:condition, '%') OR u.email LIKE CONCAT(:condition, '%') )")
     List<User> selectByName(@Param("condition") String condition);
 
-    @Query("SELECT new User(u.id, u.email, u.name, u.info, u.dateTimeFormat, u.language) FROM User u WHERE u.id in (SELECT tu.topicUserId.userId FROM TopicUser tu WHERE tu.topicUserId.topicId = :topicId)")
+    @Query("SELECT new User(u.id, u.email, u.name, u.info, u.dateTimeFormat, u.language) FROM User u WHERE u.id in (SELECT tu.user.id FROM TopicUser tu WHERE tu.topic.id = :topicId)")
     List<User> selectTopicUserList(@Param("topicId") Long topicId);
 }
 
