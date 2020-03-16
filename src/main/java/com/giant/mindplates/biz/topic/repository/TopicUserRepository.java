@@ -8,6 +8,5 @@ import com.giant.mindplates.biz.topic.entity.TopicUserId;
 
 public interface TopicUserRepository extends JpaRepository<TopicUser, TopicUserId>{
 	
-//	@Query("DELETE FROM topicUser t WHERE t.topicid = :topicId")
-	void deleteByTopicId(long topicId);
+
 }

@@ -3,15 +3,10 @@ package com.giant.mindplates.biz.organization.service;
 import com.giant.mindplates.biz.organization.entity.Organization;
 import com.giant.mindplates.biz.organization.entity.OrganizationUser;
 import com.giant.mindplates.biz.organization.repository.OrganizationRepository;
-import com.giant.mindplates.biz.organization.vo.OrganizationRole;
-import com.giant.mindplates.biz.organization.vo.OrganizationStats;
-import com.giant.mindplates.biz.organization.vo.request.CreateOrganizationRequest;
-import com.giant.mindplates.biz.organization.vo.request.UpdateOrganizationRequest;
 import com.giant.mindplates.biz.topic.repository.TopicRepository;
 import com.giant.mindplates.biz.user.entity.User;
 import com.giant.mindplates.common.exception.ServiceException;
 import com.giant.mindplates.common.exception.code.ServiceExceptionCode;
-import com.giant.mindplates.framework.session.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -33,32 +27,46 @@ public class OrganizationService {
     @Autowired
     private TopicRepository topicRepository;
 
-    private void checkHasRole(Organization organization, UserInfo userInfo, Boolean checkAdmin) {
-
-        if (checkAdmin && organization.getUsers().stream().filter(organizationUser -> organizationUser.getRole().equals("ADMIN") && organizationUser.getUser().getId().equals(userInfo.getId())).count() < 1) {
-            throw new ServiceException(ServiceExceptionCode.NO_ADMIN_USER);
-        }
-
-        if (!checkAdmin && organization.getUsers().stream().filter(organizationUser -> organizationUser.getUser().getId().equals(userInfo.getId())).count() < 1) {
-            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-        }
-
-    }
-
-    public Organization selectOrganization(long id) {
-        return organizationRepository.findById(id).orElse(null);
-    }
-
-    public OrganizationRole selectOrganizationRole(long id, UserInfo userInfo) {
-        Organization organization = organizationRepository.findById(id).orElse(null);
+    public void checkOrgIncludesUser(Long organizationId, Long userId) {
+        Organization organization = selectOrganization(organizationId);
 
         if (organization == null) {
             throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
         }
 
-        this.checkHasRole(organization, userInfo, false);
+        if (organization.getPublicYn()) {
+            return;
+        }
 
-        return new OrganizationRole(organization);
+        boolean isIncludeUser = organization.getUsers().stream().filter(organizationUser -> organizationUser.getUser().getId().equals(userId)).count() > 0;
+        if (isIncludeUser) {
+            return;
+        }
+
+        throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+    }
+
+    public void checkIsUserOrgAdmin(Long organizationId, Long userId) {
+        Organization organization = selectOrganization(organizationId);
+
+        if (organization == null) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
+        }
+
+        if (organization.getPublicYn()) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
+        }
+
+        boolean isAdminUser = organization.getUsers().stream().filter(organizationUser -> organizationUser.getUser().getId().equals(userId) && organizationUser.getRole().equals("ADMIN")).count() > 0;
+        if (isAdminUser) {
+            return;
+        }
+
+        throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+    }
+
+    public Organization selectOrganization(long id) {
+        return organizationRepository.findById(id).orElse(null);
     }
 
     public List<Organization> selectUserOrganizationList(Long userId, Boolean includePublic) {
@@ -70,51 +78,29 @@ public class OrganizationService {
         return organizations;
     }
 
-    public List<OrganizationStats> selectUserOrganizationStatList(Long userId, String searchWord, String order, String direction) {
-        return organizationRepository.findUserOrganizationStat(userId, searchWord, true, direction.equals("asc") ? Sort.by(order).ascending() : Sort.by(order).descending());
+    public List<Organization> selectOrganizationListByUser(Long userId, String searchWord, String order, String direction) {
+        return organizationRepository.findOrganizationListByUser(userId, searchWord, true, direction.equals("asc") ? Sort.by(order).ascending() : Sort.by(order).descending());
     }
 
     public List<Organization> selectPublicOrganizationList() {
         return organizationRepository.findPublicOrganization();
     }
 
-    public Organization createOrganization(CreateOrganizationRequest createOrganizationRequest) {
-
-        Organization organization = Organization.builder().name(createOrganizationRequest.getName()).description(createOrganizationRequest.getDescription()).publicYn(false).useYn(true).build();
-
-        List<OrganizationUser> admins = createOrganizationRequest.getAdmins().stream().map(user -> OrganizationUser.builder().organization(organization).user(User.builder().id(user.getId()).build()).role("ADMIN").build()).collect(Collectors.toList());
-        List<OrganizationUser> members = createOrganizationRequest.getMembers().stream().map(user -> OrganizationUser.builder().organization(organization).user(User.builder().id(user.getId()).build()).role("MEMBER").build()).collect(Collectors.toList());
-        admins.addAll(members);
-
-        organization.setUsers(admins);
-
-        return organizationRepository.save(organization);
-    }
-
     public Organization createOrganization(Organization organization) {
         return organizationRepository.save(organization);
     }
 
-    public void updateOrganization(UpdateOrganizationRequest updateOrganizationRequest, UserInfo userInfo) {
+    public void updateOrganization(Organization organizationInfo) {
 
-        Organization organization = organizationRepository.findById(updateOrganizationRequest.getId()).orElse(null);
-
-        if (organization == null) {
-            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
-        }
-
-        this.checkHasRole(organization, userInfo, true);
+        Organization organization = organizationRepository.findById(organizationInfo.getId()).orElse(null);
 
         HashMap<Long, String> nextUserMap = new HashMap<>();
-        for (UpdateOrganizationRequest.User admin : updateOrganizationRequest.getAdmins()) {
-            nextUserMap.put(admin.getId(), "ADMIN");
-        }
-        for (UpdateOrganizationRequest.User admin : updateOrganizationRequest.getMembers()) {
-            nextUserMap.put(admin.getId(), "MEMBER");
+        for (OrganizationUser user : organizationInfo.getUsers()) {
+            nextUserMap.put(user.getUser().getId(), user.getRole());
         }
 
-        organization.setName(updateOrganizationRequest.getName());
-        organization.setDescription(updateOrganizationRequest.getDescription());
+        organization.setName(organizationInfo.getName());
+        organization.setDescription(organizationInfo.getDescription());
 
         // UPDATE AND REMOVE
         HashMap<Long, Boolean> currentUserMap = new HashMap<>();
@@ -144,17 +130,14 @@ public class OrganizationService {
         organizationRepository.save(organization);
     }
 
-    public void deleteOrganization(Long id, UserInfo userInfo) {
-        Organization organization = selectOrganization(id);
-
-        this.checkHasRole(organization, userInfo, true);
-
-        Long count = topicRepository.countByOrganizationId(id);
+    public void deleteOrganization(Long organizationId) {
+        Organization organization = selectOrganization(organizationId);
+        Long count = topicRepository.countByOrganizationId(organizationId);
         if (count > 0) {
-            throw new ServiceException(ServiceExceptionCode.NO_MANAGER_ASSIGNED);
+            throw new ServiceException(ServiceExceptionCode.NO_EMPTY_ORGANIZATION);
         }
-
         organization.setUseYn(false);
+        organizationRepository.save(organization);
     }
 
     public Long selectPublicOrganizationCount() {
