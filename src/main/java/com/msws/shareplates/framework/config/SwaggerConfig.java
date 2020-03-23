@@ -20,7 +20,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.giant.mindplates.biz"))
+                .apis(RequestHandlerSelectors.basePackage("com.msws.shareplates.biz"))
                 .paths(PathSelectors.any())
                 .build();
     }
