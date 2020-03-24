@@ -19,6 +19,6 @@ public class ChapterApiController {
 
 	@PutMapping("")
 	public void createChapter(@RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
-		chapterService.createChater(chapterRequest.createChaterEntity(), userInfo);
+		chapterService.createChater(chapterRequest.buildChaterEntity(), userInfo);
 	}
 }

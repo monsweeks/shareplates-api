@@ -14,7 +14,7 @@ public class ChapterRequest {
 	private boolean useYn;
 	private long topicId;
 	
-	public Chapter createChaterEntity() {
+	public Chapter buildChaterEntity() {
 		return Chapter.builder()
 				.orderNo(orderNo)
 				.title(title)
