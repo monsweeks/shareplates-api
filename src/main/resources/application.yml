@@ -51,7 +51,7 @@ spring:
 
 logging:
   level: 
-    com.giant.mindplates: debug
+    com.msws.shareplates: debug
     
          
      
@@ -84,5 +84,5 @@ file:
   
 logging:
   level: 
-    com.giant.mindplates: error
+    com.msws.shareplates: error
    
