@@ -53,10 +53,8 @@ logging:
   level: 
     com.msws.shareplates: debug
     
-         
-     
 file:
-  upload-dir: c:/fileupload/
+  upload-dir: d:/fileupload/
   allowed-extension: txt,pdf
 
 shareplates:
@@ -70,7 +68,12 @@ server:
   servlet:
     session:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
-
+      
+oauth:
+  kakao:
+    client_id: 863525fbdd02a15ac03536bbfcf0151d
+    redirect_uri: http://localhost:8080/oauth/kakao/login
+    
 ---
 spring:
   profiles: production
