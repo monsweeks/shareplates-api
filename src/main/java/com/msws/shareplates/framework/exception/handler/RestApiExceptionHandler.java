@@ -22,7 +22,7 @@ public class RestApiExceptionHandler {
 		String message = messageSourceAccessor.getMessage(serviceExceptionCode.getMessageCode(), args);
 		
 		return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
-				.code(serviceExceptionCode.getCode().name())
+				.code(serviceExceptionCode.name())
 				.message(message)
 				.build(), serviceExceptionCode.getCode());
 	};	
