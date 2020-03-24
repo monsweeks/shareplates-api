@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,8 @@ public class OrganizationResponse extends RepresentationModel<OrganizationRespon
     private Long userCount;
     private Long topicCount;
     private String role;
+    private LocalDateTime creationDate;
+
 
     public OrganizationResponse(Organization organization) {
         this.id = organization.getId();
@@ -35,11 +38,12 @@ public class OrganizationResponse extends RepresentationModel<OrganizationRespon
         this.userCount = organization.getUserCount();
         this.topicCount = organization.getTopicCount();
         this.role = organization.getRole();
+        this.creationDate = organization.getCreationDate();
 
         this.admins = organization.getUsers().stream().filter(organizationUser -> organizationUser.getRole().equals("ADMIN")).map(organizationUser
                 -> User.builder()
                 .id(organizationUser.getUser().getId())
-                .email(organizationUser.getUser().getName())
+                .email(organizationUser.getUser().getEmail())
                 .name(organizationUser.getUser().getName())
                 .info(organizationUser.getUser().getInfo())
                 .build()).collect(Collectors.toList());
@@ -47,7 +51,7 @@ public class OrganizationResponse extends RepresentationModel<OrganizationRespon
         this.members = organization.getUsers().stream().filter(organizationUser -> organizationUser.getRole().equals("MEMBER")).map(organizationUser
                 -> User.builder()
                 .id(organizationUser.getUser().getId())
-                .email(organizationUser.getUser().getName())
+                .email(organizationUser.getUser().getEmail())
                 .name(organizationUser.getUser().getName())
                 .info(organizationUser.getUser().getInfo())
                 .build()).collect(Collectors.toList());
