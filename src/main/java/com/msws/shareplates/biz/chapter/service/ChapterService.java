@@ -1,5 +1,7 @@
 package com.msws.shareplates.biz.chapter.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ public class ChapterService {
 	@Autowired
 	private TopicRepository topicRepository;
 
-	public void createChater(Chapter chapter, UserInfo userInfo) {
+	public void saveChater(Chapter chapter, UserInfo userInfo) {
 		
 		topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
 						
@@ -32,5 +34,42 @@ public class ChapterService {
 		}).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
 		
 		
+	}
+	
+	public void deleteChapter(Chapter chapter, UserInfo userInfo) {
+		
+		topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
+			
+			if(topic.getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId())))
+				throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+			
+			chapterRepository.delete(chapter);
+			
+			return topic;
+		}).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
+	}
+	
+	public List<Chapter> getChapters(Chapter chapter, UserInfo userInfo){
+		
+		return topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
+			
+			if(topic.getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId())))
+				throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);			
+			
+			return chapterRepository.findByTopicIdOrderByOrderNo(chapter.getTopic().getId());
+		}).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
+		
+	}
+	
+	public Chapter getChapter(long chapterId, Chapter chapter, UserInfo userInfo) {
+		
+		return topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
+			
+			if(topic.getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId())))
+				throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);	
+			
+			return chapterRepository.findById(chapterId);
+		}).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC))
+				.orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_CHAPTER));
 	}
 }
