@@ -43,16 +43,15 @@ public class Chapter extends CommonEntity {
 
     @NotBlank
     @Length(min = 1, max = 100)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "title")
+    private String title;
 
     @Column(columnDefinition = "text", name = "summary")
     private String summary;
 
     @Column(name = "order_no")
-    Integer orderNo;
+    private int orderNo;
 
-    @NotBlank
     @Column(name = "use_yn")
     private Boolean useYn;
 
