@@ -24,7 +24,7 @@ import com.msws.shareplates.framework.session.vo.UserInfo;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/api/chapter")
+@RequestMapping("/api/chapters")
 public class ChapterApiController {
 	
 	@Autowired
