@@ -72,7 +72,7 @@ server:
 oauth:
   kakao:
     client_id: 863525fbdd02a15ac03536bbfcf0151d
-    redirect_uri: http://localhost:8080/oauth/kakao/login
+    redirect_uri: http://localhost:8080/oauth/kakao/token
     
 ---
 spring:
@@ -88,4 +88,7 @@ file:
 logging:
   level: 
     com.msws.shareplates: error
-   
+oauth:
+  kakao:
+    client_id: 863525fbdd02a15ac03536bbfcf0151d
+    redirect_uri: http://mindplates.com/oauth/kakao/token

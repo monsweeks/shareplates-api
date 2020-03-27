@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.msws.shareplates.biz.oauth.kakao.service.KakaoOauthService;
+import com.msws.shareplates.biz.oauth.kakao.service.OauthService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OauthLoginTest {
 	
 	@Autowired
-	private KakaoOauthService kakaoservice;
+	private OauthService kakaoservice;
 	
 	@Test
 	public void test() {
