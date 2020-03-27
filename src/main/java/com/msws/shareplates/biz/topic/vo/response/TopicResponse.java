@@ -39,7 +39,7 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
         this.users = topic.getTopicUsers().stream().map(topicUser
                 -> User.builder()
                 .id(topicUser.getUser().getId())
-                .email(topicUser.getUser().getName())
+                .email(topicUser.getUser().getEmail())
                 .name(topicUser.getUser().getName())
                 .info(topicUser.getUser().getInfo())
                 .build()).collect(Collectors.toList());
