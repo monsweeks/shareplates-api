@@ -1,16 +1,15 @@
 package com.msws.shareplates.biz.chapter.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.msws.shareplates.biz.chapter.entity.Chapter;
 import com.msws.shareplates.biz.chapter.repository.ChapterRepository;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.framework.session.vo.UserInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ChapterService {
@@ -21,18 +20,19 @@ public class ChapterService {
 	@Autowired
 	private TopicRepository topicRepository;
 
-	public void saveChater(Chapter chapter, UserInfo userInfo) {
-		
+	public Chapter saveChapter(Chapter chapter, UserInfo userInfo) {
 		topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
 						
 			if(topic.getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId())))
 				throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-			
-			chapterRepository.save(chapter);
+
+
 			
 			return topic;
 		}).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
-		
+
+		chapter = chapterRepository.save(chapter);
+		return chapter;
 		
 	}
 	
@@ -71,5 +71,17 @@ public class ChapterService {
 			return chapterRepository.findById(chapterId);
 		}).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC))
 				.orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_CHAPTER));
+	}
+
+	public Chapter getChapter(long chapterId, UserInfo userInfo) {
+
+		Chapter chapter = chapterRepository.findById(chapterId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_CHAPTER));
+
+		if (chapter.getTopic().getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId()))) {
+			throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+		}
+
+		return chapter;
+
 	}
 }

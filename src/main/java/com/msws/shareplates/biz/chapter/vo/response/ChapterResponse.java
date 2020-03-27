@@ -2,6 +2,8 @@ package com.msws.shareplates.biz.chapter.vo.response;
 
 import java.util.List;
 
+import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
+import com.msws.shareplates.biz.topic.vo.response.TopicsResponse;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
@@ -15,5 +17,6 @@ public class ChapterResponse extends RepresentationModel<ChapterResponse>{
 	
 	private List<ChapterModel> chapters;
 	private ChapterModel chapter;
+	private TopicResponse topic;
 
 }
