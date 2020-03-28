@@ -1,16 +1,19 @@
-package com.msws.shareplates.biz.oauth.kakao.controller;
+package com.msws.shareplates.biz.oauth.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
-import com.msws.shareplates.biz.oauth.kakao.entity.UserInfo;
-import com.msws.shareplates.biz.oauth.kakao.service.OauthService;
+import com.msws.shareplates.biz.oauth.entity.OauthUserInfo;
+import com.msws.shareplates.biz.oauth.service.OauthServiceFactory;
+import com.msws.shareplates.biz.oauth.service.IF.OauthServiceIF;
+import com.msws.shareplates.biz.oauth.vo.OauthVendor;
 import com.msws.shareplates.biz.oauth.vo.response.TokenInfo;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
@@ -21,14 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@RequestMapping("oauth/kakao")
-@RestController
+@RequestMapping("oauth")
+@RestController	
 public class OauthController {
 	
 	private final String service_prefix = "OAUTH_KAKAO_";
-	
+
 	@Autowired
-	private OauthService service;
+	private OauthServiceFactory serviceFactory;
 	
 	@Autowired
 	private UserService user_service;
@@ -47,20 +50,24 @@ public class OauthController {
 	 * @return
 	 */
 	@DisableLogin
-	@GetMapping(value = "/token")
-	public TokenInfo getAuthorizationCode(HttpServletRequest req, String code) {
+	@GetMapping(value = "/{oauth_vendor}/token")
+	public TokenInfo getAuthorizationCode(@PathVariable(name = "oauth_vendor") OauthVendor oauth_vendor, 
+										  HttpServletRequest req, 
+										  String code) {
 		
 		log.info("received authorization code is {}", code);
+		
+		OauthServiceIF service = serviceFactory.getOauthVendorService(oauth_vendor);
 		
 		String result = service.getToken(code);
 		TokenInfo ti = new Gson().fromJson(result, TokenInfo.class);
 
-		UserInfo user_info = new Gson().fromJson(service.getUserInfo(ti.getAccess_token()), UserInfo.class);
+		OauthUserInfo user_info = service.getUserInfo(ti.getAccess_token()); 
 		
 		User user = User.builder().build();
 		user.setPassword("password");
-		user.setName(user_info.getProperties().getNickname());
-		user.setEmail(service_prefix + user_info.getKakao_account().getEmail());
+		user.setName(user_info.getNickname());
+		user.setEmail(service_prefix + user_info.getEmail());
 		user.setActivateMailSendResult(true);
 		user.setActivateYn(true);
 		
@@ -85,9 +92,10 @@ public class OauthController {
 	 * @return
 	 */
 	@DisableLogin
-	@PostMapping(value = "/token")
-	public TokenInfo refreshToken(String refresh_token) {
+	@PostMapping(value = "/{oauth_vendor}//token")
+	public TokenInfo refreshToken(@PathVariable(name = "oauth_vendor") OauthVendor oauth_vendor,String refresh_token) {
 		
+		OauthServiceIF service = serviceFactory.getOauthVendorService(oauth_vendor);
 		String result = service.refreshToken(refresh_token);
 		TokenInfo tr = new Gson().fromJson(result, TokenInfo.class);
 		log.info("received token info is {}", tr);

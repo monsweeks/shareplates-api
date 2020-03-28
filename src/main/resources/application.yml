@@ -71,6 +71,10 @@ server:
       
 oauth:
   kakao:
+    host: https://kauth.kakao.com
+    api_host: https://kapi.kakao.com
+    token_endpoint: /oauth/token
+    userinfo_endpoint: /v2/user/me
     client_id: 863525fbdd02a15ac03536bbfcf0151d
     redirect_uri: http://localhost:8080/oauth/kakao/token
     
@@ -90,5 +94,10 @@ logging:
     com.msws.shareplates: error
 oauth:
   kakao:
+    host: https://kauth.kakao.com
+    api_host: https://kapi.kakao.com
+    token_endpoint: /oauth/token
+    userinfo_endpoint: /v2/user/me
     client_id: 863525fbdd02a15ac03536bbfcf0151d
     redirect_uri: http://mindplates.com/oauth/kakao/token
+    

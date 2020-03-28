@@ -1,4 +1,4 @@
-package com.msws.shareplates.biz.oauth.kakao.service;
+package com.msws.shareplates.biz.oauth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,20 +8,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.google.gson.Gson;
+import com.msws.shareplates.biz.oauth.entity.KakaoOauthUserInfo;
+import com.msws.shareplates.biz.oauth.entity.OauthUserInfo;
+import com.msws.shareplates.biz.oauth.service.IF.OauthServiceIF;
+import com.msws.shareplates.biz.oauth.vo.OauthVendor;
 import com.msws.shareplates.common.util.HttpRequestUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class OauthService {
+public class KakaoOauthService implements OauthServiceIF{
 	
-	private final String OAUTH_HOST = "https://kauth.kakao.com";
-	private final String API_HOST = "https://kapi.kakao.com";
-	private final String GET_TOKEN_ENDPOINT = "/oauth/token";
-	private final String GET_USERINFO_ENDPOINT = "/v2/user/me";
+	@Value("${oauth.kakao.host}")
+	private String OAUTH_HOST;
+	
+	@Value("${oauth.kakao.api_host}")
+	private String API_HOST;
+	
+	@Value("${oauth.kakao.token_endpoint}")
+	private String GET_TOKEN_ENDPOINT;
+	
+	@Value("${oauth.kakao.userinfo_endpoint}")
+	private String GET_USERINFO_ENDPOINT;
+	
 	private final String AUTHORIZATION = "Bearer ";
-	
+		
 	
 	@Value("${oauth.kakao.client_id}")
     private String client_id;
@@ -83,19 +96,17 @@ public class OauthService {
 		
 	}
 	
-	/**
-	 * get user info
-	 * 
-	 * @param token
-	 * @return
-	 */
-	public String getUserInfo(String token) {
-
+	public OauthUserInfo getUserInfo(String token) {
+		
 		log.info("token is {}", token);
 		try {
 			String[] headers = { "Authorization" };
 			String[] values = { AUTHORIZATION + token};
-			return requestUtil.sendRequest(API_HOST + GET_USERINFO_ENDPOINT, null , headers, values, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
+			String api_result = requestUtil.sendRequest(API_HOST + GET_USERINFO_ENDPOINT, null , headers, values, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
+			KakaoOauthUserInfo result = new Gson().fromJson(api_result , KakaoOauthUserInfo.class);
+			return new OauthUserInfo(result.getId(), 
+									 result.getProperties().getNickname(), 
+									 result.getKakao_account().getEmail());
 		}catch(Exception e) {
 			log.error("fail to get token from kakao server : {}", e);
 		}
@@ -103,11 +114,10 @@ public class OauthService {
 		return null;
 		
 	}
-	
-	
-	
-	
-	
+
+	public OauthVendor getVendor() {
+		return OauthVendor.kakao;
+	}
 
 }
 
