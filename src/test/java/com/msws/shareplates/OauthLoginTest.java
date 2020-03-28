@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.msws.shareplates.biz.oauth.kakao.service.OauthService;
+import com.msws.shareplates.biz.oauth.service.OauthServiceFactory;
+import com.msws.shareplates.biz.oauth.service.IF.OauthServiceIF;
+import com.msws.shareplates.biz.oauth.vo.OauthVendor;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OauthLoginTest {
 	
 	@Autowired
-	private OauthService kakaoservice;
+	private OauthServiceFactory factory;
 	
 	@Test
 	public void test() {
@@ -21,6 +23,7 @@ public class OauthLoginTest {
 		try {
 			
 			String code = "";
+			OauthServiceIF kakaoservice = factory.getOauthVendorService(OauthVendor.kakao);
 			String result = kakaoservice.getToken(code);
 			log.debug("Code from kakao is {}", result);
 			

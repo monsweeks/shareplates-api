@@ -1,4 +1,4 @@
-package com.msws.shareplates.biz.oauth.kakao.entity;
+package com.msws.shareplates.biz.oauth.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
+public class KakaoOauthUserInfo{
 	
 		
 	private Long id;
