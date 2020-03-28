@@ -1,4 +1,4 @@
-package com.giant.mindplates;
+package com.msws.shareplates;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
