@@ -54,7 +54,7 @@ logging:
     com.msws.shareplates: debug
     
 file:
-  upload-dir: d:/fileupload/
+  upload-dir: c:/fileupload/
   allowed-extension: txt,pdf
 
 shareplates:
@@ -72,11 +72,11 @@ server:
 oauth:
   kakao:
     host: https://kauth.kakao.com
-    api_host: https://kapi.kakao.com
-    token_endpoint: /oauth/token
-    userinfo_endpoint: /v2/user/me
-    client_id: 863525fbdd02a15ac03536bbfcf0151d
-    redirect_uri: http://localhost:8080/oauth/kakao/token
+    api-host: https://kapi.kakao.com
+    token-endpoint: /oauth/token
+    userinfo-endpoint: /v2/user/me
+    client-id: 863525fbdd02a15ac03536bbfcf0151d
+    redirect-uri: http://localhost:8080/oauth/kakao/token
     
 ---
 spring:
@@ -95,9 +95,9 @@ logging:
 oauth:
   kakao:
     host: https://kauth.kakao.com
-    api_host: https://kapi.kakao.com
-    token_endpoint: /oauth/token
-    userinfo_endpoint: /v2/user/me
-    client_id: 863525fbdd02a15ac03536bbfcf0151d
-    redirect_uri: http://mindplates.com/oauth/kakao/token
+    api-host: https://kapi.kakao.com
+    token-endpoint: /oauth/token
+    userinfo-endpoint: /v2/user/me
+    client-id: 863525fbdd02a15ac03536bbfcf0151d
+    redirect-uri: http://mindplates.com/oauth/kakao/token
     

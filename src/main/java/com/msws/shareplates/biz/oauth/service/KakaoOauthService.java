@@ -12,35 +12,39 @@ import com.google.gson.Gson;
 import com.msws.shareplates.biz.oauth.entity.KakaoOauthUserInfo;
 import com.msws.shareplates.biz.oauth.entity.OauthUserInfo;
 import com.msws.shareplates.biz.oauth.service.IF.OauthServiceIF;
+import com.msws.shareplates.biz.oauth.service.annotation.VendorType;
 import com.msws.shareplates.biz.oauth.vo.OauthVendor;
+import com.msws.shareplates.common.exception.VendorException;
+import com.msws.shareplates.common.exception.code.VendorExceptionCode;
 import com.msws.shareplates.common.util.HttpRequestUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@VendorType(vendor=OauthVendor.KAKAO)
 public class KakaoOauthService implements OauthServiceIF{
 	
 	@Value("${oauth.kakao.host}")
-	private String OAUTH_HOST;
+	private String oauthHost;
 	
-	@Value("${oauth.kakao.api_host}")
-	private String API_HOST;
+	@Value("${oauth.kakao.api-host}")
+	private String apiHost;
 	
-	@Value("${oauth.kakao.token_endpoint}")
-	private String GET_TOKEN_ENDPOINT;
+	@Value("${oauth.kakao.token-endpoint}")
+	private String getTokenEndpoint;
 	
-	@Value("${oauth.kakao.userinfo_endpoint}")
-	private String GET_USERINFO_ENDPOINT;
+	@Value("${oauth.kakao.userinfo-endpoint}")
+	private String getUserinfoEndpoint;
 	
 	private final String AUTHORIZATION = "Bearer ";
 		
 	
-	@Value("${oauth.kakao.client_id}")
-    private String client_id;
+	@Value("${oauth.kakao.client-id}")
+    private String clientId;
 	
-	@Value("${oauth.kakao.redirect_uri}")
-	private String redirect_uri;
+	@Value("${oauth.kakao.redirect-uri}")
+	private String redirectUri;
 	
 	@Autowired
 	private HttpRequestUtil requestUtil;
@@ -58,16 +62,16 @@ public class KakaoOauthService implements OauthServiceIF{
 			//set token request
 			MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<String, String>();
 			tokenRequest.add("grant_type", "authorization_code");
-			tokenRequest.add("client_id", client_id);
-			tokenRequest.add("redirect_uri", redirect_uri);
+			tokenRequest.add("client_id", clientId);
+			tokenRequest.add("redirect_uri", redirectUri);
 			tokenRequest.add("code", code);
 			
-			return requestUtil.sendRequest(OAUTH_HOST + GET_TOKEN_ENDPOINT, tokenRequest , null, null, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
+			return requestUtil.sendRequest(oauthHost + getTokenEndpoint, tokenRequest , null, null, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
 		}catch(Exception e) {
 			log.error("fail to get token from kakao server : {}", e);
+			
+			throw new VendorException(VendorExceptionCode.KAKAO_OAUTH2_SERVICE_NOT_AVAILABLE);
 		}
-		
-		return null;
 		
 	}
 	
@@ -84,15 +88,15 @@ public class KakaoOauthService implements OauthServiceIF{
 			//set token request
 			MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<String, String>();
 			tokenRequest.add("grant_type", "refresh_token");
-			tokenRequest.add("client_id", client_id);
+			tokenRequest.add("client_id", clientId);
 			tokenRequest.add("refresh_token", refresh_token);
 			
-			return requestUtil.sendRequest(OAUTH_HOST + GET_TOKEN_ENDPOINT, tokenRequest , null, null, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
+			return requestUtil.sendRequest(oauthHost + getTokenEndpoint, tokenRequest , null, null, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
 		}catch(Exception e) {
 			log.error("fail to get token from kakao server : {}", e);
+			
+			throw new VendorException(VendorExceptionCode.KAKAO_OAUTH2_SERVICE_NOT_AVAILABLE);
 		}
-		
-		return null;
 		
 	}
 	
@@ -102,21 +106,18 @@ public class KakaoOauthService implements OauthServiceIF{
 		try {
 			String[] headers = { "Authorization" };
 			String[] values = { AUTHORIZATION + token};
-			String api_result = requestUtil.sendRequest(API_HOST + GET_USERINFO_ENDPOINT, null , headers, values, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
+			String api_result = requestUtil.sendRequest(apiHost + getUserinfoEndpoint, null , headers, values, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
 			KakaoOauthUserInfo result = new Gson().fromJson(api_result , KakaoOauthUserInfo.class);
+			
 			return new OauthUserInfo(result.getId(), 
 									 result.getProperties().getNickname(), 
 									 result.getKakao_account().getEmail());
 		}catch(Exception e) {
 			log.error("fail to get token from kakao server : {}", e);
+			
+			throw new VendorException(VendorExceptionCode.KAKAO_OAUTH2_SERVICE_NOT_AVAILABLE);
 		}
 		
-		return null;
-		
-	}
-
-	public OauthVendor getVendor() {
-		return OauthVendor.kakao;
 	}
 
 }

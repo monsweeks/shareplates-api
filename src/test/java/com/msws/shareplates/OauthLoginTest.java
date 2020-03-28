@@ -23,7 +23,7 @@ public class OauthLoginTest {
 		try {
 			
 			String code = "";
-			OauthServiceIF kakaoservice = factory.getOauthVendorService(OauthVendor.kakao);
+			OauthServiceIF kakaoservice = factory.getOauthVendorService(OauthVendor.KAKAO);
 			String result = kakaoservice.getToken(code);
 			log.debug("Code from kakao is {}", result);
 			
