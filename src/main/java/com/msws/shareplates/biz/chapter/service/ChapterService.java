@@ -44,12 +44,7 @@ public class ChapterService {
     public void deleteChapter(Chapter chapter, UserInfo userInfo) {
 
         topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
-
-            if (topic.getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId())))
-                throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-
             chapterRepository.delete(chapter);
-
             return topic;
         }).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
     }
@@ -57,10 +52,6 @@ public class ChapterService {
     public List<Chapter> getChapters(Chapter chapter, UserInfo userInfo) {
 
         return topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
-
-            if (topic.getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId())))
-                throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-
             return chapterRepository.findByTopicIdOrderByOrderNo(chapter.getTopic().getId());
         }).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
 
@@ -69,10 +60,6 @@ public class ChapterService {
     public Chapter getChapter(long chapterId, Chapter chapter, UserInfo userInfo) {
 
         return topicRepository.findById(chapter.getTopic().getId()).map(topic -> {
-
-            if (topic.getTopicUsers().stream().noneMatch(topicUser -> topicUser.getUser().getId().equals(userInfo.getId())))
-                throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-
             return chapterRepository.findById(chapterId);
         }).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC))
                 .orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_CHAPTER));

@@ -22,5 +22,19 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
             " WHERE t.useYn = 1 AND t.organizationId = :organizationId AND t.name LIKE CONCAT(:searchWord, '%') AND (t.id in (SELECT tu.topic.id FROM TopicUser tu WHERE tu.user.id = :userId) OR t.privateYn = 0)")
     List<Topic> findTopicList(@Param("userId") Long userId, @Param("organizationId") Long organizationId, @Param("searchWord") String searchWord, Sort sort);
 
+    @Query("SELECT new java.lang.Boolean(t.privateYn) FROM Topic t WHERE t.id = :topicId")
+    Boolean isPrivateTopic(@Param("topicId") Long topicId);
+
+    @Query("SELECT new java.lang.Long(count(tu.id)) FROM Topic t INNER JOIN TopicUser tu ON t.id = tu.topic.id WHERE t.id = :topicId AND tu.user.id = :userId")
+    Long countByTopicUserCount(@Param("topicId") Long topicId, @Param("userId") Long userId);
+
+
+    @Query("SELECT new java.lang.Boolean(o.publicYn) FROM Organization o WHERE id = (SELECT t.organizationId from Topic t where t.id = :topicId)")
+    Boolean isPublicOrganization(@Param("topicId") Long topicId);
+
+
+    @Query("SELECT new java.lang.String(ou.role) FROM Topic t INNER JOIN Organization o ON t.organizationId = o.id INNER JOIN OrganizationUser ou ON o.id = ou.organization.id WHERE  t.id = :topicId AND ou.user.id = :userId")
+    String findUserOrganizationRole(@Param("topicId") Long topicId, @Param("userId") Long userId );
+
 }
 

@@ -18,5 +18,6 @@ public class ChapterResponse extends RepresentationModel<ChapterResponse>{
 	private List<ChapterModel> chapters;
 	private ChapterModel chapter;
 	private TopicResponse topic;
+	private String role;
 
 }

@@ -1,6 +1,5 @@
 package com.msws.shareplates.biz.topic.service;
 
-import com.msws.shareplates.biz.organization.entity.Organization;
 import com.msws.shareplates.biz.organization.service.OrganizationService;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.entity.TopicUser;
@@ -131,6 +130,52 @@ public class TopicService {
         Topic topic = topicRepository.findById(id).orElse(null);
         topic.setUseYn(false);
         topicRepository.save(topic);
+    }
+
+    public Boolean selectIsPrivateTopic(Long topicId) {
+        return topicRepository.isPrivateTopic(topicId);
+    }
+
+    public Boolean selectIsTopicMember(Long topicId, Long userId) {
+        if (topicRepository.countByTopicUserCount(topicId, userId) > 0L) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public String selectUserTopicRole (Long topicId, Long userId) {
+
+        Boolean isPrivateTopic = topicRepository.isPrivateTopic(topicId);
+        Long topicMemberCount = topicRepository.countByTopicUserCount(topicId, userId);
+
+        // 비밀 토픽이면, 토픽 멤버만 쓰기/보기 가능
+        if (isPrivateTopic) {
+            if (topicMemberCount > 0L) {
+                return "WRITE";
+            }
+            return "NONE";
+        } else {
+            // 오픈된 토픽이고, 멤버면 쓰기 가능
+            if (topicMemberCount > 0L) {
+                return "WRITE";
+            }
+
+            Boolean isPublicOrganization= topicRepository.isPublicOrganization(topicId);
+            // 오픈된 토픽이고, 토픽의 ORG가 퍼블릭이면 보기 가능
+            if (isPublicOrganization) {
+                return "READ";
+            }
+
+            // 오픈된 토픽이고, 토픽의 ORG가 퍼블릭이 아니면, ORG의 권한에 따라 쓰기/읽기 가능
+            String role = topicRepository.findUserOrganizationRole(topicId, userId);
+            if ("ADMIN".equals(role)) {
+                return "WRITE";
+            } else if ("MEMBER".equals(role)) {
+                return "READ";
+            }
+            return "NONE";
+        }
     }
 
 }
