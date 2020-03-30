@@ -11,16 +11,16 @@ import java.util.Optional;
 
 public interface TopicRepository extends JpaRepository<Topic, Long> {
 
-    Long countByOrganizationIdAndName(Long organizationId, String name);
+    Long countByGrpIdAndName(Long grpId, String name);
 
-    Long countByOrganizationId(Long organizationId);
+    Long countByGrpId(Long grpId);
 
     Optional<Topic> findByIdAndUseYnTrue(Long id);
 
     @Query(" SELECT new Topic(t.id, t.name, t.summary, t.iconIndex, t.privateYn, t.chapterCount, t.pageCount) " +
             " FROM Topic t " +
-            " WHERE t.useYn = 1 AND t.organizationId = :organizationId AND t.name LIKE CONCAT(:searchWord, '%') AND (t.id in (SELECT tu.topic.id FROM TopicUser tu WHERE tu.user.id = :userId) OR t.privateYn = 0)")
-    List<Topic> findTopicList(@Param("userId") Long userId, @Param("organizationId") Long organizationId, @Param("searchWord") String searchWord, Sort sort);
+            " WHERE t.useYn = 1 AND t.grpId = :grpId AND t.name LIKE CONCAT(:searchWord, '%') AND (t.id in (SELECT tu.topic.id FROM TopicUser tu WHERE tu.user.id = :userId) OR t.privateYn = 0)")
+    List<Topic> findTopicList(@Param("userId") Long userId, @Param("grpId") Long grpId, @Param("searchWord") String searchWord, Sort sort);
 
     @Query("SELECT new java.lang.Boolean(t.privateYn) FROM Topic t WHERE t.id = :topicId")
     Boolean isPrivateTopic(@Param("topicId") Long topicId);
@@ -29,12 +29,12 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     Long countByTopicUserCount(@Param("topicId") Long topicId, @Param("userId") Long userId);
 
 
-    @Query("SELECT new java.lang.Boolean(o.publicYn) FROM Organization o WHERE id = (SELECT t.organizationId from Topic t where t.id = :topicId)")
-    Boolean isPublicOrganization(@Param("topicId") Long topicId);
+    @Query("SELECT new java.lang.Boolean(o.publicYn) FROM Grp o WHERE id = (SELECT t.grpId from Topic t where t.id = :topicId)")
+    Boolean isPublicGrp(@Param("topicId") Long topicId);
 
 
-    @Query("SELECT ou.role FROM Topic t INNER JOIN Organization o ON t.organizationId = o.id INNER JOIN OrganizationUser ou ON o.id = ou.organization.id WHERE  t.id = :topicId AND ou.user.id = :userId")
-    String findUserOrganizationRole(@Param("topicId") Long topicId, @Param("userId") Long userId );
+    @Query("SELECT ou.role FROM Topic t INNER JOIN Grp o ON t.grpId = o.id INNER JOIN GrpUser ou ON o.id = ou.grp.id WHERE  t.id = :topicId AND ou.user.id = :userId")
+    String findUserGrpRole(@Param("topicId") Long topicId, @Param("userId") Long userId );
 
 }
 

@@ -30,12 +30,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<User> selectUserList(Long organizationId, String condition) {
-        if (organizationId == null) {
+    public List<User> selectUserList(Long grpId, String condition) {
+        if (grpId == null) {
             return userRepository.selectByName(condition);
         }
 
-        return userRepository.selectByOrganization(organizationId, condition);
+        return userRepository.selectByGrp(grpId, condition);
     }
 
     public List<User> selectTopicUserList(Long topicId) {

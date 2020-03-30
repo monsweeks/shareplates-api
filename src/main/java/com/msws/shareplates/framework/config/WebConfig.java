@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import com.msws.shareplates.biz.organization.service.OrganizationService;
+import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.common.bean.InitService;
 import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.interceptor.LoginCheckInterceptor;
@@ -40,7 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
     MessageSourceAccessor messageSourceAccessor;
 
     @Autowired
-    OrganizationService organizationService;
+    GrpService grpService;
 
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
@@ -77,7 +77,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public InitService initService() {
-        InitService initService = new InitService(organizationService);
+        InitService initService = new InitService(grpService);
         initService.init();
         return initService;
     };

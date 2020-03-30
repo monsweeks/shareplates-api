@@ -1,4 +1,4 @@
-package com.msws.shareplates.biz.organization.entity;
+package com.msws.shareplates.biz.grp.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 
-import com.msws.shareplates.biz.organization.vo.request.OrganizationRequest;
+import com.msws.shareplates.biz.grp.vo.request.GrpRequest;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.AuthCode;
 import com.msws.shareplates.common.data.domain.CommonEntity;
@@ -33,20 +33,20 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
-@Table(name = "organization")
+@Table(name = "grp")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Organization extends CommonEntity {
+public class Grp extends CommonEntity {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     Long id;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "grp", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
-    List<OrganizationUser> users = new ArrayList<>();
+    List<GrpUser> users = new ArrayList<>();
 
     @Length(min = 2, max = 100)
     @Column(name = "name", nullable = false)
@@ -71,13 +71,13 @@ public class Organization extends CommonEntity {
     @Transient
     private AuthCode role;
 
-    public Organization(Long id, String name, Boolean publicYn) {
+    public Grp(Long id, String name, Boolean publicYn) {
         this.id = id;
         this.name = name;
         this.publicYn = publicYn;
     }
 
-    public Organization(Long id, String name, String description, Boolean publicYn, LocalDateTime creationDate, Long userCount, Long topicCount, AuthCode role) {
+    public Grp(Long id, String name, String description, Boolean publicYn, LocalDateTime creationDate, Long userCount, Long topicCount, AuthCode role) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -88,26 +88,26 @@ public class Organization extends CommonEntity {
         this.role = role;
     }
 
-    public Organization(OrganizationRequest organization) {
-        this.id = organization.getId();
-        this.name = organization.getName();
-        this.description = organization.getDescription();
+    public Grp(GrpRequest grp) {
+        this.id = grp.getId();
+        this.name = grp.getName();
+        this.description = grp.getDescription();
         this.publicYn = false;
         this.useYn = true;
-        this.userCount = organization.getUserCount();
-        this.topicCount = organization.getTopicCount();
-        this.role = organization.getRole();
+        this.userCount = grp.getUserCount();
+        this.topicCount = grp.getTopicCount();
+        this.role = grp.getRole();
 
-        this.users = Stream.concat(organization.getAdmins().stream().map(user
-                        -> OrganizationUser.builder()
+        this.users = Stream.concat(grp.getAdmins().stream().map(user
+                        -> GrpUser.builder()
                         .user(User.builder().id(user.getId()).build())
-                        .organization(this)
+                        .grp(this)
                         .role(AuthCode.ADMIN).build()),
 
-                organization.getMembers().stream().map(user
-                        -> OrganizationUser.builder()
+                grp.getMembers().stream().map(user
+                        -> GrpUser.builder()
                         .user(User.builder().id(user.getId()).build())
-                        .organization(this)
+                        .grp(this)
                         .role(AuthCode.MEMBER).build())
         ).collect(Collectors.toList());
     }

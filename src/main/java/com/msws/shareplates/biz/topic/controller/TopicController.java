@@ -1,6 +1,6 @@
 package com.msws.shareplates.biz.topic.controller;
 
-import com.msws.shareplates.biz.organization.service.OrganizationService;
+import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.SimpleTopic;
@@ -32,8 +32,7 @@ public class TopicController {
     UserService userService;
 
     @Autowired
-    OrganizationService organizationService;
-
+    GrpService grpService;
 
 
     @Autowired
@@ -44,16 +43,16 @@ public class TopicController {
     }
 
     @GetMapping("/exist")
-    public Boolean selectTopicNameExist(@RequestParam Long organizationId, @RequestParam String name) {
-        return topicService.selectIsTopicNameExist(organizationId, name);
+    public Boolean selectTopicNameExist(@RequestParam Long grpId, @RequestParam String name) {
+        return topicService.selectIsTopicNameExist(grpId, name);
     }
 
     @DisableLogin
     @GetMapping("")
-    public TopicsResponse selectTopicList(@RequestParam Long organizationId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, HttpServletRequest request) {
+    public TopicsResponse selectTopicList(@RequestParam Long grpId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, HttpServletRequest request) {
         Long userId = SessionUtil.getUserId(request);
-        organizationService.checkOrgIncludesUser(organizationId, userId);
-        return new TopicsResponse(topicService.selectTopicList(userId, organizationId, searchWord, order, direction));
+        grpService.checkGrpIncludesUser(grpId, userId);
+        return new TopicsResponse(topicService.selectTopicList(userId, grpId, searchWord, order, direction));
     }
 
     @GetMapping("/{topicId}")
@@ -64,12 +63,11 @@ public class TopicController {
 
     @PostMapping("")
     public TopicResponse createTopic(@RequestBody TopicRequest topicRequest, UserInfo userInfo) {
-        organizationService.checkOrgIncludesUser(topicRequest.getOrganizationId(), userInfo.getId());
+        grpService.checkGrpIncludesUser(topicRequest.getGrpId(), userInfo.getId());
         Topic topic = topicService.createTopic(new Topic(topicRequest));
         SimpleTopic simpleTopic = new SimpleTopic(topic, StatusCode.CREATE);
         pubTopic(simpleTopic);
-        Link link = new Link("/topics", "topics");
-        return TopicResponse.builder().build().add(link);
+        return new TopicResponse(topic);
     }
 
     @PutMapping("/{topicId}")

@@ -10,7 +10,7 @@ public class TopicRequest {
 	private Long id;
 	private String name;
 	private String summary;
-	private Long organizationId;
+	private Long grpId;
 	private Integer iconIndex;
 	private Boolean privateYn;
 	private List<User> users;
@@ -20,7 +20,7 @@ public class TopicRequest {
 		private Long id;
 		private String email;
 		private String name;
-		private Long organizationId;
+		private Long grpId;
 		private String info;
 	}
 

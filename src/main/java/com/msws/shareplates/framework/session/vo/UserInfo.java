@@ -17,7 +17,7 @@ public class UserInfo implements Serializable{
 	
 	private long id;
 
-	public static class Organization{
+	public static class Grp {
 		private long oranizationId;
 		private AuthCode auth;
 	}

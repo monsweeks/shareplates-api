@@ -1,7 +1,7 @@
 package com.msws.shareplates.biz.user.controller;
 
-import com.msws.shareplates.biz.organization.entity.Organization;
-import com.msws.shareplates.biz.organization.service.OrganizationService;
+import com.msws.shareplates.biz.grp.entity.Grp;
+import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
 import com.msws.shareplates.common.mail.MailService;
@@ -29,7 +29,7 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    OrganizationService organizationService;
+    GrpService grpService;
 
     @Autowired
     MailService mailService;
@@ -66,8 +66,8 @@ public class UserController {
     }
 
     @GetMapping("")
-    public List<User> search(@RequestParam Long organizationId, @RequestParam String condition) {
-        return userService.selectUserList(organizationId, condition);
+    public List<User> search(@RequestParam Long grpId, @RequestParam String condition) {
+        return userService.selectUserList(grpId, condition);
     }
 
     @DisableLogin
@@ -77,12 +77,12 @@ public class UserController {
 
         if (userInfo == null) {
             info.put("user", null);
-            info.put("organizations", organizationService.selectPublicOrganizationList());
+            info.put("grps", grpService.selectPublicGrpList());
         } else {
             User user = userService.selectUser(userInfo.getId());
             info.put("user", user);
-            List<Organization> organizations = organizationService.selectUserOrganizationList(userInfo.getId(), true);
-            info.put("organizations", organizations);
+            List<Grp> grps = grpService.selectUserGrpList(userInfo.getId(), true);
+            info.put("grps", grps);
         }
 
 
@@ -98,10 +98,10 @@ public class UserController {
         }
 
         userService.updateUser(user);
-        List<Organization> organizations = organizationService.selectUserOrganizationList(userId, true);
+        List<Grp> grps = grpService.selectUserGrpList(userId, true);
 
         info.put("user", user);
-        info.put("organizations", organizations);
+        info.put("grps", grps);
 
         return info;
     }

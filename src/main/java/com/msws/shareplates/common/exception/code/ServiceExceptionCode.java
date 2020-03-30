@@ -38,9 +38,9 @@ public enum ServiceExceptionCode {
     NOT_EXISTS_TOPIC(HttpStatus.NOT_FOUND, "chapter.error.not_exists_topic"),
     NOT_EXISTS_CHAPTER(HttpStatus.NOT_FOUND, "chapter.error.not_exists_chapter"),
     //ORG
-    NO_MANAGER_ASSIGNED(HttpStatus.BAD_REQUEST, "organization.no.manager.assigned"),
-    NO_EMPTY_ORGANIZATION(HttpStatus.BAD_REQUEST, "organization.no.empty.organization"),
-    NO_ADMIN_USER(HttpStatus.FORBIDDEN, "organization.no.admin.user"),
+    NO_MANAGER_ASSIGNED(HttpStatus.BAD_REQUEST, "grp.no.manager.assigned"),
+    NO_EMPTY_ORGANIZATION(HttpStatus.BAD_REQUEST, "grp.no.empty.grp"),
+    NO_ADMIN_USER(HttpStatus.FORBIDDEN, "grp.no.admin.user"),
     ;
 
     private HttpStatus code;

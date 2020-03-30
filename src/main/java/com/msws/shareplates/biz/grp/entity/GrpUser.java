@@ -1,4 +1,4 @@
-package com.msws.shareplates.biz.organization.entity;
+package com.msws.shareplates.biz.grp.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "organization_user", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "organization_id"})})
-public class OrganizationUser extends CommonEntity {
+@Table(name = "grp_user", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "grp_id"})})
+public class GrpUser extends CommonEntity {
 
     @Id
     @Column(name = "id")
@@ -47,6 +47,6 @@ public class OrganizationUser extends CommonEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "grp_id")
+    private Grp grp;
 }

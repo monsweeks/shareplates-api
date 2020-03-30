@@ -1,4 +1,4 @@
-package com.msws.shareplates.biz.organization.vo.request;
+package com.msws.shareplates.biz.grp.vo.request;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,7 +9,7 @@ import lombok.Data;
 
 
 @Data
-public class OrganizationRequest {
+public class GrpRequest {
 
     private Long id;
     private String name;
