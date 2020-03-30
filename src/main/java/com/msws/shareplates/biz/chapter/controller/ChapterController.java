@@ -40,7 +40,7 @@ public class ChapterController {
     private TopicService topicService;
 
     @ApiOperation(value = "챕터 저장")
-    @PutMapping("")
+    @PostMapping("")
     public ChapterResponse insertChapter(@RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
         Chapter chapter = chapterService.saveChapter(chapterRequest.buildChaterEntity(), userInfo);
         return ChapterResponse.builder()
@@ -53,7 +53,7 @@ public class ChapterController {
     }
 
     @ApiOperation(value = "챕터 수정")
-    @PostMapping("/{chapter-id}")
+    @PutMapping("/{chapter-id}")
     public ChapterResponse updateChapter(@PathVariable("chapter-id") long charpterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
         Chapter chapter = chapterService.saveChapter(chapterRequest.buildChaterEntity(charpterId), userInfo);
         return ChapterResponse.builder()
@@ -66,12 +66,11 @@ public class ChapterController {
     }
 
     @ApiOperation(value = "챕터 제목 수정")
-    @PostMapping("/{chapter-id}/title")
+    @PutMapping("/{chapter-id}/title")
     public ChapterResponse updateChapterTitle(@PathVariable("chapter-id") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
 
         Chapter chapter = chapterService.getChapter(chapterId, userInfo);
-        chapter.setTitle(chapterRequest.getTitle());
-        chapterService.saveChapter(chapter, userInfo);
+        chapterService.saveChapter(chapter.setTitle(chapterRequest.getTitle()), userInfo);
 
         return ChapterResponse.builder()
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapter))

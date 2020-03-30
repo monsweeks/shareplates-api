@@ -62,4 +62,10 @@ public class Chapter extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "chapter", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Page> pages;
+    
+    public Chapter setTitle(String title) {
+    	this.title = title;
+    	
+    	return this;
+    }
 }
