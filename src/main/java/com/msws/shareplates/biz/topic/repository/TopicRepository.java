@@ -33,7 +33,7 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     Boolean isPublicOrganization(@Param("topicId") Long topicId);
 
 
-    @Query("SELECT new java.lang.String(ou.role) FROM Topic t INNER JOIN Organization o ON t.organizationId = o.id INNER JOIN OrganizationUser ou ON o.id = ou.organization.id WHERE  t.id = :topicId AND ou.user.id = :userId")
+    @Query("SELECT ou.role FROM Topic t INNER JOIN Organization o ON t.organizationId = o.id INNER JOIN OrganizationUser ou ON o.id = ou.organization.id WHERE  t.id = :topicId AND ou.user.id = :userId")
     String findUserOrganizationRole(@Param("topicId") Long topicId, @Param("userId") Long userId );
 
 }

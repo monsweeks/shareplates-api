@@ -1,16 +1,18 @@
 package com.msws.shareplates.biz.organization.vo.response;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.hateoas.RepresentationModel;
+
 import com.msws.shareplates.biz.organization.entity.Organization;
-import com.msws.shareplates.biz.organization.entity.OrganizationUser;
+import com.msws.shareplates.common.code.AuthCode;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.RepresentationModel;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
@@ -26,7 +28,7 @@ public class OrganizationResponse extends RepresentationModel<OrganizationRespon
     private List<User> members;
     private Long userCount;
     private Long topicCount;
-    private String role;
+    private AuthCode role;
     private LocalDateTime creationDate;
 
 

@@ -1,9 +1,11 @@
 package com.msws.shareplates.biz.organization.vo.request;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.msws.shareplates.common.code.AuthCode;
+
+import lombok.Data;
 
 
 @Data
@@ -15,7 +17,7 @@ public class OrganizationRequest {
     private Boolean publicYn;
     private Long userCount;
     private Long topicCount;
-    private String role;
+    private AuthCode role;
     private LocalDateTime creationDate;
     private List<User> admins;
     private List<User> members;

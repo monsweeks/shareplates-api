@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum AuthCode {
 	
-	GENERAL_USER("일반 유저"),
+	MEMBER("일반 유저"),
 	ADMIN("관리자");
 	
 	private String desc;
