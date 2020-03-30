@@ -1,22 +1,35 @@
 package com.msws.shareplates.biz.organization.entity;
 
-import com.msws.shareplates.biz.organization.vo.request.OrganizationRequest;
-import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.common.data.domain.CommonEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.validator.constraints.Length;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.Length;
+
+import com.msws.shareplates.biz.organization.vo.request.OrganizationRequest;
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.data.domain.CommonEntity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
@@ -56,7 +69,7 @@ public class Organization extends CommonEntity {
     private Long topicCount;
 
     @Transient
-    private String role;
+    private AuthCode role;
 
     public Organization(Long id, String name, Boolean publicYn) {
         this.id = id;
@@ -64,7 +77,7 @@ public class Organization extends CommonEntity {
         this.publicYn = publicYn;
     }
 
-    public Organization(Long id, String name, String description, Boolean publicYn, LocalDateTime creationDate, Long userCount, Long topicCount, String role) {
+    public Organization(Long id, String name, String description, Boolean publicYn, LocalDateTime creationDate, Long userCount, Long topicCount, AuthCode role) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -89,13 +102,13 @@ public class Organization extends CommonEntity {
                         -> OrganizationUser.builder()
                         .user(User.builder().id(user.getId()).build())
                         .organization(this)
-                        .role("ADMIN").build()),
+                        .role(AuthCode.ADMIN).build()),
 
                 organization.getMembers().stream().map(user
                         -> OrganizationUser.builder()
                         .user(User.builder().id(user.getId()).build())
                         .organization(this)
-                        .role("MEMBER").build())
+                        .role(AuthCode.MEMBER).build())
         ).collect(Collectors.toList());
     }
 }

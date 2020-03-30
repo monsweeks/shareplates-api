@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 public class UserInfo implements Serializable{
 	
 	private long id;
-	private AuthCode auth;
 
+	public static class Organization{
+		private long oranizationId;
+		private AuthCode auth;
+	}
 }

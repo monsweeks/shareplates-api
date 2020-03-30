@@ -1,21 +1,23 @@
 package com.msws.shareplates.biz.organization.service;
 
-import com.msws.shareplates.biz.organization.entity.Organization;
-import com.msws.shareplates.biz.organization.entity.OrganizationUser;
-import com.msws.shareplates.biz.organization.repository.OrganizationRepository;
-import com.msws.shareplates.biz.topic.repository.TopicRepository;
-import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.common.exception.ServiceException;
-import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import com.msws.shareplates.biz.organization.entity.Organization;
+import com.msws.shareplates.biz.organization.entity.OrganizationUser;
+import com.msws.shareplates.biz.organization.repository.OrganizationRepository;
+import com.msws.shareplates.biz.topic.repository.TopicRepository;
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.exception.ServiceException;
+import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 
 @Service
 @Transactional
@@ -57,7 +59,7 @@ public class OrganizationService {
             throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
         }
 
-        boolean isAdminUser = organization.getUsers().stream().filter(organizationUser -> organizationUser.getUser().getId().equals(userId) && organizationUser.getRole().equals("ADMIN")).count() > 0;
+        boolean isAdminUser = organization.getUsers().stream().filter(organizationUser -> organizationUser.getUser().getId().equals(userId) && organizationUser.getRole() == AuthCode.ADMIN).count() > 0;
         if (isAdminUser) {
             return;
         }
@@ -94,7 +96,7 @@ public class OrganizationService {
 
         Organization organization = organizationRepository.findById(organizationInfo.getId()).orElse(null);
 
-        HashMap<Long, String> nextUserMap = new HashMap<>();
+        HashMap<Long, AuthCode> nextUserMap = new HashMap<>();
         for (OrganizationUser user : organizationInfo.getUsers()) {
             nextUserMap.put(user.getUser().getId(), user.getRole());
         }
@@ -123,7 +125,7 @@ public class OrganizationService {
             }
         }
 
-        if (users.size() < 1 || users.stream().filter(user -> user.getRole().equals("ADMIN")).count() < 1) {
+        if (users.size() < 1 || users.stream().filter(user -> user.getRole() == AuthCode.ADMIN).count() < 1) {
             throw new ServiceException(ServiceExceptionCode.NO_MANAGER_ASSIGNED);
         }
 

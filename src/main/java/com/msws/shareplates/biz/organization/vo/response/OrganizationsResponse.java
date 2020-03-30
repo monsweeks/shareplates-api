@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.msws.shareplates.common.code.AuthCode;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -23,14 +25,14 @@ public class OrganizationsResponse extends RepresentationModel<OrganizationsResp
                 .userCount(organization.getUserCount())
                 .topicCount(organization.getTopicCount())
                 .role(organization.getRole())
-                .admins(organization.getUsers().stream().filter(organizationUser -> organizationUser.getRole().equals("ADMIN")).map(organizationUser
+                .admins(organization.getUsers().stream().filter(organizationUser -> organizationUser.getRole() == AuthCode.ADMIN).map(organizationUser
                         -> User.builder()
                         .id(organizationUser.getUser().getId())
                         .email(organizationUser.getUser().getName())
                         .name(organizationUser.getUser().getName())
                         .info(organizationUser.getUser().getInfo())
                         .build()).collect(Collectors.toList()))
-                .members(organization.getUsers().stream().filter(organizationUser -> organizationUser.getRole().equals("MEMBER")).map(organizationUser
+                .members(organization.getUsers().stream().filter(organizationUser -> organizationUser.getRole()== AuthCode.MEMBER).map(organizationUser
                         -> User.builder()
                         .id(organizationUser.getUser().getId())
                         .email(organizationUser.getUser().getName())
@@ -50,7 +52,7 @@ public class OrganizationsResponse extends RepresentationModel<OrganizationsResp
         private Boolean publicYn;
         private Long userCount;
         private Long topicCount;
-        private String role;
+        private AuthCode role;
         private List<User> admins;
         private List<User> members;
     }

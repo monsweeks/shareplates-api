@@ -32,4 +32,15 @@ public class ChapterRequest {
 				.topic(Topic.builder().id(topicId).build())
 				.build();
 	}
+	
+	public Chapter buildChaterEntity(long chapterId) {
+		return Chapter.builder()
+				.id(chapterId)
+				.orderNo(orderNo)
+				.title(title)
+				.summary(summary)
+				.useYn(useYn)
+				.topic(Topic.builder().id(topicId).build())
+				.build();
+	}
 }
