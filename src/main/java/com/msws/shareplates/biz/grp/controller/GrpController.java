@@ -8,7 +8,6 @@ import com.msws.shareplates.biz.grp.vo.response.GrpResponse;
 import com.msws.shareplates.biz.grp.vo.response.GrpsResponse;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,8 +36,7 @@ public class GrpController {
     @PostMapping("")
     public GrpResponse createGrp(@RequestBody GrpRequest grpRequest) {
         grpService.createGrp(new Grp(grpRequest));
-        Link link = new Link("/groups", "groups");
-        return GrpResponse.builder().build().add(link);
+        return GrpResponse.builder().build();
     }
 
     @PutMapping("/{grpId}")
@@ -48,8 +46,7 @@ public class GrpController {
 
         grpService.checkIsUserGrpAdmin(grpRequest.getId(), userInfo.getId());
         grpService.updateGrp(new Grp(grpRequest));
-        Link link = new Link("/groups", "groups");
-        return GrpResponse.builder().build().add(link);
+        return GrpResponse.builder().build();
     }
 
     @DeleteMapping("/{grpId}")
@@ -59,8 +56,7 @@ public class GrpController {
 
         grpService.checkIsUserGrpAdmin(grpId, userInfo.getId());
         grpService.deleteGrp(grpId);
-        Link link = new Link("/groups", "groups");
-        return GrpResponse.builder().build().add(link);
+        return GrpResponse.builder().build();
     }
 
 }
