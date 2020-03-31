@@ -1,6 +1,6 @@
 package com.msws.shareplates.biz.topic.entity;
 
-import com.msws.shareplates.biz.organization.entity.Organization;
+import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.topic.vo.request.TopicRequest;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.data.domain.CommonEntity;
@@ -41,8 +41,8 @@ public class Topic extends CommonEntity {
     @Column(name = "use_yn")
     private Boolean useYn;
 
-    @Column(name = "organization_id")
-    private Long organizationId;
+    @Column(name = "grp_id")
+    private Long grpId;
 
     @Column(name = "icon_index")
     private Integer iconIndex;
@@ -57,8 +57,8 @@ public class Topic extends CommonEntity {
     private Integer pageCount;
 
     @ManyToOne
-    @JoinColumn(name = "organization_id", insertable = false, updatable = false)
-    private Organization organization;
+    @JoinColumn(name = "grp_id", insertable = false, updatable = false)
+    private Grp grp;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
@@ -80,7 +80,7 @@ public class Topic extends CommonEntity {
         this.summary = topicRequest.getSummary();
         this.iconIndex = topicRequest.getIconIndex();
         this.privateYn = topicRequest.getPrivateYn();
-        this.organizationId = topicRequest.getOrganizationId();
+        this.grpId = topicRequest.getGrpId();
         this.useYn = true;
         this.chapterCount = 0;
         this.pageCount = 0;

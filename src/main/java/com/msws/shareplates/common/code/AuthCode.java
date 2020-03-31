@@ -8,10 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum AuthCode {
-	
-	GENERAL_USER("일반 유저"),
-	ADMIN("관리자");
-	
-	private String desc;
 
+	WRITE("WRITE"),
+	READ("READ"),
+    NONE("NONE");
+	private String code;
 }

@@ -20,8 +20,8 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
     private Long id;
     private String name;
     private String summary;
-    private Long organizationId;
-    private String organizationName;
+    private Long grpId;
+    private String grpName;
     private Integer iconIndex;
     private Boolean privateYn;
     private List<TopicResponse.User> users;
@@ -31,15 +31,17 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
         this.id = topic.getId();
         this.name = topic.getName();
         this.summary = topic.getSummary();
-        this.organizationId = topic.getOrganizationId();
-        this.organizationName = topic.getOrganization().getName();
+        this.grpId = topic.getGrpId();
+        if (topic.getGrp() != null) {
+            this.grpName = topic.getGrp().getName();
+        }
         this.iconIndex = topic.getIconIndex();
         this.privateYn = topic.getPrivateYn();
         this.creationDate = topic.getCreationDate();
         this.users = topic.getTopicUsers().stream().map(topicUser
                 -> User.builder()
                 .id(topicUser.getUser().getId())
-                .email(topicUser.getUser().getName())
+                .email(topicUser.getUser().getEmail())
                 .name(topicUser.getUser().getName())
                 .info(topicUser.getUser().getInfo())
                 .build()).collect(Collectors.toList());

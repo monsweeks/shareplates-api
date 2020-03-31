@@ -2,7 +2,7 @@ package com.msws.shareplates.framework.session.vo;
 
 import java.io.Serializable;
 
-import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 public class UserInfo implements Serializable{
 	
 	private long id;
-	private AuthCode auth;
 
+	public static class Grp {
+		private long oranizationId;
+		private RoleCode auth;
+	}
 }

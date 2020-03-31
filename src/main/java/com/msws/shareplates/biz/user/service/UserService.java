@@ -3,6 +3,7 @@ package com.msws.shareplates.biz.user.service;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<User> selectUserList(Long organizationId, String condition) {
-        if (organizationId == null) {
+    public List<User> selectUserList(Long grpId, String condition) {
+        if (grpId == null) {
             return userRepository.selectByName(condition);
         }
 
-        return userRepository.selectByOrganization(organizationId, condition);
+        return userRepository.selectByGrp(grpId, condition);
     }
 
     public List<User> selectTopicUserList(Long topicId) {
@@ -83,6 +84,10 @@ public class UserService {
         userRepository.findByEmail(email).ifPresent(user -> {
         	throw new ServiceException(ServiceExceptionCode.EXIST_EMAIL);
     	});
+    }
+    
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
     
     public boolean checkEmail(String email) {

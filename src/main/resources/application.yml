@@ -53,8 +53,6 @@ logging:
   level: 
     com.msws.shareplates: debug
     
-         
-     
 file:
   upload-dir: c:/fileupload/
   allowed-extension: txt,pdf
@@ -70,7 +68,16 @@ server:
   servlet:
     session:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
-
+      
+oauth:
+  kakao:
+    host: https://kauth.kakao.com
+    api-host: https://kapi.kakao.com
+    token-endpoint: /oauth/token
+    userinfo-endpoint: /v2/user/me
+    client-id: 863525fbdd02a15ac03536bbfcf0151d
+    redirect-uri: http://localhost:8080/oauth/kakao/token
+    
 ---
 spring:
   profiles: production
@@ -85,4 +92,12 @@ file:
 logging:
   level: 
     com.msws.shareplates: error
-   
+oauth:
+  kakao:
+    host: https://kauth.kakao.com
+    api-host: https://kapi.kakao.com
+    token-endpoint: /oauth/token
+    userinfo-endpoint: /v2/user/me
+    client-id: 863525fbdd02a15ac03536bbfcf0151d
+    redirect-uri: http://mindplates.com/oauth/kakao/token
+    
