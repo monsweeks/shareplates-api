@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.data.domain.CommonEntity;
 
 import lombok.AllArgsConstructor;
@@ -37,7 +37,7 @@ public class GrpUser extends CommonEntity {
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private AuthCode role; // ADMIN or MEMBER 나중에 혹시 추가될 수 있어서 스트링으로
+    private RoleCode role; // ADMIN or MEMBER 나중에 혹시 추가될 수 있어서 스트링으로
 
     @Column(name = "status"/*, nullable = false*/)
     private String status; // INVITE, REQUEST, APPROVE (DENY는 없고, DENY시 삭제)

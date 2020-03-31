@@ -23,5 +23,10 @@ public interface GrpRepository extends JpaRepository<Grp, Long> {
             " GROUP BY t.id, t.name, t.publicYn, t.creationDate ")
     List<Grp> findGrpListByUser(@Param("userId") Long userId, @Param("searchWord")  String searchWord, @Param("useYn") Boolean useYn, Sort sort);
 
+    @Query("SELECT new java.lang.Boolean(o.publicYn) FROM Grp o WHERE id = :grpId")
+    Boolean isPublicGrp(@Param("grpId") Long grpId);
+
+    @Query("SELECT ou.role FROM Grp o INNER JOIN GrpUser ou ON o.id = ou.grp.id WHERE  o.id = :grpId AND ou.user.id = :userId")
+    String findUserGrpRole(@Param("grpId") Long grpId, @Param("userId") Long userId);
 }
 

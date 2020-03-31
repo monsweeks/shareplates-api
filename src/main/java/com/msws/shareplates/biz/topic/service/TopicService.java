@@ -1,10 +1,11 @@
 package com.msws.shareplates.biz.topic.service;
 
-import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.entity.TopicUser;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
 import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,6 @@ public class TopicService {
 
     @Autowired
     private TopicRepository topicRepository;
-
-    @Autowired
-    private GrpService grpService;
 
     public void checkUserHasTopicReadRole(Long topicId, Long userId) {
         Topic topic = selectTopic(topicId);
@@ -45,19 +43,6 @@ public class TopicService {
         throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
     }
 
-    public void checkUserHasTopicWriteRole(Long topicId, Long userId) {
-        Topic topic = selectTopic(topicId);
-        if (topic == null) {
-            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
-        }
-
-        boolean isIncludeUser = topic.getTopicUsers().stream().filter(topicUser -> topicUser.getUser().getId().equals(userId)).count() > 0;
-        if (isIncludeUser) {
-            return;
-        }
-
-        throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-    }
 
     public List<Topic> selectTopicList(Long userId, Long grpId, String searchWord, String order, String direction) {
         return topicRepository.findTopicList(userId, grpId, searchWord, direction.equals("asc") ? Sort.by(order).ascending() : Sort.by(order).descending());
@@ -132,19 +117,7 @@ public class TopicService {
         topicRepository.save(topic);
     }
 
-    public Boolean selectIsPrivateTopic(Long topicId) {
-        return topicRepository.isPrivateTopic(topicId);
-    }
-
-    public Boolean selectIsTopicMember(Long topicId, Long userId) {
-        if (topicRepository.countByTopicUserCount(topicId, userId) > 0L) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public String selectUserTopicRole (Long topicId, Long userId) {
+    public AuthCode selectUserTopicRole(Long topicId, Long userId) {
 
         Boolean isPrivateTopic = topicRepository.isPrivateTopic(topicId);
         Long topicMemberCount = topicRepository.countByTopicUserCount(topicId, userId);
@@ -152,29 +125,30 @@ public class TopicService {
         // 비밀 토픽이면, 토픽 멤버만 쓰기/보기 가능
         if (isPrivateTopic) {
             if (topicMemberCount > 0L) {
-                return "WRITE";
+                return AuthCode.WRITE;
             }
-            return "NONE";
+            return AuthCode.NONE;
         } else {
             // 오픈된 토픽이고, 멤버면 쓰기 가능
             if (topicMemberCount > 0L) {
-                return "WRITE";
+                return AuthCode.WRITE;
             }
 
-            Boolean isPublicGrp= topicRepository.isPublicGrp(topicId);
-            // 오픈된 토픽이고, 토픽의 ORG가 퍼블릭이면 보기 가능
-            if (isPublicGrp) {
-                return "READ";
-            }
+            Boolean isPublicGrp = topicRepository.isPublicGrp(topicId);
 
             // 오픈된 토픽이고, 토픽의 ORG가 퍼블릭이 아니면, ORG의 권한에 따라 쓰기/읽기 가능
             String role = topicRepository.findUserGrpRole(topicId, userId);
-            if ("ADMIN".equals(role)) {
-                return "WRITE";
-            } else if ("MEMBER".equals(role)) {
-                return "READ";
+            if (RoleCode.ADMIN.getCode().equals(role)) {
+                return AuthCode.WRITE;
+            } else if (RoleCode.MEMBER.getCode().equals(role)) {
+                return AuthCode.READ;
             }
-            return "NONE";
+
+            // 오픈된 토픽이고, 토픽의 ORG가 퍼블릭이면 보기 가능
+            if (isPublicGrp) {
+                return AuthCode.READ;
+            }
+            return AuthCode.NONE;
         }
     }
 

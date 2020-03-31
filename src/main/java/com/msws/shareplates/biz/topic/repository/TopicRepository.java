@@ -28,13 +28,11 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     @Query("SELECT new java.lang.Long(count(tu.id)) FROM Topic t INNER JOIN TopicUser tu ON t.id = tu.topic.id WHERE t.id = :topicId AND tu.user.id = :userId")
     Long countByTopicUserCount(@Param("topicId") Long topicId, @Param("userId") Long userId);
 
-
     @Query("SELECT new java.lang.Boolean(o.publicYn) FROM Grp o WHERE id = (SELECT t.grpId from Topic t where t.id = :topicId)")
     Boolean isPublicGrp(@Param("topicId") Long topicId);
 
-
     @Query("SELECT ou.role FROM Topic t INNER JOIN Grp o ON t.grpId = o.id INNER JOIN GrpUser ou ON o.id = ou.grp.id WHERE  t.id = :topicId AND ou.user.id = :userId")
-    String findUserGrpRole(@Param("topicId") Long topicId, @Param("userId") Long userId );
+    String findUserGrpRole(@Param("topicId") Long topicId, @Param("userId") Long userId);
 
 }
 

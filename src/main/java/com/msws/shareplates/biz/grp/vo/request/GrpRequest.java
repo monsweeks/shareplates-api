@@ -3,7 +3,7 @@ package com.msws.shareplates.biz.grp.vo.request;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class GrpRequest {
     private Boolean publicYn;
     private Long userCount;
     private Long topicCount;
-    private AuthCode role;
+    private RoleCode role;
     private LocalDateTime creationDate;
     private List<User> admins;
     private List<User> members;

@@ -1,11 +1,11 @@
 package com.msws.shareplates.biz.grp.controller;
 
+import com.msws.shareplates.biz.common.service.AuthService;
 import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.grp.vo.request.GrpRequest;
 import com.msws.shareplates.biz.grp.vo.response.GrpResponse;
 import com.msws.shareplates.biz.grp.vo.response.GrpsResponse;
-import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -18,7 +18,7 @@ public class GrpController {
     GrpService grpService;
 
     @Autowired
-    SessionUtil sessionUtil;
+    AuthService authService;
 
     @GetMapping("")
     public GrpsResponse selectGrpListByUser(@RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, UserInfo userInfo) {
@@ -27,6 +27,9 @@ public class GrpController {
 
     @GetMapping("/{grpId}")
     public GrpResponse selectGrp(@PathVariable Long grpId, UserInfo userInfo) {
+        // 그룹의 읽기 권한 확인
+        authService.checkUserHasReadRoleAboutGrp(grpId, userInfo.getId());
+
         grpService.checkGrpIncludesUser(grpId, userInfo.getId());
         return new GrpResponse(grpService.selectGrp(grpId));
     }
@@ -39,15 +42,21 @@ public class GrpController {
     }
 
     @PutMapping("/{grpId}")
-    public GrpResponse updateGrp(@RequestBody GrpRequest GrpRequest, UserInfo userInfo) {
-        grpService.checkIsUserGrpAdmin(GrpRequest.getId(), userInfo.getId());
-        grpService.updateGrp(new Grp(GrpRequest));
+    public GrpResponse updateGrp(@RequestBody GrpRequest grpRequest, UserInfo userInfo) {
+        // 그룹의 쓰기 권한 확인
+        authService.checkUserHasWriteRoleAboutGrp(grpRequest.getId(), userInfo.getId());
+
+        grpService.checkIsUserGrpAdmin(grpRequest.getId(), userInfo.getId());
+        grpService.updateGrp(new Grp(grpRequest));
         Link link = new Link("/groups", "groups");
         return GrpResponse.builder().build().add(link);
     }
 
     @DeleteMapping("/{grpId}")
     public GrpResponse deleteGrp(@PathVariable Long grpId, UserInfo userInfo) {
+        // 그룹의 쓰기 권한 확인
+        authService.checkUserHasWriteRoleAboutGrp(grpId, userInfo.getId());
+
         grpService.checkIsUserGrpAdmin(grpId, userInfo.getId());
         grpService.deleteGrp(grpId);
         Link link = new Link("/groups", "groups");

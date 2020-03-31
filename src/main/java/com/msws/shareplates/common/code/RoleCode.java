@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum AuthCode {
-
-	WRITE("WRITE"),
-	READ("READ"),
-    NONE("NONE");
+public enum RoleCode {
+	
+	MEMBER("MEMBER"),
+	ADMIN("ADMIN");
+	
 	private String code;
+
 }

@@ -23,7 +23,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.msws.shareplates.biz.grp.vo.request.GrpRequest;
 import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.data.domain.CommonEntity;
 
 import lombok.AllArgsConstructor;
@@ -69,7 +69,7 @@ public class Grp extends CommonEntity {
     private Long topicCount;
 
     @Transient
-    private AuthCode role;
+    private RoleCode role;
 
     public Grp(Long id, String name, Boolean publicYn) {
         this.id = id;
@@ -77,7 +77,7 @@ public class Grp extends CommonEntity {
         this.publicYn = publicYn;
     }
 
-    public Grp(Long id, String name, String description, Boolean publicYn, LocalDateTime creationDate, Long userCount, Long topicCount, AuthCode role) {
+    public Grp(Long id, String name, String description, Boolean publicYn, LocalDateTime creationDate, Long userCount, Long topicCount, RoleCode role) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -102,13 +102,13 @@ public class Grp extends CommonEntity {
                         -> GrpUser.builder()
                         .user(User.builder().id(user.getId()).build())
                         .grp(this)
-                        .role(AuthCode.ADMIN).build()),
+                        .role(RoleCode.ADMIN).build()),
 
                 grp.getMembers().stream().map(user
                         -> GrpUser.builder()
                         .user(User.builder().id(user.getId()).build())
                         .grp(this)
-                        .role(AuthCode.MEMBER).build())
+                        .role(RoleCode.MEMBER).build())
         ).collect(Collectors.toList());
     }
 }

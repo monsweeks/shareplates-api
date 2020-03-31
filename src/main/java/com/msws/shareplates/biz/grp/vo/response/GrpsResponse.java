@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.hateoas.RepresentationModel;
 
-import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 
 import lombok.Builder;
 import lombok.Data;
@@ -25,14 +25,14 @@ public class GrpsResponse extends RepresentationModel<GrpsResponse> {
                 .userCount(grp.getUserCount())
                 .topicCount(grp.getTopicCount())
                 .role(grp.getRole())
-                .admins(grp.getUsers().stream().filter(grpUser -> grpUser.getRole() == AuthCode.ADMIN).map(grpUser
+                .admins(grp.getUsers().stream().filter(grpUser -> grpUser.getRole().equals(RoleCode.ADMIN.getCode())).map(grpUser
                         -> User.builder()
                         .id(grpUser.getUser().getId())
                         .email(grpUser.getUser().getName())
                         .name(grpUser.getUser().getName())
                         .info(grpUser.getUser().getInfo())
                         .build()).collect(Collectors.toList()))
-                .members(grp.getUsers().stream().filter(grpUser -> grpUser.getRole()== AuthCode.MEMBER).map(grpUser
+                .members(grp.getUsers().stream().filter(grpUser -> grpUser.getRole().equals(RoleCode.MEMBER.getCode())).map(grpUser
                         -> User.builder()
                         .id(grpUser.getUser().getId())
                         .email(grpUser.getUser().getName())
@@ -52,7 +52,7 @@ public class GrpsResponse extends RepresentationModel<GrpsResponse> {
         private Boolean publicYn;
         private Long userCount;
         private Long topicCount;
-        private AuthCode role;
+        private RoleCode role;
         private List<User> admins;
         private List<User> members;
     }

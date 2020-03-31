@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.msws.shareplates.biz.grp.entity.Grp;
+import com.msws.shareplates.common.code.AuthCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import com.msws.shareplates.biz.grp.entity.GrpUser;
 import com.msws.shareplates.biz.grp.repository.GrpRepository;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
 import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 
@@ -59,7 +60,7 @@ public class GrpService {
             throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
         }
 
-        boolean isAdminUser = grp.getUsers().stream().filter(grpUser -> grpUser.getUser().getId().equals(userId) && grpUser.getRole() == AuthCode.ADMIN).count() > 0;
+        boolean isAdminUser = grp.getUsers().stream().filter(grpUser -> grpUser.getUser().getId().equals(userId) && grpUser.getRole().equals(RoleCode.ADMIN.getCode())).count() > 0;
         if (isAdminUser) {
             return;
         }
@@ -96,7 +97,7 @@ public class GrpService {
 
         Grp grp = grpRepository.findById(grpInfo.getId()).orElse(null);
 
-        HashMap<Long, AuthCode> nextUserMap = new HashMap<>();
+        HashMap<Long, RoleCode> nextUserMap = new HashMap<>();
         for (GrpUser user : grpInfo.getUsers()) {
             nextUserMap.put(user.getUser().getId(), user.getRole());
         }
@@ -125,7 +126,7 @@ public class GrpService {
             }
         }
 
-        if (users.size() < 1 || users.stream().filter(user -> user.getRole() == AuthCode.ADMIN).count() < 1) {
+        if (users.size() < 1 || users.stream().filter(user -> user.getRole().equals(RoleCode.ADMIN.getCode())).count() < 1) {
             throw new ServiceException(ServiceExceptionCode.NO_MANAGER_ASSIGNED);
         }
 
@@ -146,5 +147,19 @@ public class GrpService {
         return grpRepository.countByUseYnTrueAndPublicYnTrue();
     }
 
+    public AuthCode selectUserGrpRole(Long grpId, Long userId) {
+        Boolean isPublicGrp = grpRepository.isPublicGrp(grpId);
+        if (isPublicGrp) {
+            return AuthCode.WRITE;
+        } else {
+            String role = grpRepository.findUserGrpRole(grpId, userId);
+            if (RoleCode.ADMIN.getCode().equals(role)) {
+                return AuthCode.WRITE;
+            } else if (RoleCode.MEMBER.getCode().equals(role)) {
+                return AuthCode.READ;
+            }
+            return AuthCode.NONE;
+        }
+    }
 
 }
