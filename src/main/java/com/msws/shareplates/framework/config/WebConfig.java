@@ -29,8 +29,8 @@ public class WebConfig implements WebMvcConfigurer {
 	@Value("${spring.profiles.active}")
 	private String activeProfile;
 
-    @Value("${shareplates.corsUrl}")
-    private String corsUrl;
+    @Value("${shareplates.corsUrls}")
+    private String[] corsUrls;
 
 
     @Autowired
@@ -85,7 +85,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(this.corsUrl).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
+                .allowedOrigins(this.corsUrls).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
     }
     
     @Override
