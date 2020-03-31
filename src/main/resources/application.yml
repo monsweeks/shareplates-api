@@ -60,7 +60,7 @@ file:
 shareplates:
   locale:
     default: ko
-  corsUrl : http://localhost:3000
+  corsUrls: http://localhost:3000, http://mindplates.com:3000
   url: http://www.mindplates.com
   mail:
     senderName: noreply@mindplates.com
