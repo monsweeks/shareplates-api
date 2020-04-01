@@ -29,13 +29,16 @@ public class TopicAuthAspect {
 	@Pointcut("execution(* com.msws.shareplates.biz.chapter.controller.ChapterController.get*(..))")
 	private void getOperator() {};
 
+	@Pointcut("execution(* com.msws.shareplates.biz.chapter.controller.ChapterController.select*(..))")
+	private void selectOperator() {};
+
 	@Before("(createOperator() || updateOperator() || deleteOperator()) && args(topicId, .., userInfo)")
 	public void checkUserHasReadRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
 
 		 authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
 	}
 
-	@Before("getOperator() && args(topicId, .., userInfo)")
+	@Before("(getOperator() || selectOperator()) && args(topicId, .., userInfo)")
 	public void checkUserHasWriteRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
 
 		 authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());

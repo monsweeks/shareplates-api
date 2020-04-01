@@ -82,7 +82,7 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 목록")
     @GetMapping("")
-    public ChapterResponse getChapters(@PathVariable(value = "topic-id") long topicId, ChapterRequest chapterRequest, UserInfo userInfo) {
+    public ChapterResponse selectChapters(@PathVariable(value = "topic-id") long topicId, ChapterRequest chapterRequest, UserInfo userInfo) {
         AuthCode role = topicService.selectUserTopicRole(chapterRequest.getTopicId(), userInfo.getId());
 
         return ChapterResponse.builder()
@@ -96,7 +96,7 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 정보")
     @GetMapping("/{chapterId}")
-    public ChapterResponse getChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
+    public ChapterResponse selectChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
 
         return ChapterResponse.builder()
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapterService.getChapter(chapterId, topicId)))
