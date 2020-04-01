@@ -45,7 +45,7 @@ public class ChapterController {
     @PutMapping("/{chapterId}")
     public ChapterResponse updateChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
        
-        Chapter chapter = chapterService.updateChapter(chapterRequest.buildChaterEntity(chapterId));
+        Chapter chapter = chapterService.updateChapter(chapterRequest.buildChaterEntity());
         return ChapterResponse.builder()
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapter))
                 .build();
@@ -55,8 +55,8 @@ public class ChapterController {
     @PutMapping("/{chapterId}/title")
     public ChapterResponse updateChapterTitle(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
         
-    	Chapter chapter = chapterService.getChapter(chapterId, topicId);
-        chapterService.createChapter(chapter.setTitle(chapterRequest.getTitle()));
+    	Chapter chapter = chapterService.selectChapter(chapterId, topicId);
+        chapterService.updateChapter(chapter.setTitle(chapterRequest.getTitle()));
 
         return ChapterResponse.builder()
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapter))
@@ -74,7 +74,7 @@ public class ChapterController {
     @ApiOperation(value = "챕터 삭제")
     @DeleteMapping("/{chapterId}")
     public EmptyResponse deleteChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
-        Chapter chapter = chapterService.getChapter(chapterId, topicId);
+        Chapter chapter = chapterService.selectChapter(chapterId, topicId);
 
         chapterService.deleteChapter(chapter);
         return EmptyResponse.getInstance();
@@ -86,7 +86,7 @@ public class ChapterController {
         AuthCode role = topicService.selectUserTopicRole(chapterRequest.getTopicId(), userInfo.getId());
 
         return ChapterResponse.builder()
-                .chapters(chapterService.getChapters(chapterRequest.buildChaterEntity()).stream()
+                .chapters(chapterService.selectChapters(chapterRequest.buildChaterEntity()).stream()
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
                         .collect(Collectors.toList()))
                 .topic(new TopicResponse(topicService.selectTopic(chapterRequest.getTopicId())))
@@ -99,7 +99,7 @@ public class ChapterController {
     public ChapterResponse selectChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
 
         return ChapterResponse.builder()
-                .chapter(ChapterModel.builder().build().buildChapterModel(chapterService.getChapter(chapterId, topicId)))
+                .chapter(ChapterModel.builder().build().buildChapterModel(chapterService.selectChapter(chapterId, topicId)))
                 .build();
     }
 }

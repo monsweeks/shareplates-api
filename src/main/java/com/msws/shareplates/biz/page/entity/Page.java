@@ -26,17 +26,22 @@ public class Page extends CommonEntity {
 
     @NotBlank
     @Length(min = 1, max = 100)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "title")
+    private String title;
 
-    @Column(columnDefinition = "text", name = "summary")
-    private String summary;
+    @Column(columnDefinition = "text", name = "content")
+    private String content;
 
-    @NotBlank
-    @Column(name = "use_yn")
-    private Boolean useYn;
+    @Column(name = "order_no")
+    private int orderNo;
 
     @ManyToOne
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
+
+    public Page setTitle(String title) {
+        this.title = title;
+
+        return this;
+    }
 }
