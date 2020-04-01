@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/chapters")
+@RequestMapping("/api/topics/{topic-id}/chapters")
 public class ChapterController {
 
     @Autowired
@@ -33,9 +33,7 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 생성")
     @PostMapping("")
-    public ChapterResponse createChapter(@RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
-        // 토픽의 쓰기 권한 체크
-        authService.checkUserHasWriteRoleAboutTopic(chapterRequest.getTopicId(), userInfo.getId());
+    public ChapterResponse createChapter(@PathVariable(value = "topic-id") long topicId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
 
         Chapter chapter = chapterService.createChapter(chapterRequest.buildChaterEntity());
         return ChapterResponse.builder()
@@ -45,10 +43,8 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 수정")
     @PutMapping("/{chapterId}")
-    public ChapterResponse updateChapter(@PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
-        // 토픽의 쓰기 권한 체크
-        authService.checkUserHasWriteRoleAboutTopic(chapterRequest.getTopicId(), userInfo.getId());
-
+    public ChapterResponse updateChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
+       
         Chapter chapter = chapterService.updateChapter(chapterRequest.buildChaterEntity(chapterId));
         return ChapterResponse.builder()
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapter))
@@ -57,11 +53,9 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 제목 수정")
     @PutMapping("/{chapterId}/title")
-    public ChapterResponse updateChapterTitle(@PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
-        // 토픽의 쓰기 권한 체크
-        authService.checkUserHasWriteRoleAboutTopic(chapterRequest.getTopicId(), userInfo.getId());
-
-        Chapter chapter = chapterService.getChapter(chapterId);
+    public ChapterResponse updateChapterTitle(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
+        
+    	Chapter chapter = chapterService.getChapter(chapterId, topicId);
         chapterService.createChapter(chapter.setTitle(chapterRequest.getTitle()));
 
         return ChapterResponse.builder()
@@ -71,21 +65,16 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 순서 변경")
     @PutMapping("/orders")
-    public EmptyResponse updateChapterOrders(@RequestBody ChapterOrdersRequest chapterOrdersRequest, UserInfo userInfo) {
-        // 토픽의 쓰기 권한 체크
-        authService.checkUserHasWriteRoleAboutTopic(chapterOrdersRequest.getTopicId(), userInfo.getId());
-
+    public EmptyResponse updateChapterOrders(@PathVariable(value = "topic-id") long topicId, @RequestBody ChapterOrdersRequest chapterOrdersRequest, UserInfo userInfo) {
+        
         chapterService.updateChapterOrders(chapterOrdersRequest.getTopicId(), chapterOrdersRequest.buildChaterListEntity());
         return EmptyResponse.getInstance();
     }
 
     @ApiOperation(value = "챕터 삭제")
     @DeleteMapping("/{chapterId}")
-    public EmptyResponse deleteChapter(@PathVariable("chapterId") long chapterId, UserInfo userInfo) {
-        Chapter chapter = chapterService.getChapter(chapterId);
-
-        // 토픽의 쓰기 권한 체크
-        authService.checkUserHasWriteRoleAboutTopic(chapter.getTopic().getId(), userInfo.getId());
+    public EmptyResponse deleteChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
+        Chapter chapter = chapterService.getChapter(chapterId, topicId);
 
         chapterService.deleteChapter(chapter);
         return EmptyResponse.getInstance();
@@ -93,10 +82,7 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 목록")
     @GetMapping("")
-    public ChapterResponse getChapters(ChapterRequest chapterRequest, UserInfo userInfo) {
-        // 토픽의 읽기 권한 체크
-        authService.checkUserHasReadRoleAboutTopic(chapterRequest.getTopicId(), userInfo.getId());
-
+    public ChapterResponse getChapters(@PathVariable(value = "topic-id") long topicId, ChapterRequest chapterRequest, UserInfo userInfo) {
         AuthCode role = topicService.selectUserTopicRole(chapterRequest.getTopicId(), userInfo.getId());
 
         return ChapterResponse.builder()
@@ -110,15 +96,10 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 정보")
     @GetMapping("/{chapterId}")
-    public ChapterResponse getChapter(@PathVariable("chapterId") long chapterId, UserInfo userInfo) {
-
-        Chapter chapter = chapterService.getChapter(chapterId);
-
-        // 토픽의 읽기 권한 체크
-        authService.checkUserHasReadRoleAboutTopic(chapter.getTopic().getId(), userInfo.getId());
+    public ChapterResponse getChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
 
         return ChapterResponse.builder()
-                .chapter(ChapterModel.builder().build().buildChapterModel(chapterService.getChapter(chapterId)))
+                .chapter(ChapterModel.builder().build().buildChapterModel(chapterService.getChapter(chapterId, topicId)))
                 .build();
     }
 }
