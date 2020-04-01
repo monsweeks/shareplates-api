@@ -42,7 +42,7 @@ public class UserController {
 
     @DisableLogin
     @PostMapping("")
-    public User create(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
 
         userService.selectUserByEmail(user.getEmail());
 
@@ -61,18 +61,18 @@ public class UserController {
 
     @DisableLogin
     @GetMapping("/exists")
-    public Boolean existEmail(@RequestParam String email) {
+    public Boolean selectUserEmailExist(@RequestParam String email) {
         return userService.checkEmail(email);
     }
 
     @GetMapping("")
-    public List<User> search(@RequestParam Long grpId, @RequestParam String condition) {
+    public List<User> selectUsers(@RequestParam Long grpId, @RequestParam String condition) {
         return userService.selectUserList(grpId, condition);
     }
 
     @DisableLogin
     @GetMapping("/my-info")
-    public Map my(UserInfo userInfo) {
+    public Map selectMyInfo(UserInfo userInfo) {
         Map<String, Object> info = new HashMap<>();
 
         if (userInfo == null) {
@@ -108,7 +108,7 @@ public class UserController {
 
     @DisableLogin
     @GetMapping("/activations")
-    public User getUserByActivationToken(@RequestParam String token) {
+    public User selectUserByActivationToken(@RequestParam String token) {
 
         User user = userService.getUserByActivationToken(token);
         if (user == null) {
@@ -120,8 +120,8 @@ public class UserController {
 
     @DisableLogin
     @PutMapping("/activations")
-    public User setUserActivation(@RequestParam String token) {
-        User user = this.getUserByActivationToken(token);
+    public User selectUserActivation(@RequestParam String token) {
+        User user = this.selectUserByActivationToken(token);
         if (user == null) {
             throw new BizException(messageSourceAccessor.getMessage("common.error.badRequest"));
         }
@@ -134,7 +134,7 @@ public class UserController {
 
     @AdminOnly
     @GetMapping("/all")
-    public List<User> list() {
+    public List<User> selectUsers() {
         return userService.selectUserList();
     }
 

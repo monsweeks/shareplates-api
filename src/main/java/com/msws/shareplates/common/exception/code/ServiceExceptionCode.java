@@ -37,6 +37,7 @@ public enum ServiceExceptionCode {
     //챕터
     NOT_EXISTS_TOPIC(HttpStatus.NOT_FOUND, "chapter.error.not_exists_topic"),
     NOT_EXISTS_CHAPTER(HttpStatus.NOT_FOUND, "chapter.error.not_exists_chapter"),
+    NOT_EXISTS_PAGE(HttpStatus.NOT_FOUND, "page.error.not_exists_page"),
     //ORG
     NO_MANAGER_ASSIGNED(HttpStatus.BAD_REQUEST, "grp.no.manager.assigned"),
     NO_EMPTY_ORGANIZATION(HttpStatus.BAD_REQUEST, "grp.no.empty.grp"),

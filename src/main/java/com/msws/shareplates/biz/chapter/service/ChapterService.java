@@ -21,11 +21,18 @@ public class ChapterService {
     @Autowired
     private TopicRepository topicRepository;
 
+    public List<Chapter> selectChapters(Chapter chapter) {
+        return chapterRepository.findByTopicIdOrderByOrderNo(chapter.getTopic().getId());
+    }
+
+    public Chapter selectChapter(long chapterId, long topicId) {
+        return chapterRepository.findByIdAndTopicId(chapterId, topicId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
+    }
+
     public Chapter createChapter(Chapter chapter) {
         Topic topic = topicRepository.findById(chapter.getTopic().getId()).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
         topic.setChapterCount(topic.getChapterCount() + 1);
-        chapter = chapterRepository.save(chapter);
-        return chapter;
+        return chapterRepository.save(chapter);
     }
 
     public Chapter updateChapter(Chapter chapter) {
@@ -43,11 +50,5 @@ public class ChapterService {
         chapterRepository.delete(chapter);
     }
 
-    public List<Chapter> getChapters(Chapter chapter) {
-        return chapterRepository.findByTopicIdOrderByOrderNo(chapter.getTopic().getId());
-    }
 
-    public Chapter getChapter(long chapterId) {
-        return chapterRepository.findById(chapterId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
-    }
 }

@@ -51,7 +51,7 @@ public class OauthController {
 	 */
 	@DisableLogin
 	@GetMapping(value = "/{oauth_vendor}/token")
-	public TokenInfo getAuthorizationCode(@PathVariable(name = "oauth_vendor") OauthVendor oauth_vendor, 
+	public TokenInfo selectAuthorizationCode(@PathVariable(name = "oauth_vendor") OauthVendor oauth_vendor,
 										  HttpServletRequest req, 
 										  String code) {
 		

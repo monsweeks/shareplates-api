@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.msws.shareplates.framework.config.FileConfig;
@@ -13,6 +14,7 @@ import com.msws.shareplates.framework.config.FileConfig;
 })
 @EnableAsync
 @SpringBootApplication
+@EnableAspectJAutoProxy
 public class Application extends SpringBootServletInitializer {
 
     //스프링부트 톰캣 이용시
