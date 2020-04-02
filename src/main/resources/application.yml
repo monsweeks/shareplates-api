@@ -78,6 +78,9 @@ oauth:
     client-id: 863525fbdd02a15ac03536bbfcf0151d
     redirect-uri: http://localhost:8080/oauth/kakao/token
     
+slack:
+  url: https://hooks.slack.com/services/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
+    
 ---
 spring:
   profiles: production

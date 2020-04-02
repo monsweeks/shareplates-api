@@ -25,7 +25,7 @@ public class HttpRequestUtil {
         HttpRequestUtil.restTemplate = restTemplate;
     }
 
-    public String sendPost(String url, String message) {
+    public <T> String sendPost(String url, Object obj, Class<T> type) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
@@ -34,7 +34,7 @@ public class HttpRequestUtil {
 
             restTemplate.getMessageConverters()
                     .add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
-            restTemplate.postForEntity(url, message, String.class);
+            restTemplate.postForEntity(url, obj, type);
 
 
         } catch (Exception e) {

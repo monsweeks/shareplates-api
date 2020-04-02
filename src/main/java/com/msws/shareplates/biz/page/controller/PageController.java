@@ -1,8 +1,19 @@
 package com.msws.shareplates.biz.page.controller;
 
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
-import com.msws.shareplates.biz.common.service.AuthService;
 import com.msws.shareplates.biz.page.entity.Page;
 import com.msws.shareplates.biz.page.service.PageService;
 import com.msws.shareplates.biz.page.vo.PageModel;
@@ -11,11 +22,8 @@ import com.msws.shareplates.biz.page.vo.request.PageRequest;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.common.vo.EmptyResponse;
 import com.msws.shareplates.framework.session.vo.UserInfo;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api/topics/{topic-id}/chapters/{chapter-id}/pages")
@@ -27,8 +35,6 @@ public class PageController {
     @Autowired
     private ChapterService chapterService;
 
-    @Autowired
-    private AuthService authService;
 
     @ApiOperation(value = "페이지 생성")
     @PostMapping("")
