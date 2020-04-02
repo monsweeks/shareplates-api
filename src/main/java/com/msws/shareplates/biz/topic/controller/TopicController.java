@@ -48,6 +48,7 @@ public class TopicController {
         SimpleTopic simpleTopic = new SimpleTopic(topic, StatusCode.CREATE);
         pubTopic(simpleTopic);
 
+        //ToDo 슬랙메시지 빌더만들면 좋을듯
         StringBuilder message = new StringBuilder();
         message.append("새로운 토픽이 등록되었습니다.\n");
         message.append(topic.getName());
