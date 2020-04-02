@@ -1,5 +1,6 @@
 package com.msws.shareplates.biz.user.controller;
 
+import com.msws.shareplates.biz.common.service.SlackService;
 import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.user.entity.User;
@@ -40,6 +41,9 @@ public class UserController {
     @Autowired
     MessageSourceAccessor messageSourceAccessor;
 
+    @Autowired
+    private SlackService slackService;
+
     @DisableLogin
     @PostMapping("")
     public User createUser(@Valid @RequestBody User user) {
@@ -55,6 +59,14 @@ public class UserController {
         } catch (Exception e) {
             userService.updateUserActivateMailSendResult(user, false);
         }
+
+        StringBuilder message = new StringBuilder();
+        message.append("새로운 사용자가 가입하였습니다.\n");
+        message.append(user.getEmail());
+        message.append(",");
+        message.append(user.getName());
+        message.append("\n");
+        slackService.sendText(message.toString());
 
         return user;
     }
