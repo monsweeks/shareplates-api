@@ -1,7 +1,6 @@
 package com.msws.shareplates.biz.topic.controller;
 
 import com.msws.shareplates.biz.common.service.AuthService;
-import com.msws.shareplates.biz.common.service.SlackService;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.SimpleTopic;
@@ -32,9 +31,6 @@ public class TopicController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    @Autowired
-    private SlackService slackService;
-
     public void pubTopic(SimpleTopic simpleTopic) {
         simpMessagingTemplate.convertAndSend("/sub/simpleTopic", simpleTopic);
     }
@@ -47,15 +43,6 @@ public class TopicController {
         Topic topic = topicService.createTopic(new Topic(topicRequest));
         SimpleTopic simpleTopic = new SimpleTopic(topic, StatusCode.CREATE);
         pubTopic(simpleTopic);
-
-        //ToDo 슬랙메시지 빌더만들면 좋을듯
-        StringBuilder message = new StringBuilder();
-        message.append("새로운 토픽이 등록되었습니다.\n");
-        message.append(topic.getName());
-        message.append("\n");
-        message.append("http://mindplates.com/topics/");
-        message.append(topic.getId());
-        slackService.sendText(message.toString());
 
         return new TopicResponse(topic);
     }
