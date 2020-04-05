@@ -1,5 +1,7 @@
 package com.msws.shareplates.biz.oauth.controller;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController	
 public class OauthController {
 	
-	private final String service_prefix = "OAUTH_KAKAO_";
+	private final String SERVICE_PREFIX = "OAUTH_KAKAO_";
 
 	@Autowired
 	private OauthServiceFactory serviceFactory;
@@ -64,22 +66,23 @@ public class OauthController {
 
 		OauthUserInfo user_info = service.getUserInfo(ti.getAccess_token()); 
 		
-		User user = User.builder().build();
-		user.setPassword("password");
-		user.setName(user_info.getNickname());
-		user.setEmail(service_prefix + user_info.getEmail());
-		user.setActivateMailSendResult(true);
-		user.setActivateYn(true);
+		User user = User.builder()
+				.password(UUID.randomUUID().toString())
+				.name(user_info.getNickname())
+				.email(SERVICE_PREFIX + user_info.getEmail())
+				.activateMailSendResult(true)
+				.activateYn(true)
+				.build();
 		
-		User site_user;
+		User siteUser;
 		if(userService.checkEmail(user.getEmail())) {
-			site_user = userService.getUserByEmail(user.getEmail()).get();
+			siteUser = userService.getUserByEmail(user.getEmail()).get();
 			
 		}else {
-			site_user = userService.createUser(user);
+			siteUser = userService.createUser(user);
 		}
 		
-		sessionUtil.login(req, site_user.getId());
+		sessionUtil.login(req, siteUser.getId());
 		
 		log.info("received token info is {}", ti);
 		return ti; 
