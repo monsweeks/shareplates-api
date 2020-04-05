@@ -1,16 +1,14 @@
 package com.msws.shareplates.framework.config;
 
-import com.msws.shareplates.biz.grp.service.GrpService;
-import com.msws.shareplates.common.bean.InitService;
-import com.msws.shareplates.common.util.SessionUtil;
-import com.msws.shareplates.framework.interceptor.LoginCheckInterceptor;
-import com.msws.shareplates.framework.resolver.MethodArgumentResolver;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -18,7 +16,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import java.util.List;
+import com.msws.shareplates.biz.grp.service.GrpService;
+import com.msws.shareplates.common.bean.InitService;
+import com.msws.shareplates.common.util.SessionUtil;
+import com.msws.shareplates.framework.converter.StringToOAuthVendorConverter;
+import com.msws.shareplates.framework.interceptor.LoginCheckInterceptor;
+import com.msws.shareplates.framework.resolver.MethodArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -95,6 +98,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new MethodArgumentResolver());
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToOAuthVendorConverter());
     }
 
 }

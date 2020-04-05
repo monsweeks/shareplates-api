@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@RequestMapping("oauth")
+@RequestMapping("/oauth")
 @RestController	
 public class OauthController {
 	
@@ -34,10 +34,10 @@ public class OauthController {
 	private OauthServiceFactory serviceFactory;
 	
 	@Autowired
-	private UserService user_service;
+	private UserService userService;
 	
 	@Autowired
-	private SessionUtil session_util;
+	private SessionUtil sessionUtil;
 	
 
 
@@ -50,14 +50,14 @@ public class OauthController {
 	 * @return
 	 */
 	@DisableLogin
-	@GetMapping(value = "/{oauth_vendor}/token")
-	public TokenInfo selectAuthorizationCode(@PathVariable(name = "oauth_vendor") OauthVendor oauth_vendor,
+	@GetMapping(value = "/{oauth-vendor}/token")
+	public TokenInfo selectAuthorizationCode(@PathVariable(name = "oauth-vendor") OauthVendor oauthVendor,
 										  HttpServletRequest req, 
 										  String code) {
 		
 		log.info("received authorization code is {}", code);
 		
-		OauthServiceIF service = serviceFactory.getOauthVendorService(oauth_vendor);
+		OauthServiceIF service = serviceFactory.getOauthVendorService(oauthVendor);
 		
 		String result = service.getToken(code);
 		TokenInfo ti = new Gson().fromJson(result, TokenInfo.class);
@@ -72,14 +72,14 @@ public class OauthController {
 		user.setActivateYn(true);
 		
 		User site_user;
-		if(user_service.checkEmail(user.getEmail())) {
-			site_user = user_service.getUserByEmail(user.getEmail()).get();
+		if(userService.checkEmail(user.getEmail())) {
+			site_user = userService.getUserByEmail(user.getEmail()).get();
 			
 		}else {
-			site_user = user_service.createUser(user);
+			site_user = userService.createUser(user);
 		}
 		
-		session_util.login(req, site_user.getId());
+		sessionUtil.login(req, site_user.getId());
 		
 		log.info("received token info is {}", ti);
 		return ti; 
@@ -92,11 +92,11 @@ public class OauthController {
 	 * @return
 	 */
 	@DisableLogin
-	@PostMapping(value = "/{oauth_vendor}//token")
-	public TokenInfo refreshToken(@PathVariable(name = "oauth_vendor") OauthVendor oauth_vendor,String refresh_token) {
+	@PostMapping(value = "/{oauth-vendor}/token")
+	public TokenInfo refreshToken(@PathVariable(name = "oauth-vendor") OauthVendor oauthVendor,String refreshToken) {
 		
-		OauthServiceIF service = serviceFactory.getOauthVendorService(oauth_vendor);
-		String result = service.refreshToken(refresh_token);
+		OauthServiceIF service = serviceFactory.getOauthVendorService(oauthVendor);
+		String result = service.refreshToken(refreshToken);
 		TokenInfo tr = new Gson().fromJson(result, TokenInfo.class);
 		log.info("received token info is {}", tr);
 		return tr; 
