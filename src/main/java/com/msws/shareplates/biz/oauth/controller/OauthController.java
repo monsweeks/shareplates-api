@@ -5,11 +5,12 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.msws.shareplates.biz.oauth.entity.OauthUserInfo;
@@ -27,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequestMapping("/oauth")
-@RestController	
+@Controller	
 public class OauthController {
 	
 	private final String SERVICE_PREFIX = "OAUTH_KAKAO_";
@@ -41,6 +42,8 @@ public class OauthController {
 	@Autowired
 	private SessionUtil sessionUtil;
 	
+	@Value("${shareplates.web-url}")
+	private String redirectUrl;
 
 
 	
@@ -53,7 +56,7 @@ public class OauthController {
 	 */
 	@DisableLogin
 	@GetMapping(value = "/{oauth-vendor}/token")
-	public TokenInfo selectAuthorizationCode(@PathVariable(name = "oauth-vendor") OauthVendor oauthVendor,
+	public String selectAuthorizationCode(@PathVariable(name = "oauth-vendor") OauthVendor oauthVendor,
 										  HttpServletRequest req, 
 										  String code) {
 		
@@ -85,7 +88,7 @@ public class OauthController {
 		sessionUtil.login(req, siteUser.getId());
 		
 		log.info("received token info is {}", ti);
-		return ti; 
+		return "redirect:" + redirectUrl; 
 	}
 	
 	/**
