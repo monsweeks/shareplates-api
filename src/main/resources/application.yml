@@ -62,6 +62,7 @@ shareplates:
     default: ko
   corsUrls: http://localhost:3000, http://mindplates.com:3000
   url: http://www.mindplates.com
+  web-url: http://localhost:3000
   mail:
     senderName: noreply@mindplates.com
 server:
@@ -91,7 +92,14 @@ spring:
     host: 192.168.56.102
 file:
   upload-dir: /data/upload
-  
+shareplates:
+  locale:
+    default: ko
+  corsUrls: http://localhost:3000, http://mindplates.com:3000
+  url: http://www.mindplates.com
+  web-url: /
+  mail:
+    senderName: noreply@mindplates.com
 logging:
   level: 
     com.msws.shareplates: error
