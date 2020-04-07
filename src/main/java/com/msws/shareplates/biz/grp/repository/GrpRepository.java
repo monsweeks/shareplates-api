@@ -1,6 +1,8 @@
 package com.msws.shareplates.biz.grp.repository;
 
 import com.msws.shareplates.biz.grp.entity.Grp;
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,6 +28,7 @@ public interface GrpRepository extends JpaRepository<Grp, Long> {
     @Query("SELECT new java.lang.Boolean(o.publicYn) FROM Grp o WHERE id = :grpId")
     Boolean isPublicGrp(@Param("grpId") Long grpId);
 
+    @Cacheable(value="groupCache")
     @Query("SELECT ou.role FROM Grp o INNER JOIN GrpUser ou ON o.id = ou.grp.id WHERE  o.id = :grpId AND ou.user.id = :userId")
     String findUserGrpRole(@Param("grpId") Long grpId, @Param("userId") Long userId);
 }

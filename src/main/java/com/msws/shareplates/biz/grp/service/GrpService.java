@@ -5,17 +5,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.msws.shareplates.biz.grp.entity.Grp;
-import com.msws.shareplates.common.code.AuthCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.entity.GrpUser;
 import com.msws.shareplates.biz.grp.repository.GrpRepository;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
 import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.AuthCode;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
@@ -60,7 +61,7 @@ public class GrpService {
             throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
         }
 
-        boolean isAdminUser = grp.getUsers().stream().filter(grpUser -> grpUser.getUser().getId().equals(userId) && grpUser.getRole().equals(RoleCode.ADMIN.getCode())).count() > 0;
+        boolean isAdminUser = grp.getUsers().stream().filter(grpUser -> grpUser.getUser().getId().equals(userId) && grpUser.getRole() == RoleCode.ADMIN).count() > 0;
         if (isAdminUser) {
             return;
         }
@@ -88,11 +89,13 @@ public class GrpService {
     public List<Grp> selectPublicGrpList() {
         return grpRepository.findPublicGrp();
     }
-
+    
+    @CacheEvict(value="groupCache", allEntries = true)
     public Grp createGrp(Grp grp) {
         return grpRepository.save(grp);
     }
-
+    
+    @CacheEvict(value="groupCache", allEntries = true)
     public void updateGrp(Grp grpInfo) {
 
         Grp grp = grpRepository.findById(grpInfo.getId()).orElse(null);
@@ -133,6 +136,7 @@ public class GrpService {
         grpRepository.save(grp);
     }
 
+    @CacheEvict(value="groupCache", allEntries = true)
     public void deleteGrp(Long grpId) {
         Grp grp = selectGrp(grpId);
         Long count = topicRepository.countByGrpId(grpId);
@@ -153,6 +157,7 @@ public class GrpService {
             return AuthCode.WRITE;
         } else {
             String role = grpRepository.findUserGrpRole(grpId, userId);
+            
             if (RoleCode.ADMIN.getCode().equals(role)) {
                 return AuthCode.WRITE;
             } else if (RoleCode.MEMBER.getCode().equals(role)) {
