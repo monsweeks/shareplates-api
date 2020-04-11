@@ -11,25 +11,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoOauthUserInfo{
+public class FacebookOauthUserInfo{
 	
-		
 	private Double id;
-	private Account_property properties;
-	private Account_info kakao_account;
+	private String email;
 	
-
-	
-	@Getter
-	@Setter
-	public class Account_property{
-		String nickname;		
-	}
-	
-	@Getter
-	@Setter
-	public class Account_info{
-		String email;		
-		
-	}
 }

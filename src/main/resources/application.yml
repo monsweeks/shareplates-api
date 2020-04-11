@@ -54,7 +54,7 @@ logging:
     com.msws.shareplates: debug
     
 file:
-  upload-dir: c:/fileupload/
+  upload-dir: d:/fileupload/
   allowed-extension: txt,pdf
 
 shareplates:
@@ -71,13 +71,37 @@ server:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
       
 oauth:
-  kakao:
+  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=863525fbdd02a15ac03536bbfcf0151d&redirect_uri=http://localhost:8080/oauth/kakao/token&response_type=code&state=hyunseok
     host: https://kauth.kakao.com
     api-host: https://kapi.kakao.com
     token-endpoint: /oauth/token
     userinfo-endpoint: /v2/user/me
     client-id: 863525fbdd02a15ac03536bbfcf0151d
     redirect-uri: http://localhost:8080/oauth/kakao/token
+  facebook:   # https://www.facebook.com/v3.2/dialog/oauth?client_id=212487773500466&redirect_uri=http://localhost:8080/oauth/facebook/token&state=test&scope=email
+    host: https://graph.facebook.com
+    api-host: https://graph.facebook.com
+    token-endpoint: /v3.2/oauth/access_token
+    userinfo-endpoint: /me
+    client-id: 212487773500466
+    client-secret: 54a7e228616caa03c7a43805fa976b30
+    redirect-uri: http://localhost:8080/oauth/facebook/token
+  naver: # https://nid.naver.com/oauth2.0/authorize?client_id=FYKlwGmkoKaH8XSh3q6F&redirect_uri=http://localhost:8080/oauth/naver/token&response_type=code
+    host: https://nid.naver.com
+    api-host: https://openapi.naver.com
+    token-endpoint: /oauth2.0/token
+    userinfo-endpoint: /v1/nid/me
+    client-id: FYKlwGmkoKaH8XSh3q6F
+    client-secret: mTUlcxtCvQ
+    redirect-uri: http://localhost:8080/oauth/naver/token  
+  google: # https://accounts.google.com/o/oauth2/v2/auth?scope=email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://localhost:8080/oauth/google/token&client_id=766766390358-u4v4i9huft470ol689enfi9mq3gppbs6.apps.googleusercontent.com
+    host: https://accounts.google.com
+    api-host: https://www.googleapis.com
+    token-endpoint: /o/oauth2/token
+    userinfo-endpoint: /oauth2/v2/userinfo
+    client-id: 766766390358-u4v4i9huft470ol689enfi9mq3gppbs6.apps.googleusercontent.com
+    client-secret: E6CJ8_bxiCfzh0r-8-44b4KV
+    redirect-uri: http://localhost:8080/oauth/google/token
     
 slack:
   url: https://hooks.slack.com/services/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
@@ -105,10 +129,11 @@ logging:
     com.msws.shareplates: error
 oauth:
   kakao:
-    host: https://kauth.kakao.com
-    api-host: https://kapi.kakao.com
-    token-endpoint: /oauth/token
-    userinfo-endpoint: /v2/user/me
-    client-id: 863525fbdd02a15ac03536bbfcf0151d
     redirect-uri: http://mindplates.com/oauth/kakao/token
+  naver:
+    redirect-uri: http://mindplates.com/oauth/naver/token
+  google:
+    redirect-uri: http://mindplates.com/oauth/google/token
+  facebook:
+    redirect-uri: http://mindplates.com/oauth/facebook/token
     

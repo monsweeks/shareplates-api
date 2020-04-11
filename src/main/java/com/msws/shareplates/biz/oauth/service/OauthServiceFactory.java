@@ -25,7 +25,10 @@ public class OauthServiceFactory{
 		log.info("received oauth vendor name {}", vendorName);
 		return service.stream().filter(e -> e.getClass().getAnnotation(VendorType.class).vendor() == vendorName)
 				.findFirst()
-				.orElseThrow(() -> new VendorException(VendorExceptionCode.KAKAO_OAUTH2_SERVICE_NOT_AVAILABLE));
+				.orElseThrow(() ->
+					
+					new VendorException(VendorExceptionCode.NOT_SUPPORTED_VENDOR)
+				);
 		
 	}
 	

@@ -15,6 +15,7 @@ public class TokenInfo {
 	private String token_type;
 	private String refresh_token;
 	private String scope;
+	private String id_token;
 	
 	@Override
 	public String toString() {
