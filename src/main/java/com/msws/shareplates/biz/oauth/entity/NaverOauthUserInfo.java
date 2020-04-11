@@ -11,25 +11,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoOauthUserInfo{
+public class NaverOauthUserInfo{
 	
-		
-	private Double id;
-	private Account_property properties;
-	private Account_info kakao_account;
+	private Account_property response;
 	
-
+	
 	
 	@Getter
 	@Setter
 	public class Account_property{
-		String nickname;		
+		Double id;
+		String email;
 	}
 	
-	@Getter
-	@Setter
-	public class Account_info{
-		String email;		
-		
-	}
+	
 }

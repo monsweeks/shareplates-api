@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller	
 public class OauthController {
 	
-	private final String SERVICE_PREFIX = "OAUTH_KAKAO_";
+	private final String SERVICE_PREFIX = "OAUTH_{vendor}_";
 
 	@Autowired
 	private OauthServiceFactory serviceFactory;
@@ -72,7 +72,7 @@ public class OauthController {
 		User user = User.builder()
 				.password(UUID.randomUUID().toString())
 				.name(user_info.getNickname())
-				.email(SERVICE_PREFIX + user_info.getEmail())
+				.email(SERVICE_PREFIX.replace("{vendor}", oauthVendor.getVendorName().toUpperCase()) + user_info.getEmail())
 				.activateMailSendResult(true)
 				.activateYn(true)
 				.build();
