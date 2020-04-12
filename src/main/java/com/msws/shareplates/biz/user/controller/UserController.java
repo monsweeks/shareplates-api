@@ -4,6 +4,8 @@ import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
+import com.msws.shareplates.common.exception.ServiceException;
+import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.mail.MailService;
 import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.annotation.AdminOnly;
@@ -44,8 +46,12 @@ public class UserController {
     @PostMapping("")
     public User createUser(@Valid @RequestBody User user) {
 
-        userService.selectUserByEmail(user.getEmail());
+        User storedUser = userService.selectUserByEmail(user.getEmail());
+        if (storedUser != null) {
+            throw new ServiceException(ServiceExceptionCode.EXIST_EMAIL);
+        }
 
+        user.setRegistered(true);
         userService.createUser(user);
         // TODO 실패했을 경우, 실패 내역을 입력하고, 재발송이나, 어드민 알림 등의 기능을 추가해야 함
         // TODO 메일 방송 기능을 스킵할 수 있는 시스템 옵션을 추가
@@ -55,6 +61,26 @@ public class UserController {
         } catch (Exception e) {
             userService.updateUserActivateMailSendResult(user, false);
         }
+
+        return user;
+    }
+
+    @DisableLogin
+    @PutMapping("/register")
+    public User updateRegisterUser(@Valid @RequestBody User user, HttpServletRequest request) {
+
+        Long userId = SessionUtil.getUserId(request);
+
+        User storedUser = userService.selectUser(userId);
+
+        if (storedUser == null) {
+            throw new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER);
+        }
+
+        storedUser.setPassword(user.getPassword());
+        storedUser.setName(user.getName());
+        storedUser.setRegistered(true);
+        userService.updateUser(storedUser);
 
         return user;
     }

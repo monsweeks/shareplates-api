@@ -9,12 +9,13 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class OauthUserInfo {
+@AllArgsConstructor
+public class GoogleOauthUserInfo{
 	
-	private Double id;
-	private String nickname;
+	private double id;
 	private String email;
-
+	private String picture;
+	private boolean verified_email;
+	
 }

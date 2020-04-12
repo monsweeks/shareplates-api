@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 public enum OauthVendor {
 		
 	KAKAO("kakao"),
+	GOOGLE("google"),
+	NAVER("naver"),
+	FACEBOOK("facebook"),
 	NOT_SUPPORT("not_support");
 	
 	private String vendorName;

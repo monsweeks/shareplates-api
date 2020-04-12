@@ -2,7 +2,6 @@ package com.msws.shareplates.biz.page.controller;
 
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
-import com.msws.shareplates.biz.common.service.AuthService;
 import com.msws.shareplates.biz.page.entity.Page;
 import com.msws.shareplates.biz.page.service.PageService;
 import com.msws.shareplates.biz.page.vo.PageModel;
@@ -27,8 +26,6 @@ public class PageController {
     @Autowired
     private ChapterService chapterService;
 
-    @Autowired
-    private AuthService authService;
 
     @ApiOperation(value = "페이지 생성")
     @PostMapping("")
@@ -42,7 +39,9 @@ public class PageController {
     @ApiOperation(value = "페이지 수정")
     @PutMapping("/{page-id}")
     public PageResponse updatePage(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapter-id") long chapterId, @PathVariable("page-id") long pageId, @RequestBody PageRequest pageRequest, UserInfo userInfo) {
-        Page page = pageService.updatePage(pageRequest.buildPageEntity());
+        Page page = pageService.selectPage(topicId, chapterId, pageId);
+        page.setContent(pageRequest.getContent());
+        pageService.updatePage(page);
         return PageResponse.builder()
                 .page(PageModel.builder().build().buildPageModel(page))
                 .build();

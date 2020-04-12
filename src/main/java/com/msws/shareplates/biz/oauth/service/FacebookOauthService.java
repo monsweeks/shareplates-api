@@ -1,7 +1,7 @@
 package com.msws.shareplates.biz.oauth.service;
 
 import com.google.gson.Gson;
-import com.msws.shareplates.biz.oauth.entity.KakaoOauthUserInfo;
+import com.msws.shareplates.biz.oauth.entity.FacebookOauthUserInfo;
 import com.msws.shareplates.biz.oauth.entity.OauthUserInfo;
 import com.msws.shareplates.biz.oauth.service.IF.OauthServiceIF;
 import com.msws.shareplates.biz.oauth.service.annotation.VendorType;
@@ -20,28 +20,37 @@ import org.springframework.util.MultiValueMap;
 
 @Slf4j
 @Service
-@VendorType(vendor = OauthVendor.KAKAO)
-public class KakaoOauthService implements OauthServiceIF {
+@VendorType(vendor = OauthVendor.FACEBOOK)
+public class FacebookOauthService implements OauthServiceIF {
 
     private final String AUTHORIZATION = "Bearer ";
-    @Value("${oauth.kakao.host}")
+    @Value("${oauth.facebook.host}")
     private String oauthHost;
-    @Value("${oauth.kakao.api-host}")
+    @Value("${oauth.facebook.api-host}")
     private String apiHost;
-    @Value("${oauth.kakao.token-endpoint}")
+    @Value("${oauth.facebook.token-endpoint}")
     private String getTokenEndpoint;
-    @Value("${oauth.kakao.userinfo-endpoint}")
+    @Value("${oauth.facebook.userinfo-endpoint}")
     private String getUserinfoEndpoint;
-    @Value("${oauth.kakao.client-id}")
+    @Value("${oauth.facebook.client-id}")
     private String clientId;
 
-    @Value("${oauth.kakao.redirect-uri}")
+    @Value("${oauth.facebook.client-secret}")
+    private String clientSecret;
+
+    @Value("${oauth.facebook.redirect-uri}")
     private String redirectUri;
 
     @Autowired
     private HttpRequestUtil requestUtil;
 
 
+    /**
+     * get oauth token
+     *
+     * @param code
+     * @return
+     */
     public String getToken(String code) {
         try {
 
@@ -49,6 +58,7 @@ public class KakaoOauthService implements OauthServiceIF {
             MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<String, String>();
             tokenRequest.add("grant_type", "authorization_code");
             tokenRequest.add("client_id", clientId);
+            tokenRequest.add("client_secret", clientSecret);
             tokenRequest.add("redirect_uri", redirectUri);
             tokenRequest.add("code", code);
 
@@ -56,48 +66,43 @@ public class KakaoOauthService implements OauthServiceIF {
         } catch (Exception e) {
             log.error("fail to get token from kakao server : {}", e);
 
-            throw new VendorException(VendorExceptionCode.KAKAO_OAUTH2_SERVICE_NOT_AVAILABLE);
+            throw new VendorException(VendorExceptionCode.FACEBOOK_OAUTH2_SERVICE_NOT_AVAILABLE);
         }
 
     }
 
-
-    public String refreshToken(String refresh_token) {
-        try {
-
-            //set token request
-            MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<String, String>();
-            tokenRequest.add("grant_type", "refresh_token");
-            tokenRequest.add("client_id", clientId);
-            tokenRequest.add("refresh_token", refresh_token);
-
-            return requestUtil.sendRequest(oauthHost + getTokenEndpoint, tokenRequest, null, null, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
-        } catch (Exception e) {
-            log.error("fail to get token from kakao server : {}", e);
-
-            throw new VendorException(VendorExceptionCode.KAKAO_OAUTH2_SERVICE_NOT_AVAILABLE);
-        }
-
-    }
 
     public OauthUserInfo getUserInfo(String token) {
 
         log.info("token is {}", token);
         try {
-            String[] headers = {"Authorization"};
-            String[] values = {AUTHORIZATION + token};
-            String api_result = requestUtil.sendRequest(apiHost + getUserinfoEndpoint, null, headers, values, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
-            KakaoOauthUserInfo result = new Gson().fromJson(api_result, KakaoOauthUserInfo.class);
+
+
+            //set token request
+            MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<String, String>();
+            tokenRequest.add("fields", "email");
+            tokenRequest.add("access_token", token);
+
+            String api_result = requestUtil.sendRequest(apiHost + getUserinfoEndpoint, tokenRequest, null, null, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
+            log.info("Facebook user info data : {}", api_result);
+            FacebookOauthUserInfo result = new Gson().fromJson(api_result, FacebookOauthUserInfo.class);
 
             return new OauthUserInfo(result.getId(),
-                    result.getProperties().getNickname(),
-                    result.getKakao_account().getEmail());
+                    result.getEmail().split("@")[0],
+                    result.getEmail());
         } catch (Exception e) {
-            log.error("fail to get token from kakao server : {}", e);
+            log.error("fail to get token from Facebook server : {}", e);
 
-            throw new VendorException(VendorExceptionCode.KAKAO_OAUTH2_SERVICE_NOT_AVAILABLE);
+            throw new VendorException(VendorExceptionCode.FACEBOOK_OAUTH2_SERVICE_NOT_AVAILABLE);
         }
 
+    }
+
+
+    @Override
+    public String refreshToken(String refresh_token) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

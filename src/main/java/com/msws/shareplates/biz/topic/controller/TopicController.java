@@ -43,6 +43,7 @@ public class TopicController {
         Topic topic = topicService.createTopic(new Topic(topicRequest));
         SimpleTopic simpleTopic = new SimpleTopic(topic, StatusCode.CREATE);
         pubTopic(simpleTopic);
+
         return new TopicResponse(topic);
     }
 
@@ -59,9 +60,9 @@ public class TopicController {
     public TopicsResponse selectTopicList(@RequestParam Long grpId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, HttpServletRequest request) {
         Long userId = SessionUtil.getUserId(request);
         // 그룹의 읽기 권한 확인
-        authService.checkUserHasReadRoleAboutGrp(grpId, userId );
+        authService.checkUserHasReadRoleAboutGrp(grpId, userId);
 
-        return new TopicsResponse(topicService.selectTopicList(userId , grpId, searchWord, order, direction));
+        return new TopicsResponse(topicService.selectTopicList(userId, grpId, searchWord, order, direction));
     }
 
     @GetMapping("/{topicId}")

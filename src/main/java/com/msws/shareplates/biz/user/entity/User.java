@@ -97,4 +97,7 @@ public class User extends CommonEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "allow_search__yn")
     private Boolean allowSearchYn;
+
+    @Column(name = "registered")
+    private Boolean registered;
 }
