@@ -1,20 +1,16 @@
 package com.msws.shareplates.biz.user.service;
 
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.biz.user.repository.UserRepository;
+import com.msws.shareplates.common.util.EncryptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.biz.user.repository.UserRepository;
-import com.msws.shareplates.common.exception.ServiceException;
-import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
-import com.msws.shareplates.common.util.EncryptUtil;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -80,18 +76,12 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public void selectUserByEmail(String email) {
-        userRepository.findByEmail(email).ifPresent(user -> {
-        	throw new ServiceException(ServiceExceptionCode.EXIST_EMAIL);
-    	});
+    public User selectUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
-    
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-    
+
     public boolean checkEmail(String email) {
-    	return userRepository.findByEmail(email).isPresent();
+        return userRepository.findByEmail(email).isPresent();
     }
 
     public User getUserByActivationToken(String token) {
@@ -112,6 +102,18 @@ public class UserService {
         userInfo.setLastUpdatedBy(user.getId());
         userInfo.setLastUpdateDate(LocalDateTime.now());
 
+        if (user.getRegistered() != null) {
+            userInfo.setRegistered(user.getRegistered());
+        }
+        if (user.getPassword() != null) {
+            String plainText = user.getPassword();
+            byte[] saltBytes = encryptUtil.getSaltByteArray();
+            String salt = encryptUtil.getSaltString(saltBytes);
+            user.setSalt(salt);
+            String encryptedText = encryptUtil.getEncrypt(plainText, saltBytes);
+            user.setPassword(encryptedText);
+        }
+
         return userRepository.save(userInfo);
     }
 
@@ -121,8 +123,8 @@ public class UserService {
             String salt = user.getSalt();
             byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
             String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
-        	
-        	return user.getPassword().equals(encryptedText);
+
+            return user.getPassword().equals(encryptedText);
         }).orElse(null);
     }
 

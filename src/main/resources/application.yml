@@ -62,7 +62,7 @@ shareplates:
     default: ko
   corsUrls: http://localhost:3000, http://mindplates.com:3000
   url: http://www.mindplates.com
-  web-url: http://localhost:3000
+  web-url: http://localhost:3000/
   mail:
     senderName: noreply@mindplates.com
 server:
