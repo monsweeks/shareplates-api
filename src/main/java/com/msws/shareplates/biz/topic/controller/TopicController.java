@@ -1,6 +1,8 @@
 package com.msws.shareplates.biz.topic.controller;
 
 import com.msws.shareplates.biz.common.service.AuthService;
+import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.share.vo.response.SharesResponse;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.SimpleTopic;
@@ -24,6 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 public class TopicController {
     @Autowired
     TopicService topicService;
+
+    @Autowired
+    ShareService shareService;
 
     @Autowired
     AuthService authService;
@@ -70,7 +75,6 @@ public class TopicController {
         // 토픽의 읽기 권한 체크
         authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
 
-        topicService.checkUserHasTopicReadRole(topicId, userInfo.getId());
         return new TopicResponse(topicService.selectTopic(topicId));
     }
 
@@ -92,6 +96,15 @@ public class TopicController {
 
         topicService.deleteTopic(topicId);
         return TopicResponse.builder().build();
+    }
+
+    @GetMapping("/{topicId}/shares")
+    public SharesResponse selectTopicShareList(@PathVariable Long topicId, UserInfo userInfo) {
+
+        // 토픽의 쓰기 권한 체크
+        authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
+
+        return new SharesResponse(shareService.selectShareListByTopicId(topicId, userInfo.getId()));
     }
 
 }

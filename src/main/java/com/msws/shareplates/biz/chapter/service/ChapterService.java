@@ -25,6 +25,10 @@ public class ChapterService {
         return chapterRepository.findByTopicIdOrderByOrderNo(chapter.getTopic().getId());
     }
 
+    public List<Chapter> selectChapters(Long topicId) {
+        return chapterRepository.findByTopicIdOrderByOrderNo(topicId);
+    }
+
     public Chapter selectChapter(long chapterId, long topicId) {
         return chapterRepository.findByIdAndTopicId(chapterId, topicId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
     }
