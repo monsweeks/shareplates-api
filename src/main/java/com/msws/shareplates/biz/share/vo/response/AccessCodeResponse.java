@@ -22,6 +22,6 @@ public class AccessCodeResponse extends RepresentationModel<AccessCodeResponse> 
         this.id = accessCode.getId();
         this.code = accessCode.getCode();
         this.shareId = accessCode.getShare() != null ? accessCode.getShare().getId() : null;
-        this.userId = accessCode.getUser().getId();
+        this.userId = accessCode.getUser() != null ? accessCode.getUser().getId() : null;
     }
 }

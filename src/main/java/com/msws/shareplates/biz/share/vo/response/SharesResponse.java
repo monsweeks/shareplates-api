@@ -23,7 +23,9 @@ public class SharesResponse extends RepresentationModel<SharesResponse> {
                 .memo(share.getMemo())
                 .accessCode(share.getAccessCode())
                 .currentChapterId(share.getCurrentChapter().getId())
+                .currentChapterTitle(share.getCurrentChapter().getTitle())
                 .currentPageId(share.getCurrentPage().getId())
+                .currentPageTitle(share.getCurrentPage().getTitle())
                 .adminUserId(share.getAdminUser().getId())
                 .topicId(share.getTopic().getId())
                 .lastOpenDate(share.getLastOpenDate())
@@ -41,7 +43,9 @@ public class SharesResponse extends RepresentationModel<SharesResponse> {
         private String memo;
         private String accessCode;
         private Long currentChapterId;
+        private String currentChapterTitle;
         private Long currentPageId;
+        private String currentPageTitle;
         private Long adminUserId;
         private Long topicId;
         private LocalDateTime lastOpenDate;

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ShareRepository extends JpaRepository<Share, Long> {
 
-    @Query(" SELECT new Share(s.id, s.name, s.openYn, s.privateYn, s.memo, s.accessCode, s.currentChapter.id, s.currentPage.id, s.adminUser.id, s.topic.id, s.lastOpenDate, s.lastCloseDate ) " +
+    @Query(" SELECT new Share(s.id, s.name, s.openYn, s.privateYn, s.memo, s.accessCode, s.currentChapter.id, s.currentChapter.title, s.currentPage.id, s.currentPage.title, s.adminUser.id, s.topic.id, s.lastOpenDate, s.lastCloseDate ) " +
             " FROM Share s " +
             " WHERE s.topic.id = :topicId AND s.adminUser.id = :userId")
     List<Share> selectShareListByTopicId(@Param("topicId") Long topicId, @Param("userId") Long userId);

@@ -26,14 +26,14 @@ public class AccessCode extends CommonEntity {
 
     @NotBlank
     @Length(min = 1, max = 100)
-    @Column(name = "name")
+    @Column(name = "code")
     private String code;
 
     @OneToOne
-    @JoinColumn(name = "share_id", updatable = false, insertable = false)
+    @JoinColumn(name = "share_id")
     private Share share;
 
     @OneToOne
-    @JoinColumn(name = "user_id", updatable = false, insertable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 }

@@ -33,6 +33,8 @@ public enum ServiceExceptionCode {
     //토픽
     TOPIC_ALREADY_EXISTS(HttpStatus.CONFLICT, "topic.error.exists"),
     TOPIC_NO_USER_ASSIGNED(HttpStatus.BAD_REQUEST, "topic.error.no.user.assigned"),
+
+    SHARE_CANT_STOP_NO_ADMIN_USER(HttpStatus.BAD_REQUEST, "share.cant.no.admin.user"),
     
     //챕터
     NOT_EXISTS_TOPIC(HttpStatus.NOT_FOUND, "chapter.error.not_exists_topic"),

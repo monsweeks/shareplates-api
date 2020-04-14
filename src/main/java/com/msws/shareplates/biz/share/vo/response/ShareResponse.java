@@ -21,7 +21,9 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private String memo;
     private String accessCode;
     private Long currentChapterId;
+    private String currentChapterTitle;
     private Long currentPageId;
+    private String currentPageTitle;
     private Long adminUserId;
     private Long topicId;
     private LocalDateTime lastOpenDate;
@@ -35,7 +37,9 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.memo = share.getMemo();
         this.accessCode = share.getAccessCode();
         this.currentChapterId = share.getCurrentChapter().getId();
+        this.currentChapterTitle = share.getCurrentChapter().getTitle();
         this.currentPageId = share.getCurrentPage().getId();
+        this.currentPageTitle = share.getCurrentPage().getTitle();
         this.adminUserId = share.getAdminUser().getId();
         this.topicId = share.getTopic().getId();
         this.lastOpenDate = share.getLastOpenDate();

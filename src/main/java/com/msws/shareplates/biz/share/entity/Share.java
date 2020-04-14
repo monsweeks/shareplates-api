@@ -75,15 +75,15 @@ public class Share extends CommonEntity {
     @Column(name = "last_close_date")
     private LocalDateTime lastCloseDate;
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, Long currentPageId, Long adminUserId, Long topicId, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate) {
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, Long adminUserId, Long topicId, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
         this.privateYn = privateYn;
         this.memo = memo;
         this.accessCode = accessCode;
-        this.currentChapter = Chapter.builder().id(currentChapterId).build();
-        this.currentPage = Page.builder().id(currentPageId).build();
+        this.currentChapter = Chapter.builder().id(currentChapterId).title(chapterTitle).build();
+        this.currentPage = Page.builder().id(currentPageId).title(pageTitle).build();
         this.adminUser = User.builder().id(adminUserId).build();
         this.topic = Topic.builder().id(topicId).build();
         this.lastOpenDate = lastOpenDate;
@@ -92,6 +92,10 @@ public class Share extends CommonEntity {
 
     public Share(ShareRequest shareRequest) {
         this.id = shareRequest.getId();
+        this.merge(shareRequest);
+    }
+
+    public void merge (ShareRequest shareRequest) {
         this.name = shareRequest.getName();
         this.openYn = shareRequest.getOpenYn();
         this.privateYn = shareRequest.getPrivateYn();

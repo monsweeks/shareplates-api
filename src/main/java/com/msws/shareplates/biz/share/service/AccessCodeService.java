@@ -1,6 +1,7 @@
 package com.msws.shareplates.biz.share.service;
 
 import com.msws.shareplates.biz.share.entity.AccessCode;
+import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.repository.AccessCodeRepository;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.exception.ServiceException;
@@ -20,6 +21,9 @@ public class AccessCodeService {
 
     @Autowired
     private AccessCodeRepository accessCodeRepository;
+
+    @Autowired
+    private ShareService shareService;
 
     private String getRandomNumber() throws NoSuchProviderException, NoSuchAlgorithmException {
         SecureRandom secureRandomGenerator = SecureRandom.getInstance("SHA1PRNG", "SUN");
@@ -47,20 +51,26 @@ public class AccessCodeService {
         AccessCode accessCode = accessCodeRepository.findByIdAndUserId(accessCodeId, userId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND));
         String code = this.getRandomNumber();
         accessCode.setCode(code);
+
+        if (accessCode.getShare().getId() != null) {
+            Share share = shareService.selectShare(accessCode.getShare().getId());
+            share.setAccessCode(accessCode.getCode());
+            shareService.updateShareStop(share);
+        }
+
         return accessCodeRepository.save(accessCode);
     }
 
-    public AccessCode selectAccessCode(Long accessCodeId) {
-        return accessCodeRepository.findById(accessCodeId).orElse(null);
+    public AccessCode updateAccessCode(AccessCode accessCode) {
+        return accessCodeRepository.save(accessCode);
     }
 
-    public AccessCode selectAccessCode(Long accessCodeId, Long userId) {
-        return accessCodeRepository.findByIdAndUserId(accessCodeId, userId).orElse(null);
+    public AccessCode selectAccessCodeByCode(String code) {
+        return accessCodeRepository.findByCode(code).orElseThrow(() -> new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND));
     }
 
-    public void deleteAccessCode(long accessCodeId) {
-        AccessCode accessCode = accessCodeRepository.findById(accessCodeId).orElse(null);
-        accessCodeRepository.delete(accessCode);
+    public void deleteAccessCodeByShareId(long shareId) {
+        accessCodeRepository.deleteAccessCodeByShareId(shareId);
     }
 
 

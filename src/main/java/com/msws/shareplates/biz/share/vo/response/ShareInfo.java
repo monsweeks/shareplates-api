@@ -15,4 +15,5 @@ public class ShareInfo extends RepresentationModel<ShareInfo> {
     private TopicResponse topic;
     private List<ChapterModel> chapters;
     private AccessCodeResponse accessCode;
+    private ShareResponse share;
 }
