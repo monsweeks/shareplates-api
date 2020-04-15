@@ -15,6 +15,7 @@ import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
+import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.annotation.DisableLogin;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,7 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.stream.Collectors;
@@ -45,8 +47,11 @@ public class ShareController {
 
     @DisableLogin
     @GetMapping("")
-    public SharesResponse selectShareList() {
-        return new SharesResponse(shareService.selectOpenShareList());
+    public SharesResponse selectShareList(HttpServletRequest request) {
+
+        Long userId = SessionUtil.getUserId(request);
+
+        return new SharesResponse(shareService.selectOpenShareList(userId));
     }
 
     @ApiOperation(value = "공유 정보 생성을 위한 토픽 정보 조회")
@@ -89,6 +94,23 @@ public class ShareController {
         return new ShareResponse(share);
     }
 
+    @ApiOperation(value = "공유 정보 수정")
+    @PutMapping("/{shareId}")
+    public ShareResponse updateShare(@PathVariable Long shareId, @RequestBody ShareRequest shareRequest, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareRequest.getId());
+
+        // 토픽을 작성하려는 그룹의 쓰기 권한 확인
+        authService.checkUserHasWriteRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+
+        share.merge(shareRequest);
+        shareService.updateShare(share);
+        return new ShareResponse(shareService.selectShareInfo(shareRequest.getId()));
+    }
+
     @ApiOperation(value = "기존 공유 다시 시작")
     @PutMapping("/{shareId}/start")
     public ShareResponse updateStartShare(@RequestBody ShareRequest shareRequest, UserInfo userInfo) {
@@ -113,7 +135,6 @@ public class ShareController {
 
         // 토픽을 작성하려는 그룹의 쓰기 권한 확인
         authService.checkUserHasWriteRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
-
         shareService.updateShareStop(share);
         return new ShareResponse(share);
     }

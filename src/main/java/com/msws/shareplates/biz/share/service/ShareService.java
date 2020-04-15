@@ -35,13 +35,19 @@ public class ShareService {
     }
 
     public Share updateShareStart(Share share, Long userId) {
+        share.setStartedYn(false);
         share.setOpenYn(true);
         share.setAdminUser(User.builder().id(userId).build());
         share.setLastOpenDate(LocalDateTime.now());
         return shareRepository.save(share);
     }
 
+    public Share updateShare(Share share) {
+        return shareRepository.save(share);
+    }
+
     public Share updateShareStop(Share share) {
+        share.setStartedYn(false);
         share.setOpenYn(false);
         share.setLastCloseDate(LocalDateTime.now());
         return shareRepository.save(share);
@@ -55,13 +61,17 @@ public class ShareService {
         return shareRepository.findById(shareId).orElse(null);
     }
 
+    public Share selectShareInfo(long shareId) {
+        return shareRepository.selectShareInfo(shareId);
+    }
+
     public void deleteShare(Share share) {
         accessCodeService.deleteAccessCodeByShareId(share.getId());
         shareRepository.delete(share);
     }
 
-    public List<Share> selectOpenShareList() {
-        return shareRepository.selectOpenShareList();
+    public List<Share> selectOpenShareList(Long userId) {
+        return shareRepository.selectOpenShareList(userId);
     }
 
 

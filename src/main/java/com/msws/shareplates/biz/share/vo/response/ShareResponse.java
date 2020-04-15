@@ -24,10 +24,16 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private String currentChapterTitle;
     private Long currentPageId;
     private String currentPageTitle;
-    private Long adminUserId;
-    private Long topicId;
     private LocalDateTime lastOpenDate;
     private LocalDateTime lastCloseDate;
+    private Long topicId;
+    private String topicName;
+    private Boolean startedYn;
+    private Long adminUserId;
+    private String adminUserEmail;
+    private String adminUserName;
+    private String adminUserInfo;
+
 
     public ShareResponse(com.msws.shareplates.biz.share.entity.Share share) {
         this.id = share.getId();
@@ -40,11 +46,15 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.currentChapterTitle = share.getCurrentChapter().getTitle();
         this.currentPageId = share.getCurrentPage().getId();
         this.currentPageTitle = share.getCurrentPage().getTitle();
-        this.adminUserId = share.getAdminUser().getId();
-        this.topicId = share.getTopic().getId();
         this.lastOpenDate = share.getLastOpenDate();
         this.lastCloseDate = share.getLastCloseDate();
-
+        this.topicId = share.getTopic().getId();
+        this.topicName = share.getTopic().getName();
+        this.startedYn = share.getStartedYn();
+        this.adminUserId = share.getAdminUser().getId();
+        this.adminUserEmail = share.getAdminUser().getEmail();
+        this.adminUserName = share.getAdminUser().getName();
+        this.adminUserInfo = share.getAdminUser().getInfo();
     }
 
 }

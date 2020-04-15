@@ -75,7 +75,10 @@ public class Share extends CommonEntity {
     @Column(name = "last_close_date")
     private LocalDateTime lastCloseDate;
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Long topicId, Long adminUserId) {
+    @Column(name = "started_yn")
+    private Boolean startedYn;
+
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startYn, Long topicId, Long adminUserId) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
@@ -87,10 +90,11 @@ public class Share extends CommonEntity {
         this.topic = Topic.builder().id(topicId).build();
         this.lastOpenDate = lastOpenDate;
         this.lastCloseDate = lastCloseDate;
+        this.startedYn = startYn;
         this.adminUser = User.builder().id(adminUserId).build();
     }
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo) {
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
@@ -102,6 +106,7 @@ public class Share extends CommonEntity {
         this.topic = Topic.builder().id(topicId).name(topicName).build();
         this.lastOpenDate = lastOpenDate;
         this.lastCloseDate = lastCloseDate;
+        this.startedYn = startYn;
         this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
     }
 
@@ -110,7 +115,7 @@ public class Share extends CommonEntity {
         this.merge(shareRequest);
     }
 
-    public void merge (ShareRequest shareRequest) {
+    public void merge(ShareRequest shareRequest) {
         this.name = shareRequest.getName();
         this.openYn = shareRequest.getOpenYn();
         this.privateYn = shareRequest.getPrivateYn();
@@ -120,8 +125,6 @@ public class Share extends CommonEntity {
         this.currentPage = Page.builder().id(shareRequest.getCurrentPageId()).build();
         this.adminUser = User.builder().id(shareRequest.getAdminUserId()).build();
         this.topic = Topic.builder().id(shareRequest.getTopicId()).build();
-        this.lastOpenDate= shareRequest.getLastOpenDate();
-        this.lastCloseDate = shareRequest.getLastCloseDate();
     }
 
 }
