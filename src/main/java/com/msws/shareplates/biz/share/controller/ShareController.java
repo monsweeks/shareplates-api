@@ -10,10 +10,12 @@ import com.msws.shareplates.biz.share.vo.request.ShareRequest;
 import com.msws.shareplates.biz.share.vo.response.AccessCodeResponse;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.share.vo.response.ShareResponse;
+import com.msws.shareplates.biz.share.vo.response.SharesResponse;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
+import com.msws.shareplates.framework.annotation.DisableLogin;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
@@ -40,6 +42,12 @@ public class ShareController {
 
     @Autowired
     private ShareService shareService;
+
+    @DisableLogin
+    @GetMapping("")
+    public SharesResponse selectShareList() {
+        return new SharesResponse(shareService.selectOpenShareList());
+    }
 
     @ApiOperation(value = "공유 정보 생성을 위한 토픽 정보 조회")
     @GetMapping("/topics/{topicId}")

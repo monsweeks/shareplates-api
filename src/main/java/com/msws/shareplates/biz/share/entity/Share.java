@@ -75,7 +75,7 @@ public class Share extends CommonEntity {
     @Column(name = "last_close_date")
     private LocalDateTime lastCloseDate;
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, Long adminUserId, Long topicId, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate) {
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Long topicId, Long adminUserId) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
@@ -84,10 +84,25 @@ public class Share extends CommonEntity {
         this.accessCode = accessCode;
         this.currentChapter = Chapter.builder().id(currentChapterId).title(chapterTitle).build();
         this.currentPage = Page.builder().id(currentPageId).title(pageTitle).build();
-        this.adminUser = User.builder().id(adminUserId).build();
         this.topic = Topic.builder().id(topicId).build();
         this.lastOpenDate = lastOpenDate;
         this.lastCloseDate = lastCloseDate;
+        this.adminUser = User.builder().id(adminUserId).build();
+    }
+
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo) {
+        this.id = id;
+        this.name = name;
+        this.openYn = openYn;
+        this.privateYn = privateYn;
+        this.memo = memo;
+        this.accessCode = accessCode;
+        this.currentChapter = Chapter.builder().id(currentChapterId).title(chapterTitle).build();
+        this.currentPage = Page.builder().id(currentPageId).title(pageTitle).build();
+        this.topic = Topic.builder().id(topicId).name(topicName).build();
+        this.lastOpenDate = lastOpenDate;
+        this.lastCloseDate = lastCloseDate;
+        this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
     }
 
     public Share(ShareRequest shareRequest) {

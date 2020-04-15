@@ -60,5 +60,9 @@ public class ShareService {
         shareRepository.delete(share);
     }
 
+    public List<Share> selectOpenShareList() {
+        return shareRepository.selectOpenShareList();
+    }
+
 
 }

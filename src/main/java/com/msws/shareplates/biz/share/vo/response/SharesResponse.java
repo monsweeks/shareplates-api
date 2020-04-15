@@ -26,10 +26,14 @@ public class SharesResponse extends RepresentationModel<SharesResponse> {
                 .currentChapterTitle(share.getCurrentChapter().getTitle())
                 .currentPageId(share.getCurrentPage().getId())
                 .currentPageTitle(share.getCurrentPage().getTitle())
-                .adminUserId(share.getAdminUser().getId())
-                .topicId(share.getTopic().getId())
                 .lastOpenDate(share.getLastOpenDate())
                 .lastCloseDate(share.getLastCloseDate())
+                .topicId(share.getTopic().getId())
+                .topicName(share.getTopic().getName())
+                .adminUserId(share.getAdminUser().getId())
+                .adminUserEmail(share.getAdminUser().getEmail())
+                .adminUserName(share.getAdminUser().getName())
+                .adminUserInfo(share.getAdminUser().getInfo())
                 .build()).collect(Collectors.toList());
     }
 
@@ -46,9 +50,13 @@ public class SharesResponse extends RepresentationModel<SharesResponse> {
         private String currentChapterTitle;
         private Long currentPageId;
         private String currentPageTitle;
-        private Long adminUserId;
-        private Long topicId;
         private LocalDateTime lastOpenDate;
         private LocalDateTime lastCloseDate;
+        private Long topicId;
+        private String topicName;
+        private Long adminUserId;
+        private String adminUserEmail;
+        private String adminUserName;
+        private String adminUserInfo;
     }
 }
