@@ -3,6 +3,9 @@ package com.msws.shareplates.biz.share.controller;
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
 import com.msws.shareplates.biz.common.service.AuthService;
+import com.msws.shareplates.biz.page.service.PageService;
+import com.msws.shareplates.biz.page.vo.PageModel;
+import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.service.AccessCodeService;
 import com.msws.shareplates.biz.share.service.ShareService;
@@ -43,6 +46,9 @@ public class ShareController {
     private ChapterService chapterService;
 
     @Autowired
+    private PageService pageService;
+
+    @Autowired
     private ShareService shareService;
 
     @DisableLogin
@@ -68,8 +74,8 @@ public class ShareController {
                 .build();
     }
 
-    @ApiOperation(value = "공유 정보 조회")
-    @GetMapping("/{shareId}")
+    @ApiOperation(value = "공유를 생성하기 위한 정보 조회")
+    @GetMapping("/{shareId}/info")
     public ShareInfo selectShare(@PathVariable Long shareId, UserInfo userInfo) {
 
         Share share = shareService.selectShare(shareId);
@@ -153,6 +159,35 @@ public class ShareController {
     @PutMapping("/codes/{accessCodeId}")
     public AccessCodeResponse updateAccessCode(@PathVariable Long accessCodeId, UserInfo userInfo) throws NoSuchProviderException, NoSuchAlgorithmException {
         return new AccessCodeResponse(accessCodeService.updateAccessCode(accessCodeId, userInfo.getId()));
+    }
+
+    @ApiOperation(value = "공유 컨텐츠 조회")
+    @GetMapping("/{shareId}")
+    public ShareInfo selectShareContent(@PathVariable Long shareId, UserInfo userInfo) {
+
+        Share share = shareService.selectShare(shareId);
+        // TODO private인 경우, 코드가 입력되었는지 확인해야 한다.
+
+        return ShareInfo.builder().topic(new TopicResponse(topicService.selectTopic(share.getTopic().getId())))
+                .chapters(chapterService.selectChapters(share.getTopic().getId()).stream()
+                        .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
+                        .collect(Collectors.toList()))
+                .share(new ShareResponse(share))
+                .build();
+    }
+
+    @ApiOperation(value = "공유 챕터의 페이지 목록 조회")
+    @GetMapping("/{shareId}/chapters/{chapterId}/pages")
+    public PageResponse selectSharePageList(@PathVariable Long shareId, @PathVariable Long chapterId, UserInfo userInfo) {
+
+        // TODO private인 경우, 코드가 입력되었는지 확인해야 한다.
+        Share share = shareService.selectShare(shareId);
+
+        return PageResponse.builder()
+                .pages(pageService.selectPages(share.getTopic().getId(), chapterId).stream()
+                        .map(page -> PageModel.builder().build().buildPageModel(page))
+                        .collect(Collectors.toList()))
+                .build();
     }
 
 }
