@@ -29,4 +29,7 @@ public class ShareUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "share_id")
     private Share share;
+    
+    @Column(name="uuid")
+    private String uuid;
 }
