@@ -11,14 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MessageInfo {
 
-	private String targetTopic;
-	private String targetUser;
-	private ChannelCode targetChannel;
 	private Object messageObject;
 	private SenderInfo senderInfo;
+	private String topicUrl;
 	
 	public String targetTopicUrl() {
-		return "/sub/" + targetTopic + "/" + targetUser + "/" + targetChannel.getCode();
+		return "/sub/" + topicUrl;
 	}
 	
 	@Builder
@@ -29,5 +27,6 @@ public class MessageInfo {
 		private long id;
 		private String email;
 		private String name;
+		private String uuid;
 	}
 }

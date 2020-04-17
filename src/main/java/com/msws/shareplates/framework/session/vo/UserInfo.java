@@ -15,4 +15,5 @@ public class UserInfo implements Serializable {
 
     private long id;
     private Boolean registered;
+    private String uuid;
 }

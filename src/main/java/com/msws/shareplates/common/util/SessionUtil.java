@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class SessionUtil {
@@ -68,6 +69,7 @@ public class SessionUtil {
 
         UserInfo info = UserInfo.builder()
                 .id(id)
+                .uuid(UUID.randomUUID().toString())
                 .registered(true)
                 .build();
 
