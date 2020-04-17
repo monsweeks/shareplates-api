@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public enum ChannelCode {
 	
+	SHARE_ROOM("share-room", "공유"),
 	CHAT("chat", "채팅"), 
 	URL("url", "URL 공유");
 	
