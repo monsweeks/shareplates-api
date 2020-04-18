@@ -7,6 +7,7 @@ import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.repository.ShareUserRepository;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.message.MessageBroker;
@@ -27,7 +28,7 @@ public class MessageSendService {
 	
 	//TODO 토픽 입장 시 사용자별 채널 코드 생성 및 채널 정보 내려주기
 	public void sendToShareUser(long shareRoom, long targetUser, ChannelCode targetChannel, Object messageObject, UserInfo userInfo) {
-		String uuid = shareUserRepository.findByShareIdAndUserId(shareRoom, targetUser).map(ShareUser::getUuid).orElseThrow(() -> new ServiceException(ServiceExceptionCode.BAD_REQUEST));
+		String uuid = shareUserRepository.findByShareIdAndUserIdAndStatus(shareRoom, targetUser, SocketStatusCode.ONLINE).map(ShareUser::getUuid).orElseThrow(() -> new ServiceException(ServiceExceptionCode.BAD_REQUEST));
 		
 		String topicUrl = ChannelCode.SHARE_ROOM.getCode() + "/" + shareRoom + "/" + targetChannel.getCode() + "/" + uuid;
 		
@@ -36,6 +37,12 @@ public class MessageSendService {
 	
 	//TODO 접속 사용자 캐시로 변경할지 말지
 	public void sendToShareGroup(String shareRoom, long targetGrouptId, RoleCode targetGroup, ChannelCode targetChannel, Object messageObject, UserInfo userInfo) {
-		shareService.selectShare(targetGrouptId).getShareUsers().forEach(shareUser -> messageBroker.pubMessage(ChannelCode.SHARE_ROOM.getCode() + "/" + shareRoom + "/" + targetChannel.getCode() + "/" + shareUser.getUuid(), messageObject, userInfo));
+		shareService.selectShare(targetGrouptId).getShareUsers().stream()
+			.filter(shareUser -> shareUser.getRole() == targetGroup)
+			.forEach(shareUser -> messageBroker.pubMessage(ChannelCode.SHARE_ROOM.getCode() + "/" + shareRoom + "/" + targetChannel.getCode() + "/" + shareUser.getUuid(), messageObject, userInfo));
+	}
+	
+	public void sendToAll(String topicUrl, Object messageObject, UserInfo userInfo) {
+		messageBroker.pubMessage(topicUrl, messageObject, userInfo);
 	}
 }

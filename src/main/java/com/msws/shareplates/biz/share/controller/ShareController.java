@@ -154,5 +154,17 @@ public class ShareController {
     public AccessCodeResponse updateAccessCode(@PathVariable Long accessCodeId, UserInfo userInfo) throws NoSuchProviderException, NoSuchAlgorithmException {
         return new AccessCodeResponse(accessCodeService.updateAccessCode(accessCodeId, userInfo.getId()));
     }
+    
+    //TODO 권한 체크 후 쉐어사용자 정보 생성 및 갱신
+    @ApiOperation(value = "공유방 참가")
+    @PutMapping("/{shareId}/join")
+    public ShareResponse joinShare(@PathVariable Long shareId, UserInfo userInfo) {
+
+        Share share = shareService.selectShare(shareId);
+        // 토픽의 읽기 권한 체크
+        authService.checkUserHasReadRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
+    	
+    	return ShareResponse.builder().uuid(userInfo.getUuid()).build();
+    }
 
 }
