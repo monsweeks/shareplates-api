@@ -1,5 +1,6 @@
 package com.msws.shareplates.common.message;
 
+import com.msws.shareplates.common.message.vo.MessageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -27,12 +28,12 @@ public class MessageBroker {
 	@Autowired
 	private ObjectMapper mapper;
 	
-	public void pubMessage(String topicUrl, Object messageObject, UserInfo info) {
+	public void pubMessage(String topicUrl, MessageData messageData, UserInfo info) {
 			
 		jsonRedisTemplate.convertAndSend("sendMessage"
 				, MessageInfo.builder()
 					.topicUrl(topicUrl)
-					.messageObject(messageObject)
+					.data(messageData)
 					.senderInfo(SenderInfo.builder().id(info.getId()).uuid(info.getUuid()).build())
 					.build());
 	}
@@ -42,6 +43,6 @@ public class MessageBroker {
 		
 		log.info("send url -> {}", message.targetTopicUrl());
 		
-		simpMessagingTemplate.convertAndSend(message.targetTopicUrl(), message.getMessageObject());
+		simpMessagingTemplate.convertAndSend(message.targetTopicUrl(), message.getData());
 	}
 }
