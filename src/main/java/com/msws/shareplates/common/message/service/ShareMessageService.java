@@ -13,7 +13,7 @@ public class ShareMessageService {
 
     public void sendShareStartedChange(long shareId, Boolean startedYn, UserInfo userInfo) {
         String shareUrl = messageSendService.getShareUrl(shareId);
-        MessageData data = MessageData.builder().type("share-started-status-change").build();
+        MessageData data = MessageData.builder().type(MessageData.messageType.SHARE_STARTED_STATUS_CHANGE).build();
         data.addData("startedYn", startedYn);
         // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
         messageSendService.sendToAll(shareUrl, data, userInfo);
@@ -21,7 +21,7 @@ public class ShareMessageService {
 
     public void sendCurrentPageChange(long shareId, long chapterId, long pageId, UserInfo userInfo) {
         String shareUrl = messageSendService.getShareUrl(shareId);
-        MessageData data = MessageData.builder().type("current-page-change").build();
+        MessageData data = MessageData.builder().type(MessageData.messageType.CURRENT_PAGE_CHANGE).build();
         data.addData("chapterId", chapterId);
         data.addData("pageId", pageId);
         // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
