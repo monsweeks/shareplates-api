@@ -106,10 +106,10 @@ public class UserController {
             info.put("grps", grpService.selectPublicGrpList());
         } else {
             User user = userService.selectUser(userInfo.getId());
+            user.setUuid(userInfo.getUuid());
             info.put("user", user);
             List<Grp> grps = grpService.selectUserGrpList(userInfo.getId(), true);
-            info.put("grps", grps);            
-            info.put("uuid", userInfo.getUuid());
+            info.put("grps", grps);
         }
 
 
