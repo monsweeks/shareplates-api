@@ -108,7 +108,8 @@ public class UserController {
             User user = userService.selectUser(userInfo.getId());
             info.put("user", user);
             List<Grp> grps = grpService.selectUserGrpList(userInfo.getId(), true);
-            info.put("grps", grps);
+            info.put("grps", grps);            
+            info.put("uuid", userInfo.getUuid());
         }
 
 
