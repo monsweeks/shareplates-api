@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "share_user", uniqueConstraints = {@UniqueConstraint(columnNames = {"share_id", "user_id"})})
+@Table(name = "share_user")
 public class ShareUser extends CommonEntity {
 
     @Id

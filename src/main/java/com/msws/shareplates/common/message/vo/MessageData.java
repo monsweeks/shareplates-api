@@ -37,7 +37,8 @@ public class MessageData {
     @Getter
     public enum messageType{
     	SHARE_STARTED_STATUS_CHANGE("공유시작상태 변경"),
-    	CURRENT_PAGE_CHANGE("현재 페이지 변경");
+    	CURRENT_PAGE_CHANGE("현재 페이지 변경"),
+        USER_JOINED("새로운 사용자 등장");
     	
     	String desc;
     }
