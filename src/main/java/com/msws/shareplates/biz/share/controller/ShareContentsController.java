@@ -7,6 +7,7 @@ import com.msws.shareplates.biz.page.entity.Page;
 import com.msws.shareplates.biz.page.service.PageService;
 import com.msws.shareplates.biz.page.vo.PageModel;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
+import com.msws.shareplates.biz.share.entity.Chat;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
@@ -17,6 +18,7 @@ import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.vo.response.UserResponse;
+import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.exception.ServiceException;
@@ -71,7 +73,9 @@ public class ShareContentsController {
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
                         .collect(Collectors.toList()))
                 .share(new ShareResponse(share))
-                .users(share.getShareUsers().stream().filter(distinctByKey(shareUser -> shareUser.getUser().getId())).map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareUser.getMessage())).collect(Collectors.toList()))
+                .users(share.getShareUsers().stream()
+                        .filter(distinctByKey(shareUser -> shareUser.getUser().getId()))
+                        .map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser()   .getId()).getMessage())).collect(Collectors.toList()))
                 .build();
     }
 
@@ -172,14 +176,17 @@ public class ShareContentsController {
     }
 
     @ApiOperation(value = "페이지 이동")
-    @PutMapping("/chats/ready")
-    public Boolean updateSendLastMessage(@PathVariable(value = "share-id") long shareId, @RequestBody ChatRequest chatRequest, UserInfo userInfo) {
+    @PostMapping("/chats/ready")
+    public Boolean createReadyChat(@PathVariable(value = "share-id") long shareId, @RequestBody ChatRequest chatRequest, UserInfo userInfo) {
 
-        ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId(), userInfo.getUuid());
-        shareUser.setMessage(chatRequest.getMessage());
-        shareService.updateShareUser(shareUser);
+        Chat chat = Chat.builder()
+                .type(ChatTypeCode.READY)
+                .user(User.builder().id(userInfo.getId()).build())
+                .share(Share.builder().id(shareId).build())
+                .message(chatRequest.getMessage()).build();
+        shareService.createChat(chat);
 
-        shareMessageService.sendReadyChat(shareId, chatRequest.getMessage(), userInfo);
+        shareMessageService.sendChat(shareId, chat.getType(), chatRequest.getMessage(), userInfo);
 
         return true;
     }

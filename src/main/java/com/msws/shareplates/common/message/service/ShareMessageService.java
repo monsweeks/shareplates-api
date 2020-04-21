@@ -2,6 +2,7 @@ package com.msws.shareplates.common.message.service;
 
 import com.msws.shareplates.biz.user.service.UserService;
 import com.msws.shareplates.biz.user.vo.response.UserResponse;
+import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.message.vo.MessageData;
 import com.msws.shareplates.framework.session.vo.UserInfo;
@@ -44,10 +45,11 @@ public class ShareMessageService {
         messageSendService.sendToAll(shareUrl, data, userInfo);
     }
 
-    public void sendReadyChat(long shareId, String lastMessage, UserInfo userInfo) {
+    public void sendChat(long shareId, ChatTypeCode type, String message, UserInfo userInfo) {
         String shareUrl = messageSendService.getShareUrl(shareId);
-        MessageData data = MessageData.builder().type(MessageData.messageType.READY_CHAT).build();
-        data.addData("message", lastMessage);
+        MessageData data = MessageData.builder().type(MessageData.messageType.CHAT_MESSAGE).build();
+        data.addData("type", type);
+        data.addData("message", message);
         data.addData("senderId", userInfo.getId());
         // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
         messageSendService.sendToAll(shareUrl, data, userInfo);
