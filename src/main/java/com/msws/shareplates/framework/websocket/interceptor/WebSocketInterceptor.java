@@ -1,37 +1,43 @@
 package com.msws.shareplates.framework.websocket.interceptor;
 
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import com.msws.shareplates.common.util.SessionUtil;
+import com.msws.shareplates.framework.session.vo.UserInfo;
 
 @Component
-public class WebSocketInterceptor implements ChannelInterceptor {
+public class WebSocketInterceptor implements HandshakeInterceptor {
 
 	@Override
-	public Message<?> preSend(Message<?> message, MessageChannel channel) {
-		System.out.println("Channel Interceptor");
-
-		MessageHeaders headers = message.getHeaders();
-		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-
-		System.out.println(accessor.getDestination());
-		MultiValueMap<String, String> multiValueMap = headers.get(StompHeaderAccessor.NATIVE_HEADERS, MultiValueMap.class);
-		if (multiValueMap != null) {
-			for (Map.Entry<String, List<String>> head : multiValueMap.entrySet()) {
-				if (head != null) {
-					System.out.println(head.getKey() + "#" + head.getValue());
-				}
-			}
-		}
+	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+			Map<String, Object> attributes) throws Exception {
 		
-		return message;
+		if (request instanceof ServletServerHttpRequest) {
+            HttpServletRequest req = ((ServletServerHttpRequest) request).getServletRequest();
+                        
+            UserInfo userInfo = SessionUtil.getUserInfo(req);
+            
+            if(userInfo != null) {                
+                attributes.put("USER_INFO", userInfo);
+            }
+        }
+		return true;
+	}
+
+	@Override
+	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+			Exception exception) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
