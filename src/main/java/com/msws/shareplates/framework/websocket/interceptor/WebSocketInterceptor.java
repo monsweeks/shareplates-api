@@ -22,13 +22,14 @@ public class WebSocketInterceptor implements ChannelInterceptor {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
 		System.out.println(accessor.getDestination());
-		MultiValueMap<String, String> multiValueMap = headers.get(StompHeaderAccessor.NATIVE_HEADERS,
-				MultiValueMap.class);
-		for (Map.Entry<String, List<String>> head : multiValueMap.entrySet()) {
-			System.out.println(head.getKey() + "#" + head.getValue());
+		MultiValueMap<String, String> multiValueMap = headers.get(StompHeaderAccessor.NATIVE_HEADERS, MultiValueMap.class);
+		if (multiValueMap != null) {
+			for (Map.Entry<String, List<String>> head : multiValueMap.entrySet()) {
+				if (head != null) {
+					System.out.println(head.getKey() + "#" + head.getValue());
+				}
+			}
 		}
-		
-		
 		
 		return message;
 	}

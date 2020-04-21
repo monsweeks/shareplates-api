@@ -8,11 +8,17 @@ import com.msws.shareplates.biz.page.service.PageService;
 import com.msws.shareplates.biz.page.vo.PageModel;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.share.vo.response.ShareResponse;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.biz.user.vo.response.UserResponse;
+import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.message.service.ShareMessageService;
@@ -22,6 +28,10 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Log
@@ -44,6 +54,11 @@ public class ShareContentsController {
     @Autowired
     private ShareMessageService shareMessageService;
 
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
     @ApiOperation(value = "공유 정보 조회 (공유)")
     @GetMapping("")
     public ShareInfo selectShareContent(@PathVariable(value = "share-id") long shareId, UserInfo userInfo) {
@@ -56,6 +71,7 @@ public class ShareContentsController {
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
                         .collect(Collectors.toList()))
                 .share(new ShareResponse(share))
+                .users(share.getShareUsers().stream().filter(distinctByKey(shareUser -> shareUser.getUser().getId())).map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareUser.getMessage())).collect(Collectors.toList()))
                 .build();
     }
 
@@ -134,11 +150,38 @@ public class ShareContentsController {
     public ShareResponse joinShare(@PathVariable(value = "share-id") long shareId, UserInfo userInfo) {
         // TODO 가벼운 쿼리로 변경
         Share share = shareService.selectShare(shareId);
+
         // TODO privateY인 경우, 코드가 입력되었는지 확인 (코드 입력 화면이 아직 없음)
         if (!share.getOpenYn()) {
             throw new ServiceException(ServiceExceptionCode.SHARE_NOT_OPENED);
         }
+
+        ShareUser shareUser = ShareUser.builder().user(User.builder().id(userInfo.getId()).build())
+                .share(Share.builder().id(shareId).build())
+                .status(SocketStatusCode.ONLINE)
+                .uuid(userInfo.getUuid())
+                .role(share.getAdminUser().getId().equals(userInfo.getId()) ? RoleCode.ADMIN : RoleCode.MEMBER).build();
+
+        shareService.createOrUpdateShareUserRepository(shareUser);
+
+        shareMessageService.sendUserJoined(shareId, userInfo, shareUser.getRole());
+
+        // TODO 연결 끊기면 오프라인 처리 언제?
+
         return ShareResponse.builder().uuid(userInfo.getUuid()).build();
+    }
+
+    @ApiOperation(value = "페이지 이동")
+    @PutMapping("/chats/ready")
+    public Boolean updateSendLastMessage(@PathVariable(value = "share-id") long shareId, @RequestBody ChatRequest chatRequest, UserInfo userInfo) {
+
+        ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId(), userInfo.getUuid());
+        shareUser.setMessage(chatRequest.getMessage());
+        shareService.updateShareUser(shareUser);
+
+        shareMessageService.sendReadyChat(shareId, chatRequest.getMessage(), userInfo);
+
+        return true;
     }
 
 

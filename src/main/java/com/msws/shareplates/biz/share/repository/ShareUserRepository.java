@@ -11,7 +11,8 @@ public interface ShareUserRepository extends JpaRepository<ShareUser, Long> {
 	
 
 	Optional<ShareUser> findByShareIdAndUserIdAndStatus(long shareId, long UserId, SocketStatusCode status);
-	
+
+	ShareUser findByShareIdAndUserIdAndUuid(long shareId, long userId, String uuid);
 
 }
 

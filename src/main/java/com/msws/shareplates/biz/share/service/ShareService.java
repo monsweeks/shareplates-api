@@ -2,8 +2,11 @@ package com.msws.shareplates.biz.share.service;
 
 import com.msws.shareplates.biz.share.entity.AccessCode;
 import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.repository.ShareRepository;
+import com.msws.shareplates.biz.share.repository.ShareUserRepository;
 import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.SocketStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,9 @@ public class ShareService {
 
     @Autowired
     private AccessCodeService accessCodeService;
+
+    @Autowired
+    private ShareUserRepository shareUserRepository;
 
     public Share createShare(Share share, Long userId) {
         share.setOpenYn(true);
@@ -72,6 +78,30 @@ public class ShareService {
 
     public List<Share> selectOpenShareList(Long userId) {
         return shareRepository.selectOpenShareList(userId);
+    }
+
+    public ShareUser createOrUpdateShareUserRepository(ShareUser shareUser) {
+        ShareUser sUser = shareUserRepository.findByShareIdAndUserIdAndUuid(shareUser.getShare().getId(), shareUser.getUser().getId(), shareUser.getUuid());
+        if (sUser == null) {
+            shareUser.setStatus(SocketStatusCode.ONLINE);
+            shareUserRepository.save(shareUser);
+            return shareUser;
+        } else {
+            if (!sUser.getStatus().equals(SocketStatusCode.ONLINE)) {
+                sUser.setStatus(SocketStatusCode.ONLINE);
+                shareUserRepository.save(sUser);
+            }
+
+            return sUser;
+        }
+    }
+
+    public ShareUser selectShareUser(long shareId, long userId, String uuid) {
+        return shareUserRepository.findByShareIdAndUserIdAndUuid(shareId, userId, uuid);
+    }
+
+    public ShareUser updateShareUser(ShareUser shareUser) {
+        return shareUserRepository.save(shareUser);
     }
 
 
