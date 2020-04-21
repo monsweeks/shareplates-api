@@ -118,6 +118,10 @@ public class ShareService {
         return shareUserRepository.save(shareUser);
     }
 
+    public List<ShareUser> selectShareUserList(long shareId) {
+        return shareUserRepository.findAllByShareId(shareId);
+    }
+
     public Chat selectLastReadyChat(long shareId, long userId) {
         return chatRepository.findFirstByTypeAndShareIdAndUserIdOrderByCreationDateDesc(ChatTypeCode.READY, shareId, userId).orElse(Chat.builder().build());
     }

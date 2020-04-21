@@ -15,6 +15,7 @@ import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
+import com.msws.shareplates.common.message.service.ShareMessageService;
 import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.annotation.DisableLogin;
 import com.msws.shareplates.framework.session.vo.UserInfo;
@@ -46,6 +47,9 @@ public class ShareController {
 
     @Autowired
     private ShareService shareService;
+
+    @Autowired
+    private ShareMessageService shareMessageService;
 
     @ApiOperation(value = "열린 (+ 본인 프라이빗) 공유 리스트 조회")
     @DisableLogin
@@ -149,10 +153,8 @@ public class ShareController {
         if (!share.getAdminUser().getId().equals(userInfo.getId())) {
             throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
         }
-
-        // 토픽을 작성하려는 그룹의 쓰기 권한 확인
-        authService.checkUserHasWriteRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
         shareService.updateShareStop(share);
+        shareMessageService.sendShareClosed(shareId, userInfo);
         return new ShareResponse(share);
     }
 

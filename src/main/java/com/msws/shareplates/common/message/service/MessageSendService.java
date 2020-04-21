@@ -1,5 +1,6 @@
 package com.msws.shareplates.common.message.service;
 
+import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.repository.ShareUserRepository;
 import com.msws.shareplates.biz.share.service.ShareService;
@@ -11,9 +12,13 @@ import com.msws.shareplates.common.message.MessageBroker;
 import com.msws.shareplates.common.message.vo.ChannelCode;
 import com.msws.shareplates.common.message.vo.MessageData;
 import com.msws.shareplates.framework.session.vo.UserInfo;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Log
 @Service
 public class MessageSendService {
 
@@ -44,7 +49,8 @@ public class MessageSendService {
 
     //TODO 접속 사용자 캐시로 변경할지 말지
     public void sendToShare(long shareId, MessageData messageData, UserInfo userInfo) {
-        shareService.selectShare(shareId).getShareUsers().stream().filter(shareUser -> shareUser.getStatus() == SocketStatusCode.ONLINE)
+        List<ShareUser> shareUsers = shareService.selectShareUserList(shareId);
+        shareUsers.stream().filter(shareUser -> shareUser.getStatus() == SocketStatusCode.ONLINE)
                 .forEach(shareUser -> messageBroker.pubMessage(ChannelCode.SHARE_ROOM.getCode() + "/" + shareId + "/" + shareUser.getUuid(), messageData, userInfo));
     }
 
