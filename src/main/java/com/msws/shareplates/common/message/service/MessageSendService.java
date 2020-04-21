@@ -36,10 +36,16 @@ public class MessageSendService {
     }
 
     //TODO 접속 사용자 캐시로 변경할지 말지
-    public void sendToShareGroup(String shareId, long targetGrouptId, RoleCode targetGroup, ChannelCode targetChannel, MessageData messageData, UserInfo userInfo) {
-        shareService.selectShare(targetGrouptId).getShareUsers().stream()
+    public void sendToShareGroup(long shareId, RoleCode targetGroup, MessageData messageData, UserInfo userInfo) {
+        shareService.selectShare(shareId).getShareUsers().stream()
                 .filter(shareUser -> shareUser.getRole() == targetGroup)
-                .forEach(shareUser -> messageBroker.pubMessage(ChannelCode.SHARE_ROOM.getCode() + "/" + shareId + "/" + targetChannel.getCode() + "/" + shareUser.getUuid(), messageData, userInfo));
+                .forEach(shareUser -> messageBroker.pubMessage(ChannelCode.SHARE_ROOM.getCode() + "/" + shareId + "/" + shareUser.getUuid(), messageData, userInfo));
+    }
+
+    //TODO 접속 사용자 캐시로 변경할지 말지
+    public void sendToShare(long shareId, MessageData messageData, UserInfo userInfo) {
+        shareService.selectShare(shareId).getShareUsers().stream().filter(shareUser -> shareUser.getStatus() == SocketStatusCode.ONLINE)
+                .forEach(shareUser -> messageBroker.pubMessage(ChannelCode.SHARE_ROOM.getCode() + "/" + shareId + "/" + shareUser.getUuid(), messageData, userInfo));
     }
 
     public void sendToAll(String topicUrl, MessageData messageData, UserInfo userInfo) {
