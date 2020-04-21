@@ -1,11 +1,14 @@
 package com.msws.shareplates.biz.share.service;
 
 import com.msws.shareplates.biz.share.entity.AccessCode;
+import com.msws.shareplates.biz.share.entity.Chat;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
+import com.msws.shareplates.biz.share.repository.ChatRepository;
 import com.msws.shareplates.biz.share.repository.ShareRepository;
 import com.msws.shareplates.biz.share.repository.ShareUserRepository;
 import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,9 @@ public class ShareService {
 
     @Autowired
     private ShareUserRepository shareUserRepository;
+
+    @Autowired
+    private ChatRepository chatRepository;
 
     public Share createShare(Share share, Long userId) {
         share.setOpenYn(true);
@@ -104,5 +110,12 @@ public class ShareService {
         return shareUserRepository.save(shareUser);
     }
 
+    public Chat selectLastReadyChat(long shareId, long userId) {
+        return chatRepository.findFirstByTypeAndShareIdAndUserIdOrderByCreationDateDesc(ChatTypeCode.READY, shareId, userId).orElse(Chat.builder().build());
+    }
+
+    public Chat createChat(Chat chat) {
+        return chatRepository.save(chat);
+    }
 
 }
