@@ -10,6 +10,7 @@ import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.share.vo.response.ShareResponse;
 import com.msws.shareplates.biz.topic.service.TopicService;
@@ -53,8 +54,7 @@ public class ShareContentsController {
     @Autowired
     private ShareMessageService shareMessageService;
 
-    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor)
-    {
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> map = new ConcurrentHashMap<>();
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
@@ -71,7 +71,7 @@ public class ShareContentsController {
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
                         .collect(Collectors.toList()))
                 .share(new ShareResponse(share))
-                .users(share.getShareUsers().stream().filter(distinctByKey(shareUser -> shareUser.getUser().getId())).map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus())).collect(Collectors.toList()))
+                .users(share.getShareUsers().stream().filter(distinctByKey(shareUser -> shareUser.getUser().getId())).map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareUser.getMessage())).collect(Collectors.toList()))
                 .build();
     }
 
@@ -169,6 +169,19 @@ public class ShareContentsController {
         // TODO 연결 끊기면 오프라인 처리 언제?
 
         return ShareResponse.builder().uuid(userInfo.getUuid()).build();
+    }
+
+    @ApiOperation(value = "페이지 이동")
+    @PutMapping("/chats/ready")
+    public Boolean updateSendLastMessage(@PathVariable(value = "share-id") long shareId, @RequestBody ChatRequest chatRequest, UserInfo userInfo) {
+
+        ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId(), userInfo.getUuid());
+        shareUser.setMessage(chatRequest.getMessage());
+        shareService.updateShareUser(shareUser);
+
+        shareMessageService.sendReadyChat(shareId, chatRequest.getMessage(), userInfo);
+
+        return true;
     }
 
 

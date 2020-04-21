@@ -21,6 +21,7 @@ public class UserResponse extends RepresentationModel<UserResponse> {
     private String info;
     private RoleCode shareRoleCode;
     private SocketStatusCode status;
+    private String message;
 
     public UserResponse(User user) {
         this.id = user.getId();
@@ -29,13 +30,14 @@ public class UserResponse extends RepresentationModel<UserResponse> {
         this.info = user.getInfo();
     }
 
-    public UserResponse(User user, RoleCode roleCode, SocketStatusCode status) {
+    public UserResponse(User user, RoleCode roleCode, SocketStatusCode status, String message) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();
         this.info = user.getInfo();
         this.shareRoleCode = roleCode;
         this.status = status;
+        this.message = message;
     }
 
 }

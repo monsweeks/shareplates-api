@@ -43,4 +43,13 @@ public class ShareMessageService {
         // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
         messageSendService.sendToAll(shareUrl, data, userInfo);
     }
+
+    public void sendReadyChat(long shareId, String lastMessage, UserInfo userInfo) {
+        String shareUrl = messageSendService.getShareUrl(shareId);
+        MessageData data = MessageData.builder().type(MessageData.messageType.READY_CHAT).build();
+        data.addData("message", lastMessage);
+        data.addData("senderId", userInfo.getId());
+        // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
+        messageSendService.sendToAll(shareUrl, data, userInfo);
+    }
 }

@@ -54,4 +54,7 @@ public class ShareUser extends CommonEntity {
     @Column(name="role")
     @Enumerated(EnumType.STRING)
     private RoleCode role;
+
+    @Column(name="message")
+    private String message;
 }

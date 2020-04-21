@@ -80,7 +80,7 @@ public class ShareService {
         return shareRepository.selectOpenShareList(userId);
     }
 
-    public ShareUser createOrUpdateShareUserRepository (ShareUser shareUser) {
+    public ShareUser createOrUpdateShareUserRepository(ShareUser shareUser) {
         ShareUser sUser = shareUserRepository.findByShareIdAndUserIdAndUuid(shareUser.getShare().getId(), shareUser.getUser().getId(), shareUser.getUuid());
         if (sUser == null) {
             shareUser.setStatus(SocketStatusCode.ONLINE);
@@ -94,6 +94,14 @@ public class ShareService {
 
             return sUser;
         }
+    }
+
+    public ShareUser selectShareUser(long shareId, long userId, String uuid) {
+        return shareUserRepository.findByShareIdAndUserIdAndUuid(shareId, userId, uuid);
+    }
+
+    public ShareUser updateShareUser(ShareUser shareUser) {
+        return shareUserRepository.save(shareUser);
     }
 
 
