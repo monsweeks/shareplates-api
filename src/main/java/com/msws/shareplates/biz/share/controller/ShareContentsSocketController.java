@@ -50,6 +50,7 @@ public class ShareContentsSocketController {
     @MessageMapping("/join")
     public Long join(@DestinationVariable(value = "shareId") long shareId, SimpMessageHeaderAccessor headerAccessor) {
 
+    	
         Share share = shareService.selectShareInfo(shareId);
         UserInfo userInfo = this.getUserInfo(headerAccessor);
 
