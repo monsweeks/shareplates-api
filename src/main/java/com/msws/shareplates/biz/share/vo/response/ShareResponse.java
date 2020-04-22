@@ -33,7 +33,6 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private String adminUserEmail;
     private String adminUserName;
     private String adminUserInfo;
-    private String uuid;
 
 
     public ShareResponse(com.msws.shareplates.biz.share.entity.Share share) {

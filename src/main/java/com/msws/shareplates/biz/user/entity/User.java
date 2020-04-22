@@ -100,7 +100,4 @@ public class User extends CommonEntity {
 
     @Column(name = "registered")
     private Boolean registered;
-
-    @Transient
-    private String uuid;
 }

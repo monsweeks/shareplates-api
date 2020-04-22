@@ -1,12 +1,10 @@
 package com.msws.shareplates.biz.share.service;
 
-import com.msws.shareplates.biz.share.entity.AccessCode;
-import com.msws.shareplates.biz.share.entity.Chat;
-import com.msws.shareplates.biz.share.entity.Share;
-import com.msws.shareplates.biz.share.entity.ShareUser;
+import com.msws.shareplates.biz.share.entity.*;
 import com.msws.shareplates.biz.share.repository.ChatRepository;
 import com.msws.shareplates.biz.share.repository.ShareRepository;
 import com.msws.shareplates.biz.share.repository.ShareUserRepository;
+import com.msws.shareplates.biz.share.repository.ShareUserSocketRepository;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
@@ -29,6 +27,9 @@ public class ShareService {
 
     @Autowired
     private ShareUserRepository shareUserRepository;
+
+    @Autowired
+    private ShareUserSocketRepository shareUserSocketRepository;
 
     @Autowired
     private ChatRepository chatRepository;
@@ -86,28 +87,52 @@ public class ShareService {
         return shareRepository.selectOpenShareList(userId);
     }
 
-    public ShareUser createOrUpdateShareUserRepository(ShareUser shareUser) {
-        ShareUser sUser = shareUserRepository.findByShareIdAndUserIdAndUuid(shareUser.getShare().getId(), shareUser.getUser().getId(), shareUser.getUuid());
+
+    public ShareUser createOrUpdateShareUser(ShareUser shareUser) {
+        ShareUser sUser = shareUserRepository.findByShareIdAndUserId(shareUser.getShare().getId(), shareUser.getUser().getId());
         if (sUser == null) {
             shareUser.setStatus(SocketStatusCode.ONLINE);
             shareUserRepository.save(shareUser);
             return shareUser;
         } else {
-            if (!sUser.getStatus().equals(SocketStatusCode.ONLINE)) {
-                sUser.setStatus(SocketStatusCode.ONLINE);
-                shareUserRepository.save(sUser);
-            }
-
+            sUser.setStatus(SocketStatusCode.ONLINE);
+            shareUserRepository.save(sUser);
             return sUser;
         }
     }
 
-    public ShareUser selectShareUser(long shareId, long userId, String uuid) {
-        return shareUserRepository.findByShareIdAndUserIdAndUuid(shareId, userId, uuid);
+
+    public ShareUserSocket createShareUserSocket(ShareUserSocket shareUserSocket) {
+        return shareUserSocketRepository.save(shareUserSocket);
+    }
+
+    public ShareUserSocket updateShareUserSocket(ShareUserSocket shareUserSocket) {
+        return shareUserSocketRepository.save(shareUserSocket);
+    }
+
+    public Long countSessionByShareIdAndUserId(long shareId, long userId) {
+        return shareUserSocketRepository.countSessionByShareIdAndUserId(shareId, userId);
+    }
+
+    public ShareUserSocket selectShareUserSocket(String sessionId) {
+        return shareUserSocketRepository.findBySessionId(sessionId);
+    }
+
+
+    public void deleteShareUserSocket(String sessionId) {
+        shareUserSocketRepository.deleteBySessionId(sessionId);
+    }
+
+    public ShareUser selectShareUser(long shareId, long userId) {
+        return shareUserRepository.findByShareIdAndUserId(shareId, userId);
     }
 
     public ShareUser updateShareUser(ShareUser shareUser) {
         return shareUserRepository.save(shareUser);
+    }
+
+    public List<ShareUser> selectShareUserList(long shareId) {
+        return shareUserRepository.findAllByShareId(shareId);
     }
 
     public Chat selectLastReadyChat(long shareId, long userId) {
@@ -116,6 +141,10 @@ public class ShareService {
 
     public Chat createChat(Chat chat) {
         return chatRepository.save(chat);
+    }
+
+    public void updateStatusById(Long id, SocketStatusCode code) {
+        shareUserRepository.updateStatusById(id, code);
     }
 
 }

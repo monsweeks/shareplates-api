@@ -69,7 +69,6 @@ public class SessionUtil {
 
         UserInfo info = UserInfo.builder()
                 .id(id)
-                .uuid(UUID.randomUUID().toString())
                 .registered(true)
                 .build();
 
