@@ -27,6 +27,5 @@ public class MessageInfo {
 		private long id;
 		private String email;
 		private String name;
-		private String uuid;
 	}
 }

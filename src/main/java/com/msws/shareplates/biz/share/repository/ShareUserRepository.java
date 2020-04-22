@@ -16,12 +16,10 @@ public interface ShareUserRepository extends JpaRepository<ShareUser, Long> {
 	Optional<ShareUser> findByShareIdAndUserIdAndStatus(long shareId, long UserId, SocketStatusCode status);
 
 	ShareUser findByShareIdAndUserId(long shareId, long userId);
-	
-	Optional<ShareUser> findByUuid(String uuid);
-	
+
 	@Modifying
-    @Query("UPDATE ShareUser s SET s.status = :status WHERE s.uuid = :uuid")
-	void updateStatusByUudi(@Param("status") SocketStatusCode code, @Param("uuid")String uuid);
+	@Query("UPDATE ShareUser s SET s.status = :status WHERE s.id = :id ")
+	void updateStatusById(@Param("id") Long id, @Param("status") SocketStatusCode status);
 
 	List<ShareUser> findAllByShareId(long shareId);
 

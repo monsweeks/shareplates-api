@@ -9,7 +9,6 @@ import com.msws.shareplates.biz.page.vo.PageModel;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Chat;
 import com.msws.shareplates.biz.share.entity.Share;
-import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
@@ -20,7 +19,6 @@ import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
-import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.message.service.ShareMessageService;
@@ -39,7 +37,7 @@ import java.util.stream.Collectors;
 @Log
 @RestController
 @RequestMapping("/api/shares/{share-id}/contents")
-public class ShareContentsController {
+public class ShareContentsHttpController {
 
     @Autowired
     private TopicService topicService;
@@ -75,7 +73,7 @@ public class ShareContentsController {
                 .share(new ShareResponse(share))
                 .users(share.getShareUsers().stream()
                         .filter(distinctByKey(shareUser -> shareUser.getUser().getId()))
-                        .map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser()   .getId()).getMessage())).collect(Collectors.toList()))
+                        .map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage())).collect(Collectors.toList()))
                 .build();
     }
 
@@ -145,34 +143,6 @@ public class ShareContentsController {
         shareMessageService.sendCurrentPageChange(shareId, chapterId, pageId, userInfo);
 
         return new ShareResponse(share);
-    }
-
-
-    //TODO 권한 체크 후 쉐어사용자 정보 생성 및 갱신
-    @ApiOperation(value = "공유방 참가")
-    @PutMapping("/join")
-    public ShareResponse joinShare(@PathVariable(value = "share-id") long shareId, UserInfo userInfo) {
-        // TODO 가벼운 쿼리로 변경
-        Share share = shareService.selectShare(shareId);
-
-        // TODO privateY인 경우, 코드가 입력되었는지 확인 (코드 입력 화면이 아직 없음)
-        if (!share.getOpenYn()) {
-            throw new ServiceException(ServiceExceptionCode.SHARE_NOT_OPENED);
-        }
-
-        ShareUser shareUser = ShareUser.builder().user(User.builder().id(userInfo.getId()).build())
-                .share(Share.builder().id(shareId).build())
-                .status(SocketStatusCode.ONLINE)
-                .uuid(userInfo.getUuid())
-                .role(share.getAdminUser().getId().equals(userInfo.getId()) ? RoleCode.ADMIN : RoleCode.MEMBER).build();
-
-        shareService.createOrUpdateShareUserRepository(shareUser);
-
-        shareMessageService.sendUserJoined(shareId, userInfo, shareUser.getRole());
-
-        // TODO 연결 끊기면 오프라인 처리 언제?
-
-        return ShareResponse.builder().uuid(userInfo.getUuid()).build();
     }
 
     @ApiOperation(value = "페이지 이동")

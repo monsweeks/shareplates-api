@@ -1,23 +1,19 @@
 package com.msws.shareplates.biz.share.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
+import com.msws.shareplates.biz.share.entity.*;
+import com.msws.shareplates.biz.share.repository.ChatRepository;
+import com.msws.shareplates.biz.share.repository.ShareRepository;
+import com.msws.shareplates.biz.share.repository.ShareUserRepository;
+import com.msws.shareplates.biz.share.repository.ShareUserSocketRepository;
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.ChatTypeCode;
+import com.msws.shareplates.common.code.SocketStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.msws.shareplates.biz.share.entity.AccessCode;
-import com.msws.shareplates.biz.share.entity.Chat;
-import com.msws.shareplates.biz.share.entity.Share;
-import com.msws.shareplates.biz.share.entity.ShareUser;
-import com.msws.shareplates.biz.share.repository.ChatRepository;
-import com.msws.shareplates.biz.share.repository.ShareRepository;
-import com.msws.shareplates.biz.share.repository.ShareUserRepository;
-import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.common.code.ChatTypeCode;
-import com.msws.shareplates.common.code.SocketStatusCode;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -31,6 +27,9 @@ public class ShareService {
 
     @Autowired
     private ShareUserRepository shareUserRepository;
+
+    @Autowired
+    private ShareUserSocketRepository shareUserSocketRepository;
 
     @Autowired
     private ChatRepository chatRepository;
@@ -78,10 +77,6 @@ public class ShareService {
     public Share selectShareInfo(long shareId) {
         return shareRepository.selectShareInfo(shareId);
     }
-    
-    public Optional<ShareUser> selectShareUserByUuid(String uuid) {
-    	return shareUserRepository.findByUuid(uuid);
-    }
 
     public void deleteShare(Share share) {
         accessCodeService.deleteAccessCodeByShareId(share.getId());
@@ -92,22 +87,40 @@ public class ShareService {
         return shareRepository.selectOpenShareList(userId);
     }
 
-    public ShareUser createOrUpdateShareUserRepository(ShareUser shareUser) {
+
+    public ShareUser createOrUpdateShareUser(ShareUser shareUser) {
         ShareUser sUser = shareUserRepository.findByShareIdAndUserId(shareUser.getShare().getId(), shareUser.getUser().getId());
         if (sUser == null) {
             shareUser.setStatus(SocketStatusCode.ONLINE);
-            
             shareUserRepository.save(shareUser);
-            
             return shareUser;
         } else {
             sUser.setStatus(SocketStatusCode.ONLINE);
-            sUser.setUuid(shareUser.getUuid());
-            
             shareUserRepository.save(sUser);
-
             return sUser;
         }
+    }
+
+
+    public ShareUserSocket createShareUserSocket(ShareUserSocket shareUserSocket) {
+        return shareUserSocketRepository.save(shareUserSocket);
+    }
+
+    public ShareUserSocket updateShareUserSocket(ShareUserSocket shareUserSocket) {
+        return shareUserSocketRepository.save(shareUserSocket);
+    }
+
+    public Long countSessionByShareIdAndUserId(long shareId, long userId) {
+        return shareUserSocketRepository.countSessionByShareIdAndUserId(shareId, userId);
+    }
+
+    public ShareUserSocket selectShareUserSocket(String sessionId) {
+        return shareUserSocketRepository.findBySessionId(sessionId);
+    }
+
+
+    public void deleteShareUserSocket(String sessionId) {
+        shareUserSocketRepository.deleteBySessionId(sessionId);
     }
 
     public ShareUser selectShareUser(long shareId, long userId) {
@@ -129,9 +142,9 @@ public class ShareService {
     public Chat createChat(Chat chat) {
         return chatRepository.save(chat);
     }
-    
-    public void updateStatusByUudi(SocketStatusCode code, String uuid) {
-    	shareUserRepository.updateStatusByUudi(code, uuid);
+
+    public void updateStatusById(Long id, SocketStatusCode code) {
+        shareUserRepository.updateStatusById(id, code);
     }
 
 }

@@ -34,7 +34,7 @@ public class MessageBroker {
 				, MessageInfo.builder()
 					.topicUrl(topicUrl)
 					.data(messageData)
-					.senderInfo(SenderInfo.builder().id(info.getId()).uuid(info.getUuid()).build())
+					.senderInfo(SenderInfo.builder().id(info.getId()).build())
 					.build());
 	}
 	

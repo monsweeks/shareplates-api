@@ -1,5 +1,7 @@
 package com.msws.shareplates.common.message.service;
 
+import com.msws.shareplates.biz.share.entity.ShareUser;
+import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.service.UserService;
 import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
@@ -19,24 +21,24 @@ public class ShareMessageService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ShareService shareService;
+
     public void sendShareClosed(long shareId, UserInfo userInfo) {
         MessageData data = MessageData.builder().type(MessageData.messageType.SHARE_CLOSED).build();
         messageSendService.sendToShare(shareId, data, userInfo);
     }
 
     public void sendShareStartedChange(long shareId, Boolean startedYn, UserInfo userInfo) {
-        String shareUrl = messageSendService.getShareUrl(shareId);
         MessageData data = MessageData.builder().type(MessageData.messageType.SHARE_STARTED_STATUS_CHANGE).build();
         data.addData("startedYn", startedYn);
-        // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
-        messageSendService.sendToAll(shareUrl, data, userInfo);
+        messageSendService.sendToShare(shareId, data, userInfo);
     }
 
     public void sendCurrentPageChange(long shareId, long chapterId, long pageId, UserInfo userInfo) {
         MessageData data = MessageData.builder().type(MessageData.messageType.CURRENT_PAGE_CHANGE).build();
         data.addData("chapterId", chapterId);
         data.addData("pageId", pageId);
-        // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
         messageSendService.sendToShare(shareId, data, userInfo);
     }
 
@@ -50,8 +52,10 @@ public class ShareMessageService {
     }
 
     public void sendUserStatusChange(long shareId, UserInfo userInfo, SocketStatusCode statusCode) {
-        UserResponse user = new UserResponse(userService.selectUser(userInfo.getId()));
+        ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId());
+        UserResponse user = new UserResponse(shareUser.getUser());
         user.setStatus(statusCode);
+        user.setShareRoleCode(shareUser.getRole());
         MessageData data = MessageData.builder().type(MessageData.messageType.USER_STATUS_CHANGE).build();
         data.addData("user", user);
         messageSendService.sendToShare(shareId, data, userInfo);
@@ -62,7 +66,6 @@ public class ShareMessageService {
         data.addData("type", type);
         data.addData("message", message);
         data.addData("senderId", userInfo.getId());
-        // TODO JOIN 처리 후, 공유 그룹에만 전달하도록 변경해야 함
         messageSendService.sendToShare(shareId, data, userInfo);
     }
 }

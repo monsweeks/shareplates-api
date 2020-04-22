@@ -44,9 +44,6 @@ public class ShareUser extends CommonEntity {
     @JoinColumn(name = "share_id")
     private Share share;
     
-    @Column(name="uuid")
-    private String uuid;
-    
     @Column(name="status")
     @Enumerated(EnumType.STRING)
     private SocketStatusCode status;

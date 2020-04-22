@@ -12,8 +12,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfo implements Serializable {
-
     private long id;
     private Boolean registered;
-    private String uuid;
 }
