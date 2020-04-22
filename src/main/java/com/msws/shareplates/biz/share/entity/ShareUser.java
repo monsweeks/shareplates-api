@@ -1,5 +1,7 @@
 package com.msws.shareplates.biz.share.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,8 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.RoleCode;
@@ -51,4 +53,8 @@ public class ShareUser extends CommonEntity {
     @Column(name="role")
     @Enumerated(EnumType.STRING)
     private RoleCode role;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "share_user_id")
+    private List<ShareUserSocket> shareUserSocketList;
 }
