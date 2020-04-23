@@ -1,5 +1,6 @@
 package com.msws.shareplates.biz.user.service;
 
+import com.google.gson.Gson;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.repository.UserRepository;
 import com.msws.shareplates.common.util.EncryptUtil;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +48,22 @@ public class UserService {
         return false;
     }
 
-    public User createUser(User user) {
+    private String generateUserAvatar() {
+        HashMap<String, Integer> info = new HashMap<>();
+        info.put("bgStyleNumber", (int) Math.random() * 9);
+        info.put("formNumber", (int) Math.random() * 6);
+        info.put("hairNumber", (int) Math.random() * 13);
+        info.put("faceNumber", (int) Math.random() * 18);
+        info.put("accessoryNumber", 0);
+        info.put("faceColorNumber", (int) Math.random() * 12);
+        info.put("hairColorNumber", (int) Math.random() * 9);
+        info.put("accessoryColorNumber", (int) Math.random() * 24);
+        info.put("clothColorNumber", (int) Math.random() * 20);
+        return new Gson().toJson(info);
+
+    }
+
+    public User createUser(User user, Boolean registerAvatar) {
         LocalDateTime now = LocalDateTime.now();
         user.setActivateYn(false);
         user.setUseYn(true);
@@ -65,6 +82,10 @@ public class UserService {
         String uuidString = uuid.toString();
         String tokenString = uuidString.replaceAll("-", "");
         user.setActivationToken(tokenString);
+
+        if (registerAvatar) {
+            user.setInfo(this.generateUserAvatar());
+        }
 
         userRepository.saveAndFlush(user);
         user.setLastUpdatedBy(user.getId());

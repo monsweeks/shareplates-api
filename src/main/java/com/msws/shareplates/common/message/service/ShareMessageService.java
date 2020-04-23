@@ -44,6 +44,7 @@ public class ShareMessageService {
 
     public void sendUserJoined(long shareId, UserInfo userInfo, RoleCode role) {
         UserResponse user = new UserResponse(userService.selectUser(userInfo.getId()));
+        user.setMessage(shareService.selectLastReadyChat(shareId, userInfo.getId()).getMessage());
         user.setShareRoleCode(role);
         user.setStatus(SocketStatusCode.ONLINE);
         MessageData data = MessageData.builder().type(MessageData.MessageType.USER_JOINED).build();
