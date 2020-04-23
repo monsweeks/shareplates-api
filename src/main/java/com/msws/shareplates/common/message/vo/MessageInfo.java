@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MessageInfo {
 
+	private String userId;;
 	private MessageData data;
 	private SenderInfo senderInfo;
 	private String topicUrl;

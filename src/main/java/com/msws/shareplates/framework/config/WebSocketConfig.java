@@ -7,6 +7,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import com.msws.shareplates.framework.websocket.handler.WebSockethandler;
 import com.msws.shareplates.framework.websocket.interceptor.WebSocketInterceptor;
 
 @Configuration
@@ -22,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 	}
 	
 	public void registerStompEndpoints(StompEndpointRegistry endpointRegistry) {
-		endpointRegistry.addEndpoint("/ws-stomp").setAllowedOrigins("*").withSockJS().setInterceptors(webSocketInterceptor);
+		endpointRegistry.addEndpoint("/ws-stomp").setAllowedOrigins("*").setHandshakeHandler(new WebSockethandler()).withSockJS().setInterceptors(webSocketInterceptor);
 	}
 
 }

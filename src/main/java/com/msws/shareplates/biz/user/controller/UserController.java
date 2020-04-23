@@ -52,7 +52,7 @@ public class UserController {
         }
 
         user.setRegistered(true);
-        userService.createUser(user);
+        userService.createUser(user, true);
         // TODO 실패했을 경우, 실패 내역을 입력하고, 재발송이나, 어드민 알림 등의 기능을 추가해야 함
         // TODO 메일 방송 기능을 스킵할 수 있는 시스템 옵션을 추가
         try {

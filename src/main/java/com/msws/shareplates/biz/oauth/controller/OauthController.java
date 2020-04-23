@@ -68,7 +68,7 @@ public class OauthController {
             siteUser = userService.selectUserByEmail(user.getEmail());
         } else {
             user.setRegistered(false);
-            siteUser = userService.createUser(user);
+            siteUser = userService.createUser(user, true);
         }
 
         sessionUtil.login(req, siteUser.getId(), siteUser.getRegistered());
