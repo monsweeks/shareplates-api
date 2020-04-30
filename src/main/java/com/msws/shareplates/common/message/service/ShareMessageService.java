@@ -62,6 +62,25 @@ public class ShareMessageService {
         messageSendService.sendToShare(shareId, data, userInfo);
     }
 
+    public void sendUserKickOut(long shareId, long userId, UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.USER_KICK_OUT).build();
+        data.addData("userId", userId);
+        messageSendService.sendToShare(shareId, data, userInfo);
+    }
+
+    public void sendUserBan(long shareId, long userId, UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.USER_BAN).build();
+        data.addData("userId", userId);
+        messageSendService.sendToShare(shareId, data, userInfo);
+    }
+
+    public void sendUserAllowed(long shareId, long userId, UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.USER_ALLOWED).build();
+        data.addData("userId", userId);
+        messageSendService.sendToShare(shareId, data, userInfo);
+    }
+
+
     public void sendChat(long shareId, ChatTypeCode type, String message, UserInfo userInfo) {
         MessageData data = MessageData.builder().type(MessageData.MessageType.CHAT_MESSAGE).build();
         data.addData("type", type);

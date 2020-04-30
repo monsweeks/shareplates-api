@@ -31,7 +31,7 @@ public class ShareContentsSocketController {
     @Autowired
     private ShareMessageService shareMessageService;
 
-    private UserInfo getUserInfo (SimpMessageHeaderAccessor headerAccessor) {
+    private UserInfo getUserInfo(SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> attributes = headerAccessor.getSessionAttributes();
 
         if (attributes == null) {
@@ -50,7 +50,7 @@ public class ShareContentsSocketController {
     @MessageMapping("/join")
     public Long join(@DestinationVariable(value = "shareId") long shareId, SimpMessageHeaderAccessor headerAccessor) {
 
-    	
+
         Share share = shareService.selectShareInfo(shareId);
         UserInfo userInfo = this.getUserInfo(headerAccessor);
 
@@ -59,10 +59,16 @@ public class ShareContentsSocketController {
             throw new ServiceException(ServiceExceptionCode.SHARE_NOT_OPENED);
         }
 
+        if (shareService.selectIsBanUser(shareId, userInfo.getId())){
+            // TODO 이 소켓에 대해서 BAN 처리되었음을 알리는 오류를 전송해야함
+            throw new ServiceException(ServiceExceptionCode.SHARE_BANNED_USER);
+        }
+
         ShareUser info = ShareUser.builder().user(User.builder().id(userInfo.getId()).build())
                 .share(Share.builder().id(shareId).build())
                 .status(SocketStatusCode.ONLINE)
-                .role(share.getAdminUser().getId().equals(userInfo.getId()) ? RoleCode.ADMIN : RoleCode.MEMBER).build();
+                .role(share.getAdminUser().getId().equals(userInfo.getId()) ? RoleCode.ADMIN : RoleCode.MEMBER)
+                .banYn(false).build();
 
         shareService.createOrUpdateShareUser(info);
         ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId());
