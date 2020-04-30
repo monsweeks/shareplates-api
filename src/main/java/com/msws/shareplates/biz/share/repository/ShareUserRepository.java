@@ -21,7 +21,14 @@ public interface ShareUserRepository extends JpaRepository<ShareUser, Long> {
 	@Query("UPDATE ShareUser s SET s.status = :status WHERE s.id = :id ")
 	void updateStatusById(@Param("id") Long id, @Param("status") SocketStatusCode status);
 
+	@Modifying
+	@Query("DELETE FROM ShareUser su WHERE su.id= :id ")
+	void deleteShareUserById(@Param("id") Long id);
+
 	List<ShareUser> findAllByShareId(long shareId);
+
+	@Query("SELECT new java.lang.Long(count(su.id)) FROM ShareUser su WHERE su.share.id = :shareId AND su.user.id = :userId AND su.banYn = 1")
+	Long countByShareUserBan(@Param("shareId") Long shareId, @Param("userId") Long userId);
 
 }
 

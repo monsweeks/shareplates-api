@@ -54,6 +54,9 @@ public class ShareUser extends CommonEntity {
     @Enumerated(EnumType.STRING)
     private RoleCode role;
 
+    @Column(name = "ban_yn")
+    private Boolean banYn;
+
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "share_user_id")
     private List<ShareUserSocket> shareUserSocketList;

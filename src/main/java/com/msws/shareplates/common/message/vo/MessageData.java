@@ -41,6 +41,9 @@ public class MessageData {
     	CURRENT_PAGE_CHANGE("현재 페이지 변경"),
         USER_JOINED("새로운 사용자 등장"),
         USER_STATUS_CHANGE("사용자 상태 변경"),
+        USER_KICK_OUT("사용자 제거"),
+        USER_BAN("사용자 차단"),
+        USER_ALLOWED("사용자 차단 해제"),
         CHAT_MESSAGE("채팅");
     	
     	String desc;

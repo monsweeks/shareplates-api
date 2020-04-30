@@ -9,6 +9,7 @@ import com.msws.shareplates.biz.page.vo.PageModel;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Chat;
 import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
@@ -66,6 +67,10 @@ public class ShareContentsHttpController {
         Share share = shareService.selectShare(shareId);
         // TODO private인 경우, 코드가 입력되었는지 확인해야 한다.
 
+        if (shareService.selectIsBanUser(shareId, userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.SHARE_BANNED_USER);
+        }
+
         return ShareInfo.builder().topic(new TopicResponse(topicService.selectTopic(share.getTopic().getId())))
                 .chapters(chapterService.selectChapters(share.getTopic().getId()).stream()
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
@@ -73,7 +78,7 @@ public class ShareContentsHttpController {
                 .share(new ShareResponse(share))
                 .users(share.getShareUsers().stream()
                         .filter(distinctByKey(shareUser -> shareUser.getUser().getId()))
-                        .map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage())).collect(Collectors.toList()))
+                        .map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage(), shareUser.getBanYn())).collect(Collectors.toList()))
                 .build();
     }
 
@@ -84,6 +89,10 @@ public class ShareContentsHttpController {
 
         // TODO private인 경우, 코드가 입력되었는지 확인해야 한다.
         Share share = shareService.selectShare(shareId);
+
+        if (shareService.selectIsBanUser(shareId, userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.SHARE_BANNED_USER);
+        }
 
         return PageResponse.builder()
                 .pages(pageService.selectPages(share.getTopic().getId(), chapterId).stream()
@@ -157,6 +166,49 @@ public class ShareContentsHttpController {
         shareService.createChat(chat);
 
         shareMessageService.sendChat(shareId, chat.getType(), chatRequest.getMessage(), userInfo);
+
+        return true;
+    }
+
+    @ApiOperation(value = "사용자 BAN 시키기")
+    @PutMapping("/users/{userId}/ban")
+    public Boolean banUser(@PathVariable(value = "share-id") long shareId, @PathVariable long userId, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+        shareService.updateShareUserBan(shareId, userId);
+        shareMessageService.sendUserBan(shareId, userId, userInfo);
+
+        return true;
+    }
+
+    @ApiOperation(value = "사용자 BAN 취소")
+    @PutMapping("/users/{userId}/allow")
+    public Boolean allowUser(@PathVariable(value = "share-id") long shareId, @PathVariable long userId, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+        shareService.updateShareUserAllow(shareId, userId);
+
+        shareMessageService.sendUserAllowed(shareId, userId, userInfo);
+
+        return true;
+    }
+
+    @ApiOperation(value = "사용자 내보내기")
+    @PutMapping("/users/{userId}/kickOut")
+    public Boolean kickOutUser(@PathVariable(value = "share-id") long shareId, @PathVariable long userId, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+        shareService.updateShareUserKickOut(shareId, userId);
+        shareMessageService.sendUserKickOut(shareId, userId, userInfo);
 
         return true;
     }

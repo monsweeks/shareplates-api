@@ -118,6 +118,9 @@ public class ShareService {
         return shareUserSocketRepository.findBySessionId(sessionId);
     }
 
+    public void deleteShareUserSocket(long shareId, long userId) {
+        shareUserSocketRepository.deleteShareUserSocket(shareId, userId);
+    }
 
     public void deleteShareUserSocket(String sessionId) {
         shareUserSocketRepository.deleteBySessionId(sessionId);
@@ -129,6 +132,10 @@ public class ShareService {
 
     public ShareUser updateShareUser(ShareUser shareUser) {
         return shareUserRepository.save(shareUser);
+    }
+
+    public void deleteShareUserById(ShareUser shareUser) {
+        shareUserRepository.deleteShareUserById(shareUser.getId());
     }
 
     public List<ShareUser> selectShareUserList(long shareId) {
@@ -145,6 +152,41 @@ public class ShareService {
 
     public void updateStatusById(Long id, SocketStatusCode code) {
         shareUserRepository.updateStatusById(id, code);
+    }
+
+    public ShareUser updateShareUserBan(long shareId, long userId) {
+        ShareUser shareUser = this.selectShareUser(shareId, userId);
+        shareUser.setBanYn(true);
+        shareUser.setStatus(SocketStatusCode.OFFLINE);
+        this.deleteShareUserSocket(shareId, userId);
+        this.updateShareUser(shareUser);
+
+        return shareUser;
+    }
+
+    public ShareUser updateShareUserAllow(long shareId, long userId) {
+        ShareUser shareUser = this.selectShareUser(shareId, userId);
+        shareUser.setBanYn(false);
+        shareUser.setStatus(SocketStatusCode.OFFLINE);
+        this.updateShareUser(shareUser);
+
+        return shareUser;
+    }
+
+    public ShareUser updateShareUserKickOut(long shareId, long userId) {
+        ShareUser shareUser = this.selectShareUser(shareId, userId);
+        this.deleteShareUserSocket(shareId, userId);
+        this.deleteShareUserById(shareUser);
+
+        return shareUser;
+    }
+
+    public Boolean selectIsBanUser(long shareId, long userId) {
+        if (shareUserRepository.countByShareUserBan(shareId, userId) > 0L) {
+            return true;
+        }
+
+        return false;
     }
 
 }
