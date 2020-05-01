@@ -47,14 +47,15 @@ spring:
      enabled: true
      file-size-threshold: 2KB
      max-file-size: 200MB
-     max-request-size: 215MB  influxdb:    url: http://mindplates.com:20002
-    database: NOAA_water_database
+     max-request-size: 215MB  influxdb:    url: http://localhost:8086
+    database: stat
     retention-policy: autogen
     username: test
+    password: test1234
     
     
 file:
-  upload-dir: c:/fileupload/
+  upload-dir: d:/fileupload/
   allowed-extension: txt,pdf
 
 shareplates:

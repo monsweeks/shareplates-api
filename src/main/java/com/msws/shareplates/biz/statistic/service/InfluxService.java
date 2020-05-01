@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.stereotype.Service;
 
-import com.msws.shareplates.biz.statistic.entity.H2oFeet;
+import com.msws.shareplates.biz.statistic.entity.Influx_test;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
 @Service
-public class InfluxService implements StatServiceIF<H2oFeet>{
+public class InfluxService implements StatServiceIF<Influx_test>{
 	
 	private final InfluxDBResultMapper resultMapper;
 	
@@ -29,15 +29,15 @@ public class InfluxService implements StatServiceIF<H2oFeet>{
 	@Override
 	public Stat_database getName() {
 		return Stat_database.influxdb;				
-	}
+	}	
 
-	public List<H2oFeet> getData() {
-		Query query = QueryBuilder.newQuery("SELECT * FROM h2o_feet LIMIT 1000")
-		        .forDatabase("NOAA_water_database")
+	public List<Influx_test> getData() {
+		Query query = QueryBuilder.newQuery("SELECT * FROM test LIMIT 1000")
+		        .forDatabase("stat")
 		        .create();
 
 		QueryResult queryResult = influxDBTemplate.query(query);
-		return resultMapper.toPOJO(queryResult, H2oFeet.class);
+		return resultMapper.toPOJO(queryResult, Influx_test.class);
 	}
 
 	@Override
