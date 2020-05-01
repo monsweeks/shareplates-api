@@ -6,24 +6,7 @@
       </layout>
     </appender>
     
-    <appender name="INFLUX" class="org.aix.logback.InfluxDbAppender">
-           <source>
-               <ip>192.168.59.103</ip>
-               <port>8086</port>
-               <user>root</user>
-               <password>root</password>
-               <database>testdb</database>
-               <create>true</create>
-           </source>
-           <serie>
-               <version>0.8</version>
-               <name>machine.%X{machine}.type.%X{type} temperature_${byMonth}</name>
-               <timeUnit>MILLISECONDS</timeUnit>
-           </serie>
-    </appender>
-   
-    
-    <appender name="ELASTIC" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
+    <appender name="ELASTIC" class="com.msws.shareplates.framework.logger.CustomElasticsearchAppender">
         <url>http://yourserver/_bulk</url>
         <index>logs-%date{yyyy-MM-dd}</index>
         <type>tester</type>
@@ -61,16 +44,28 @@
     </appender>
 
     <springProfile name="default">
-    
+
+      <logger name="com.msws.shareplates.Application" level="info"/>    
+      
+      <logger name="com.msws.shareplates.biz.statistic.service.ElasticsearchService" level="info">
+      		<appender-ref ref="ELASTIC" />
+      </logger>
+      
       <logger name="com.msws.shareplates"/>
       
-      <root level="debug">
+      <root level="error">
         <appender-ref ref="CONSOLE" />
       </root>
     </springProfile>
     
     <springProfile name="production">
     
+      <logger name="com.msws.shareplates.Application" level="info"/>    
+      
+      <logger name="com.msws.shareplates.biz.statistic.service.ElasticsearchService" level="info">
+      		<appender-ref ref="ELASTIC" />
+      </logger>
+      
       <logger name="com.msws.shareplates"/>
       
       <root level="ERROR">

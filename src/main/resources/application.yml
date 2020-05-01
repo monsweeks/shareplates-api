@@ -47,7 +47,11 @@ spring:
      enabled: true
      file-size-threshold: 2KB
      max-file-size: 200MB
-     max-request-size: 215MB
+     max-request-size: 215MB  influxdb:    url: http://mindplates.com:20002
+    database: NOAA_water_database
+    retention-policy: autogen
+    username: test
+    
     
 file:
   upload-dir: d:/fileupload/
@@ -101,6 +105,10 @@ oauth:
     
 slack:
   url: https://hooks.slack.com/services/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
+  
+stat:
+  database: influxdb
+  
     
 ---
 spring:

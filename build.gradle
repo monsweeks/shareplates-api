@@ -33,12 +33,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'io.springfox:springfox-swagger2:3.0.0-SNAPSHOT'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0-SNAPSHOT'
     implementation 'io.springfox:springfox-data-rest:3.0.0-SNAPSHOT'
+    implementation 'org.influxdb:influxdb-java:2.14'
+    implementation 'com.github.miwurster:spring-data-influxdb:1.8'
+    
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.16'
 	
 	implementation 'com.internetitem:logback-elasticsearch-appender:1.6'
-	implementation 'org.labaix.logback:influxdb-logback:0.42'
    
     runtimeOnly 'mysql:mysql-connector-java'
     compileOnly 'org.projectlombok:lombok'
