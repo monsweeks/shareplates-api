@@ -9,9 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UploadFileResponse {
+public class FileInfoResponse {
 	
-	private String fileName;
-    private String result;
+	private Long id;
+    private String uuid;
 
 }

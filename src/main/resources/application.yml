@@ -48,14 +48,17 @@ spring:
      file-size-threshold: 2KB
      max-file-size: 200MB
      max-request-size: 215MB
-
-logging:
-  level: 
-    com.msws.shareplates: debug
+  influxdb:
+    url: http://localhost:8086
+    database: stat
+    retention-policy: autogen
+    username: test
+    password: test1234
+    
     
 file:
   upload-dir: d:/fileupload/
-  allowed-extension: txt,pdf
+  allowed-extension: txt,pdf,png,jpg,gif
 
 shareplates:
   locale:
@@ -105,6 +108,10 @@ oauth:
     
 slack:
   url: https://hooks.slack.com/services/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
+  
+stat:
+  database: influxdb
+  
     
 ---
 spring:
@@ -128,9 +135,7 @@ shareplates:
   web-url: /
   mail:
     senderName: noreply@mindplates.com
-logging:
-  level: 
-    com.msws.shareplates: error
+
 oauth:
   kakao:
     redirect-uri: http://mindplates.com/oauth/kakao/token

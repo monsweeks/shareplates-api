@@ -1,0 +1,75 @@
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
+      </layout>
+    </appender>
+    
+    <appender name="ELASTIC" class="com.msws.shareplates.framework.logger.CustomElasticsearchAppender">
+        <url>http://yourserver/_bulk</url>
+        <index>logs-%date{yyyy-MM-dd}</index>
+        <type>tester</type>
+        <loggerName>es-logger</loggerName> <!-- optional -->
+        <errorLoggerName>es-error-logger</errorLoggerName> <!-- optional -->
+        <connectTimeout>30000</connectTimeout> <!-- optional (in ms, default 30000) -->
+        <errorsToStderr>false</errorsToStderr> <!-- optional (default false) -->
+        <includeCallerData>false</includeCallerData> <!-- optional (default false) -->
+        <logsToStderr>false</logsToStderr> <!-- optional (default false) -->
+        <maxQueueSize>104857600</maxQueueSize> <!-- optional (default 104857600) -->
+        <maxRetries>3</maxRetries> <!-- optional (default 3) -->
+        <readTimeout>30000</readTimeout> <!-- optional (in ms, default 30000) -->
+        <sleepTime>250</sleepTime> <!-- optional (in ms, default 250) -->
+        <rawJsonMessage>false</rawJsonMessage> <!-- optional (default false) -->
+        <includeMdc>false</includeMdc> <!-- optional (default false) -->
+        <maxMessageSize>100</maxMessageSize> <!-- optional (default -1 -->
+        <authentication class="com.internetitem.logback.elasticsearch.config.BasicAuthentication" /> <!-- optional -->
+        <properties>
+            <property>
+                <name>host</name>
+                <value>${HOSTNAME}</value>
+                <allowEmpty>false</allowEmpty>
+            </property>
+            <property>
+                <name>logger</name>
+                <value>${APP_NAME}</value>
+            </property>
+        </properties>
+        <headers>
+            <header>
+                <name>Content-Type</name>
+                <value>application/json</value>
+            </header>
+        </headers>
+    </appender>
+
+    <springProfile name="default">
+
+      <logger name="com.msws.shareplates.Application" level="info"/>    
+      
+      <logger name="com.msws.shareplates.biz.statistic.service.ElasticsearchService" level="info">
+      		<appender-ref ref="ELASTIC" />
+      </logger>
+      
+      <logger name="com.msws.shareplates"/>
+      
+      <root level="error">
+        <appender-ref ref="CONSOLE" />
+      </root>
+    </springProfile>
+    
+    <springProfile name="production">
+    
+      <logger name="com.msws.shareplates.Application" level="info"/>    
+      
+      <logger name="com.msws.shareplates.biz.statistic.service.ElasticsearchService" level="info">
+      		<appender-ref ref="ELASTIC" />
+      </logger>
+      
+      <logger name="com.msws.shareplates"/>
+      
+      <root level="ERROR">
+        <appender-ref ref="CONSOLE" />
+      </root>
+    </springProfile>
+</configuration>
