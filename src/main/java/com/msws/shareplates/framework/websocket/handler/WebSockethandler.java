@@ -2,7 +2,6 @@ package com.msws.shareplates.framework.websocket.handler;
 
 import java.security.Principal;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
