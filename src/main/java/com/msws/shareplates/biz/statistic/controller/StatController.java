@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.msws.shareplates.biz.statistic.entity.H2oFeet;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 import com.msws.shareplates.biz.statistic.service.StatServiceIF;
 import com.msws.shareplates.common.exception.StatDBException;
@@ -22,10 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class StatController {
 	
-	private final StatServiceIF mainService;
+	private final StatServiceIF<?> mainService;
 	
 	@Autowired
-	public StatController(List<StatServiceIF> services, @Value("${stat.database}") Stat_database database) {
+	public StatController(List<StatServiceIF<?>> services, @Value("${stat.database}") Stat_database database) {
 		
 		log.debug("same result {}", database == Stat_database.influxdb);
 		this.mainService = services.stream().filter( e -> e.getName() == database)
@@ -38,8 +36,8 @@ public class StatController {
 
 
 	@DisableLogin
-	@GetMapping(path="/h2os")
-	public @ResponseBody List<H2oFeet> h2o_list() {
+	@GetMapping(path="/test")
+	public Object test() {
 
 		return mainService.getData();
 	}
