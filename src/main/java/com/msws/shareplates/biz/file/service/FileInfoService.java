@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -57,14 +58,12 @@ public class FileInfoService {
 
     public String storeFile(MultipartFile file, HttpServletRequest req) {
 
+        if (!allowedExtensions.stream().anyMatch(p -> file.getOriginalFilename().endsWith(p))) throw new ServiceException(ServiceExceptionCode.FILE_NOT_ALLOW_EXTENTION, new String[]{String.join(",", allowedExtensions)});
 
-        if (!allowedExtensions.stream().anyMatch(p -> file.getOriginalFilename().endsWith(p)))
-            throw new ServiceException(ServiceExceptionCode.FILE_NOT_ALLOW_EXTENTION, new String[]{String.join(",", allowedExtensions)});
-
-        Path path = this.fileStorageLocation.resolve(sessionUtil.getUserId(req).toString() + "/" + file.getOriginalFilename());
+        Path path = this.fileStorageLocation.resolve(sessionUtil.getUserId(req).toString() + File.separator + file.getOriginalFilename());
         while (Files.exists(path)) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            path = this.fileStorageLocation.resolve(sessionUtil.getUserId(req).toString() + "/" + file.getOriginalFilename() + "." + timestamp.getTime());
+            path = this.fileStorageLocation.resolve(sessionUtil.getUserId(req).toString() + File.separator + file.getOriginalFilename() + "." + timestamp.getTime());
         }
 
         Path targetLocation = null;
@@ -75,7 +74,7 @@ public class FileInfoService {
             if (!Files.exists(userUploadDir)) Files.createDirectories(userUploadDir.normalize());
             targetLocation = userUploadDir.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return fileName;
+            return sessionUtil.getUserId(req).toString() + File.separator + fileName;
         } catch (Exception ex) {
             try {
                 if (targetLocation != null) Files.deleteIfExists(targetLocation);
@@ -87,9 +86,9 @@ public class FileInfoService {
 
     }
 
-    public Resource loadFileAsResource(String fileName, UserInfo userInfo) {
+    public Resource loadFileAsResource(String path) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(userInfo.getId() + "/" + fileName).normalize();
+            Path filePath = this.fileStorageLocation.resolve(path).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
