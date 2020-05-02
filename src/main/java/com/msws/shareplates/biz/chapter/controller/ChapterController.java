@@ -7,6 +7,7 @@ import com.msws.shareplates.biz.chapter.vo.request.ChapterOrdersRequest;
 import com.msws.shareplates.biz.chapter.vo.request.ChapterRequest;
 import com.msws.shareplates.biz.chapter.vo.response.ChapterResponse;
 import com.msws.shareplates.biz.common.service.AuthService;
+import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.common.code.AuthCode;
@@ -73,11 +74,11 @@ public class ChapterController {
 
     @ApiOperation(value = "챕터 삭제")
     @DeleteMapping("/{chapterId}")
-    public EmptyResponse deleteChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
+    public TopicResponse deleteChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, UserInfo userInfo) {
         Chapter chapter = chapterService.selectChapter(chapterId, topicId);
-
         chapterService.deleteChapter(chapter);
-        return EmptyResponse.getInstance();
+        Topic topic = topicService.selectTopic(chapter.getTopic().getId());
+        return new TopicResponse(topic);
     }
 
     @ApiOperation(value = "챕터 목록")

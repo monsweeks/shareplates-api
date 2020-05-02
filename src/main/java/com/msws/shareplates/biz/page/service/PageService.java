@@ -2,6 +2,8 @@ package com.msws.shareplates.biz.page.service;
 
 import com.msws.shareplates.biz.page.entity.Page;
 import com.msws.shareplates.biz.page.repository.PageRepository;
+import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.repository.ShareRepository;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
 import com.msws.shareplates.common.exception.ServiceException;
@@ -22,6 +24,9 @@ public class PageService {
     @Autowired
     private PageRepository pageRepository;
 
+    @Autowired
+    private ShareRepository shareRepository;
+
     public List<Page> selectPages(long topicId, long chapterId) {
         return pageRepository.findByChapterTopicIdAndChapterIdOrderByOrderNo(topicId, chapterId);
     }
@@ -31,8 +36,12 @@ public class PageService {
     }
 
     public Page createPage(long topicId, long chapterId, Page page) {
+        if (chapterId != page.getChapter().getId()) {
+            throw new ServiceException(ServiceExceptionCode.BAD_REQUEST);
+        }
         Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
         topic.setPageCount(topic.getPageCount() + 1);
+        topicRepository.save(topic);
         return pageRepository.save(page);
     }
 
@@ -47,9 +56,11 @@ public class PageService {
 
     @Transactional
     public void deletePage(long topicId, long chapterId, long pageId) {
+
         Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
         topic.setPageCount(topic.getPageCount() - 1);
         topicRepository.save(topic);
+        shareRepository.updateCurrentPageNull(topicId, chapterId, pageId);
         pageRepository.deletePageById(topicId, chapterId, pageId);
     }
 
