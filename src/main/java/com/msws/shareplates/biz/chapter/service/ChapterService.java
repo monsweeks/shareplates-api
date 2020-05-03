@@ -42,6 +42,7 @@ public class ChapterService {
         Topic topic = topicRepository.findById(chapter.getTopic().getId()).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
         topic.setChapterCount(topic.getChapterCount() + 1);
         topicRepository.save(topic);
+        chapter.setPageCount(0);
         return chapterRepository.save(chapter);
     }
 

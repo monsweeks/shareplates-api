@@ -17,6 +17,7 @@ public class ChapterModel extends RepresentationModel<ChapterModel>{
 	private boolean useYn;
 	private long topicId;
 	private long id;
+	private int pageCount;
 	
 	public ChapterModel buildChapterModel(Chapter chapter) {
 		
@@ -26,6 +27,7 @@ public class ChapterModel extends RepresentationModel<ChapterModel>{
 		useYn = chapter.getUseYn();
 		topicId = chapter.getTopic().getId();
 		id = chapter.getId();
+		pageCount = chapter.getPageCount() != null ? chapter.getPageCount() : 0;
 		
 		return this;
 	}

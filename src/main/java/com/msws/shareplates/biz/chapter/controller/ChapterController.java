@@ -6,7 +6,6 @@ import com.msws.shareplates.biz.chapter.vo.ChapterModel;
 import com.msws.shareplates.biz.chapter.vo.request.ChapterOrdersRequest;
 import com.msws.shareplates.biz.chapter.vo.request.ChapterRequest;
 import com.msws.shareplates.biz.chapter.vo.response.ChapterResponse;
-import com.msws.shareplates.biz.common.service.AuthService;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
@@ -29,14 +28,12 @@ public class ChapterController {
     @Autowired
     private TopicService topicService;
 
-    @Autowired
-    private AuthService authService;
 
     @ApiOperation(value = "챕터 생성")
     @PostMapping("")
     public ChapterResponse createChapter(@PathVariable(value = "topic-id") long topicId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
 
-        Chapter chapter = chapterService.createChapter(chapterRequest.buildChaterEntity());
+        Chapter chapter = chapterService.createChapter(chapterRequest.buildChapterEntity());
         return ChapterResponse.builder()
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapter))
                 .build();
@@ -46,7 +43,7 @@ public class ChapterController {
     @PutMapping("/{chapterId}")
     public ChapterResponse updateChapter(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
        
-        Chapter chapter = chapterService.updateChapter(chapterRequest.buildChaterEntity());
+        Chapter chapter = chapterService.updateChapter(chapterRequest.buildChapterEntity());
         return ChapterResponse.builder()
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapter))
                 .build();
@@ -87,7 +84,7 @@ public class ChapterController {
         AuthCode role = topicService.selectUserTopicRole(chapterRequest.getTopicId(), userInfo.getId());
 
         return ChapterResponse.builder()
-                .chapters(chapterService.selectChapters(chapterRequest.buildChaterEntity()).stream()
+                .chapters(chapterService.selectChapters(chapterRequest.buildChapterEntity()).stream()
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
                         .collect(Collectors.toList()))
                 .topic(new TopicResponse(topicService.selectTopic(chapterRequest.getTopicId())))

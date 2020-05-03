@@ -59,6 +59,9 @@ public class Chapter extends CommonEntity {
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
+    @Column(name = "page_count")
+    private Integer pageCount;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "chapter", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Page> pages;

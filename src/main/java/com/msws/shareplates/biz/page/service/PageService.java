@@ -1,8 +1,9 @@
 package com.msws.shareplates.biz.page.service;
 
+import com.msws.shareplates.biz.chapter.entity.Chapter;
+import com.msws.shareplates.biz.chapter.repository.ChapterRepository;
 import com.msws.shareplates.biz.page.entity.Page;
 import com.msws.shareplates.biz.page.repository.PageRepository;
-import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.repository.ShareRepository;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
@@ -15,11 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class PageService {
 
 
     @Autowired
     private TopicRepository topicRepository;
+
+    @Autowired
+    private ChapterRepository chapterRepository;
 
     @Autowired
     private PageRepository pageRepository;
@@ -42,6 +47,11 @@ public class PageService {
         Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
         topic.setPageCount(topic.getPageCount() + 1);
         topicRepository.save(topic);
+
+        Chapter chapter = chapterRepository.findById(chapterId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
+        chapter.setPageCount(chapter.getPageCount() + 1);
+        chapterRepository.save(chapter);
+
         return pageRepository.save(page);
     }
 
@@ -49,17 +59,19 @@ public class PageService {
         return pageRepository.save(page);
     }
 
-    @Transactional
     public void updatePageOrders(long topicId, long chapterId, List<Page> pages) {
         pages.stream().forEach(page -> pageRepository.updatePageOrder(topicId, chapterId, page.getId(), page.getOrderNo()));
     }
 
-    @Transactional
     public void deletePage(long topicId, long chapterId, long pageId) {
-
         Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
         topic.setPageCount(topic.getPageCount() - 1);
         topicRepository.save(topic);
+
+        Chapter chapter = chapterRepository.findById(chapterId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.NOT_EXISTS_TOPIC));
+        chapter.setPageCount(chapter.getPageCount() - 1);
+        chapterRepository.save(chapter);
+
         shareRepository.updateCurrentPageNull(topicId, chapterId, pageId);
         pageRepository.deletePageById(topicId, chapterId, pageId);
     }
