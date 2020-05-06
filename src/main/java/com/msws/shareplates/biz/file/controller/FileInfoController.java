@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/files")
 @RestController
-public class FileUploadController {
+public class FileInfoController {
 
     @Autowired
     MessageSourceAccessor messageSourceAccessor;
@@ -32,6 +32,7 @@ public class FileUploadController {
     @Autowired
     private FileConfig fileConfig;
 
+    /*
     @AdminOnly
     @GetMapping("/uploadAllFiles")
     public List<FileInfo> uploaedFileList() {
@@ -40,6 +41,8 @@ public class FileUploadController {
         return fileInfoService.selectFileList();
 
     }
+    */
+
 	/*
 
     @PostMapping("/uploadFile")
@@ -69,10 +72,11 @@ public class FileUploadController {
     */
 
 
+	/*
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request, UserInfo userInfo) {
         // Load file as Resource
-        Resource resource = fileInfoService.loadFileAsResource(fileName, userInfo);
+        Resource resource = fileInfoService.loadFileAsResource(fileName);
 
         // Try to determine file's content type
         String contentType = null;
@@ -92,12 +96,13 @@ public class FileUploadController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+	 */
 
     @GetMapping("/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId, @RequestParam("uuid") String uuid, HttpServletRequest request, UserInfo userInfo) {
 
         FileInfo fileInfo = fileInfoService.selectFileInfo(fileId, uuid);
-        Resource resource = fileInfoService.loadFileAsResource(fileInfo.getPath(), userInfo);
+        Resource resource = fileInfoService.loadFileAsResource(fileInfo.getPath());
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileInfo.getName() + "\"")

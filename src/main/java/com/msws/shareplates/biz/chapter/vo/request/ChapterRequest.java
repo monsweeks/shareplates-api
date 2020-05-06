@@ -22,7 +22,7 @@ public class ChapterRequest {
 	@ApiModelProperty(value="챕터 ID", example = "1")
 	private long id;
 	
-	public Chapter buildChaterEntity() {
+	public Chapter buildChapterEntity() {
 		return Chapter.builder()
 				.id(id)
 				.orderNo(orderNo)
@@ -33,7 +33,7 @@ public class ChapterRequest {
 				.build();
 	}
 	
-	public Chapter buildChaterEntity(long chapterId) {
+	public Chapter buildChapterEntity(long chapterId) {
 		return Chapter.builder()
 				.id(chapterId)
 				.orderNo(orderNo)

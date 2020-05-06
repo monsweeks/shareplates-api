@@ -26,6 +26,8 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
     private Boolean privateYn;
     private List<TopicResponse.User> users;
     private LocalDateTime creationDate;
+    private Integer chapterCount;
+    private Integer pageCount;
 
     public TopicResponse(Topic topic) {
         this.id = topic.getId();
@@ -38,6 +40,8 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
         this.iconIndex = topic.getIconIndex();
         this.privateYn = topic.getPrivateYn();
         this.creationDate = topic.getCreationDate();
+        this.chapterCount = topic.getChapterCount();
+        this.pageCount = topic.getPageCount();
         this.users = topic.getTopicUsers().stream().map(topicUser
                 -> User.builder()
                 .id(topicUser.getUser().getId())
