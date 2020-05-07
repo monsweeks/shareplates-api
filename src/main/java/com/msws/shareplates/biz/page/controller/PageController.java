@@ -2,6 +2,9 @@ package com.msws.shareplates.biz.page.controller;
 
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
+import com.msws.shareplates.biz.file.entity.FileInfo;
+import com.msws.shareplates.biz.file.service.FileInfoService;
+import com.msws.shareplates.biz.file.vo.FileInfoResponse;
 import com.msws.shareplates.biz.page.entity.Page;
 import com.msws.shareplates.biz.page.service.PageService;
 import com.msws.shareplates.biz.page.vo.PageModel;
@@ -13,7 +16,11 @@ import com.msws.shareplates.framework.session.vo.UserInfo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,6 +33,11 @@ public class PageController {
     @Autowired
     private ChapterService chapterService;
 
+    @Autowired
+    private FileInfoService fileStorageService;
+
+    @Autowired
+    private FileInfoService fileInfoService;
 
     @ApiOperation(value = "페이지 생성")
     @PostMapping("")
@@ -93,6 +105,26 @@ public class PageController {
         return PageResponse.builder()
                 .page(PageModel.builder().build().buildPageModel(pageService.selectPage(topicId, chapterId, topicId)))
                 .build();
+    }
+
+    @PostMapping("/{page-id}/file")
+    public FileInfoResponse uploadFile(@PathVariable(value = "topic-id") long topicId, @PathVariable(value = "chapter-id") long chapterId, @PathVariable("page-id") long pageId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type, HttpServletRequest req) {
+
+        String fileName = fileStorageService.storeFile(file, req);
+
+        FileInfo fileInfo = FileInfo.builder().topicId(topicId)
+                .chapterId(chapterId)
+                .pageId(pageId)
+                .path(fileName)
+                .name(name)
+                .size(size)
+                .type(type)
+                .uuid(UUID.randomUUID().toString().replaceAll("-", ""))
+                .build();
+
+        fileInfoService.createFileInfo(fileInfo);
+
+        return new FileInfoResponse(fileInfo.getId(), fileInfo.getUuid());
     }
 
 

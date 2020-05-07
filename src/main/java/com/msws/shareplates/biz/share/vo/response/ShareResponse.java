@@ -42,10 +42,10 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.privateYn = share.getPrivateYn();
         this.memo = share.getMemo();
         this.accessCode = share.getAccessCode();
-        this.currentChapterId = share.getCurrentChapter().getId();
-        this.currentChapterTitle = share.getCurrentChapter().getTitle();
-        this.currentPageId = share.getCurrentPage().getId();
-        this.currentPageTitle = share.getCurrentPage().getTitle();
+        this.currentChapterId = share.getCurrentChapter() != null ? share.getCurrentChapter().getId() : null;
+        this.currentChapterTitle = share.getCurrentChapter() != null ? share.getCurrentChapter().getTitle() : null;
+        this.currentPageId = share.getCurrentPage() != null ? share.getCurrentPage().getId() : null;
+        this.currentPageTitle = share.getCurrentPage() != null ? share.getCurrentPage().getTitle() : null;
         this.lastOpenDate = share.getLastOpenDate();
         this.lastCloseDate = share.getLastCloseDate();
         this.topicId = share.getTopic().getId();
