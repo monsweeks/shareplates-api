@@ -39,6 +39,8 @@ public class StatController {
 	@GetMapping(path="/test")
 	public Object test() {
 
+		Long a = 123457373L;
+		mainService.setData(a);
 		return mainService.getData();
 	}
 

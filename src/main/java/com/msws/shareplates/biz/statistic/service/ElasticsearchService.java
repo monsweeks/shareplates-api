@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class ElasticsearchService implements StatServiceIF<Object>{
+public class ElasticsearchService implements StatServiceIF<Object> {
 
 	@Override
 	public Stat_database getName() {
@@ -43,13 +43,5 @@ public class ElasticsearchService implements StatServiceIF<Object>{
 		}
 		MDC.clear();
 	}
-
-	
-
-	
-	
-	
-	
-
 
 }

@@ -55,7 +55,7 @@ spring:
     
     
 file:
-  upload-dir: c:/fileupload/
+  upload-dir: d:/fileupload/
   allowed-extension: txt,pdf
 
 shareplates:

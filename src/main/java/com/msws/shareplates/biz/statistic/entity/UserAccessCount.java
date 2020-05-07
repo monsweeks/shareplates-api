@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Measurement(name = "test")
-public class Influx_test {
+public class UserAccessCount {
 	
 	@Column(name = "count")
 	private Double count;
