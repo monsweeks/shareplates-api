@@ -49,7 +49,7 @@ spring:
      max-file-size: 200MB
      max-request-size: 215MB
   influxdb:
-    url: http://localhost:8086
+    url: http://mindplates.com:8086
     database: stat
     retention-policy: autogen
     username: test
@@ -57,7 +57,7 @@ spring:
     
     
 file:
-  upload-dir: d:/fileupload/
+  upload-dir: c:/fileupload/
   allowed-extension: txt,pdf,png,jpg,gif
 
 shareplates:
@@ -125,6 +125,12 @@ spring:
     host: 192.168.56.101
     port: 6379
     password: dhao1234
+  influxdb:
+    url: http://192.168.56.102:8086
+    database: stat
+    retention-policy: autogen
+    username: test
+    password: test1234
 file:
   upload-dir: /data/upload
 shareplates:
