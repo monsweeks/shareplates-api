@@ -50,6 +50,9 @@ public class ChapterService {
         return chapterRepository.save(chapter);
     }
 
+    public void updateChapterContent(long id, String content) {
+        chapterRepository.updateChapterContent(id, content);
+    }
 
     public void updateChapterOrders(Long topicId, List<Chapter> chapters) {
         chapters.stream().forEach(chapter -> chapterRepository.updateChapterOrder(topicId, chapter.getId(), chapter.getOrderNo()));

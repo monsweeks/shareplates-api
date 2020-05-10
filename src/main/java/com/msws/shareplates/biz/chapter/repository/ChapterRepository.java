@@ -18,4 +18,8 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     @Modifying
     @Query("UPDATE Chapter c SET c.orderNo = :orderNo WHERE c.topic.id = :topicId AND c.id = :chapterId")
     void updateChapterOrder(@Param("topicId") Long topicId, @Param("chapterId") Long chapterId, @Param("orderNo") Integer orderNo);
+
+    @Modifying
+    @Query("UPDATE Chapter c SET c.content = :content WHERE c.id = :chapterId")
+    void updateChapterContent(@Param("chapterId") Long chapterId, @Param("content") String content);
 }

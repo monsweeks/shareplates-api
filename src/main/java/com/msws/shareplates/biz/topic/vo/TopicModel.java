@@ -1,21 +1,15 @@
-package com.msws.shareplates.biz.topic.vo.response;
+package com.msws.shareplates.biz.topic.vo;
 
 import com.msws.shareplates.biz.topic.entity.Topic;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class TopicResponse extends RepresentationModel<TopicResponse> {
+@Getter
+public class TopicModel extends RepresentationModel<TopicModel> {
 
     private Long id;
     private String name;
@@ -24,13 +18,12 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
     private String grpName;
     private Integer iconIndex;
     private Boolean privateYn;
-    private List<TopicResponse.User> users;
     private LocalDateTime creationDate;
     private Integer chapterCount;
     private Integer pageCount;
     private String content;
 
-    public TopicResponse(Topic topic) {
+    public TopicModel buildTopicModel(Topic topic) {
         this.id = topic.getId();
         this.name = topic.getName();
         this.summary = topic.getSummary();
@@ -44,22 +37,9 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
         this.chapterCount = topic.getChapterCount();
         this.pageCount = topic.getPageCount();
         this.content = topic.getContent();
-        this.users = topic.getTopicUsers().stream().map(topicUser
-                -> User.builder()
-                .id(topicUser.getUser().getId())
-                .email(topicUser.getUser().getEmail())
-                .name(topicUser.getUser().getName())
-                .info(topicUser.getUser().getInfo())
-                .build()).collect(Collectors.toList());
-    }
 
-    @Builder
-    @Data
-    public static class User {
-        private Long id;
-        private String email;
-        private String name;
-        private String info;
-    }
+        return this;
 
+
+    }
 }

@@ -5,17 +5,16 @@ import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.response.SharesResponse;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
-import com.msws.shareplates.biz.topic.vo.SimpleTopic;
 import com.msws.shareplates.biz.topic.vo.request.TopicRequest;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.topic.vo.response.TopicsResponse;
-import com.msws.shareplates.common.code.StatusCode;
 import com.msws.shareplates.common.util.SessionUtil;
+import com.msws.shareplates.common.vo.EmptyResponse;
 import com.msws.shareplates.framework.annotation.DisableLogin;
 import com.msws.shareplates.framework.session.vo.UserInfo;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,22 +32,11 @@ public class TopicController {
     @Autowired
     AuthService authService;
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
-    public void pubTopic(SimpleTopic simpleTopic) {
-        simpMessagingTemplate.convertAndSend("/sub/simpleTopic", simpleTopic);
-    }
-
     @PostMapping("")
     public TopicResponse createTopic(@RequestBody TopicRequest topicRequest, UserInfo userInfo) {
         // 토픽을 작성하려는 그룹의 쓰기 권한 확인
         authService.checkUserHasWriteRoleAboutGrp(topicRequest.getGrpId(), userInfo.getId());
-
         Topic topic = topicService.createTopic(new Topic(topicRequest));
-        SimpleTopic simpleTopic = new SimpleTopic(topic, StatusCode.CREATE);
-        pubTopic(simpleTopic);
-
         return new TopicResponse(topic);
     }
 
@@ -56,7 +44,6 @@ public class TopicController {
     public Boolean selectTopicNameExist(@RequestParam Long grpId, @RequestParam String name, UserInfo userInfo) {
         // 그룹의 읽기 권한 확인
         authService.checkUserHasReadRoleAboutGrp(grpId, userInfo.getId());
-
         return topicService.selectIsTopicNameExist(grpId, name);
     }
 
@@ -66,7 +53,6 @@ public class TopicController {
         Long userId = SessionUtil.getUserId(request);
         // 그룹의 읽기 권한 확인
         authService.checkUserHasReadRoleAboutGrp(grpId, userId);
-
         return new TopicsResponse(topicService.selectTopicList(userId, grpId, searchWord, order, direction));
     }
 
@@ -74,36 +60,38 @@ public class TopicController {
     public TopicResponse selectTopic(@PathVariable Long topicId, UserInfo userInfo) {
         // 토픽의 읽기 권한 체크
         authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
-
         return new TopicResponse(topicService.selectTopic(topicId));
     }
-
 
     @PutMapping("/{topicId}")
     public TopicResponse updateTopic(@RequestBody TopicRequest topicRequest, UserInfo userInfo) {
         // 토픽의 쓰기 권한 체크
         authService.checkUserHasWriteRoleAboutTopic(topicRequest.getId(), userInfo.getId());
-
         Topic topic = topicService.updateTopic(new Topic(topicRequest));
-        pubTopic(new SimpleTopic(topic, StatusCode.UPDATE));
-        return TopicResponse.builder().build();
+        return new TopicResponse(topic);
+    }
+
+    @ApiOperation(value = "토픽 속성 수정")
+    @PutMapping("/{topicId}/content")
+    public EmptyResponse updateTopicContent(@PathVariable Long topicId, @RequestBody TopicRequest topicRequest , UserInfo userInfo) {
+        // 토픽의 쓰기 권한 체크
+        authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
+        topicService.updateTopicContent(topicId, topicRequest.getContent());
+        return EmptyResponse.getInstance();
     }
 
     @DeleteMapping("/{topicId}")
     public TopicResponse deleteTopic(@PathVariable Long topicId, UserInfo userInfo) {
         // 토픽의 쓰기 권한 체크
         authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
-
         topicService.deleteTopic(topicId);
         return TopicResponse.builder().build();
     }
 
     @GetMapping("/{topicId}/shares")
     public SharesResponse selectTopicShareList(@PathVariable Long topicId, UserInfo userInfo) {
-
         // 토픽의 쓰기 권한 체크
         authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
-
         return new SharesResponse(shareService.selectShareListByTopicId(topicId, userInfo.getId()));
     }
 
