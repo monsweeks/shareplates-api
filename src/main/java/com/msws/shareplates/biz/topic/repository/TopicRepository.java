@@ -3,6 +3,7 @@ package com.msws.shareplates.biz.topic.repository;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -33,6 +34,10 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
 
     @Query("SELECT ou.role FROM Topic t INNER JOIN Grp o ON t.grpId = o.id INNER JOIN GrpUser ou ON o.id = ou.grp.id WHERE  t.id = :topicId AND ou.user.id = :userId")
     String findUserGrpRole(@Param("topicId") Long topicId, @Param("userId") Long userId);
+
+    @Modifying
+    @Query("UPDATE Topic t SET t.content = :content WHERE t.id = :topicId")
+    void updateTopicContent(@Param("topicId") Long topicId, @Param("content") String content);
 
 }
 

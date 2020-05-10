@@ -103,6 +103,10 @@ public class TopicService {
         return topicRepository.save(topic);
     }
 
+    public void updateTopicContent(long id, String content) {
+        topicRepository.updateTopicContent(id, content);
+    }
+
     public Topic selectTopic(long id) {
         return topicRepository.findByIdAndUseYnTrue(id).orElse(null);
     }
