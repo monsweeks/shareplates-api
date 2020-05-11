@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.msws.shareplates.biz.chapter.entity.Chapter;
-import com.msws.shareplates.biz.page.entity.Page;
+import com.msws.shareplates.biz.page.vo.response.PageResponse;
+import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 import com.msws.shareplates.biz.statistic.service.StatServiceIF;
-import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.common.exception.StatDBException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,35 +34,14 @@ public class StatisticAspect {
  
 	}
 
-	@AfterReturning(value = "execution(* com.msws.shareplates..service.*.selectTopic(..))", returning = "retVal")
-	public void selectTopic(Object retVal) throws Throwable {
+	@AfterReturning(value = "execution(* com.msws.shareplates..controller.ShareContentsHttpController.selectShareContent(..))", returning = "retVal")
+	public void logShareInfo(Object retVal) throws Throwable {
 		
 		log.info("select topic : {}", retVal);
 		
-		Topic data = (Topic)retVal;
-		mainService.setData(data.getId());
+		ShareInfo data = (ShareInfo)retVal;
+		mainService.setData(data);
 	}
-	
-	@AfterReturning(value = "execution(* com.msws.shareplates..service.*.selectChapter(..))", returning = "retVal")
-	public void selectChapter(Object retVal) throws Throwable {
-		
-		log.info("select chapter : {}", retVal);
-		
-		Chapter data = (Chapter)retVal;
-		mainService.setData(data.getId());
-	}
-	
-	@AfterReturning(value = "execution(* com.msws.shareplates..service.*.selectPage(..))", returning = "retVal")
-	public void selectPage(Object retVal) throws Throwable {
-		
-		log.info("select page : {}", retVal);
-		
-		Page data = (Page)retVal;
-		mainService.setData(data.getId());
-		
-	}
-	
-	
 
 	
 	
