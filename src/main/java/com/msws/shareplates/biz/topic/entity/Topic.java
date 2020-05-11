@@ -56,6 +56,9 @@ public class Topic extends CommonEntity {
     @Column(name = "page_count")
     private Integer pageCount;
 
+    @Column(columnDefinition = "text", name = "content")
+    private String content;
+
     @ManyToOne
     @JoinColumn(name = "grp_id", insertable = false, updatable = false)
     private Grp grp;
@@ -84,6 +87,7 @@ public class Topic extends CommonEntity {
         this.useYn = true;
         this.chapterCount = 0;
         this.pageCount = 0;
+        this.content = topicRequest.getContent();
 
         List<TopicUser> topicUsers = topicRequest.getUsers().stream().map(user
                 -> TopicUser.builder()
@@ -95,7 +99,4 @@ public class Topic extends CommonEntity {
         this.setTopicUsers(topicUsers);
     }
 
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @Fetch(value = FetchMode.SUBSELECT)
-//    private List<Chapter> chapters;
 }

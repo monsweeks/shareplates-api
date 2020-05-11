@@ -13,6 +13,7 @@ public class TopicRequest {
 	private Long grpId;
 	private Integer iconIndex;
 	private Boolean privateYn;
+	private String content;
 	private List<User> users;
 	
 	@Data

@@ -21,6 +21,8 @@ public class ChapterRequest {
 	private long topicId;
 	@ApiModelProperty(value="챕터 ID", example = "1")
 	private long id;
+	@ApiModelProperty(value="챕터 컨텐츠", example = "{chapterProperties: {backgroundColor : '#333'}")
+	private String content;
 	
 	public Chapter buildChapterEntity() {
 		return Chapter.builder()
@@ -29,6 +31,7 @@ public class ChapterRequest {
 				.title(title)
 				.summary(summary)
 				.useYn(useYn)
+				.content(content)
 				.topic(Topic.builder().id(topicId).build())
 				.build();
 	}
@@ -40,6 +43,7 @@ public class ChapterRequest {
 				.title(title)
 				.summary(summary)
 				.useYn(useYn)
+				.content(content)
 				.topic(Topic.builder().id(topicId).build())
 				.build();
 	}

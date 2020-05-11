@@ -11,6 +11,8 @@ import com.msws.shareplates.biz.page.vo.PageModel;
 import com.msws.shareplates.biz.page.vo.request.PageOrdersRequest;
 import com.msws.shareplates.biz.page.vo.request.PageRequest;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
+import com.msws.shareplates.biz.topic.service.TopicService;
+import com.msws.shareplates.biz.topic.vo.TopicModel;
 import com.msws.shareplates.common.vo.EmptyResponse;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import io.swagger.annotations.ApiOperation;
@@ -28,10 +30,13 @@ import java.util.stream.Collectors;
 public class PageController {
 
     @Autowired
-    private PageService pageService;
+    private TopicService topicService;
 
     @Autowired
     private ChapterService chapterService;
+
+    @Autowired
+    private PageService pageService;
 
     @Autowired
     private FileInfoService fileStorageService;
@@ -91,6 +96,7 @@ public class PageController {
     public PageResponse selectPages(@PathVariable(value = "topic-id") long topicId, @PathVariable(value = "chapter-id") long chapterId, UserInfo userInfo) {
 
         return PageResponse.builder()
+                .topic(TopicModel.builder().build().buildTopicModel(topicService.selectTopic(topicId)))
                 .pages(pageService.selectPages(topicId, chapterId).stream()
                         .map(page -> PageModel.builder().build().buildPageModel(page))
                         .collect(Collectors.toList()))
