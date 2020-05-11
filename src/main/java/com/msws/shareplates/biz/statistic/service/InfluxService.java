@@ -1,7 +1,5 @@
 package com.msws.shareplates.biz.statistic.service;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +11,7 @@ import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.influxdb.impl.InfluxDBResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +26,20 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	
 	private final InfluxDBResultMapper resultMapper;
 	
-	private final String TABLE_NAME = "test";
-	private final String TAG_NAME = "object";
-	private final String FIELD_NAME = "pv";
+	
+	@Value("${stat.table}")
+	private String TABLE_NAME;
+	
+	@Value("${stat.key}")
+	private String TAG_NAME;
+
+	@Value("${stat.value}")
+	private String FIELD_NAME;
 	
 	@Autowired
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
-	private final String QUERY_BASE = "SELECT count(" + FIELD_NAME + ") as count FROM %s where time > %s %s group by \"%s\"";
+	private final String QUERY_BASE = "SELECT count(%s) as count FROM %s where time > %s %s group by \"%s\"";
 	
 	
 	public InfluxService() {
@@ -65,7 +70,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Override
 	public List<UserAccessCount> getData(TimeUnit timeunit, int amount) {
 		
-		String revised_query = String.format(QUERY_BASE, TABLE_NAME, getTimeStamp(timeunit, amount)  , "", TAG_NAME);
+		String revised_query = String.format(QUERY_BASE, FIELD_NAME, TABLE_NAME, getTimeStamp(timeunit, amount)  , "", TAG_NAME);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase("stat")
@@ -81,7 +86,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	public List<UserAccessCount> getData(String key, TimeUnit timeunit, int amount) {
 		
 		key = String.format("and %s = '%s'", TAG_NAME, key);
-		String revised_query = String.format(QUERY_BASE, TABLE_NAME, getTimeStamp(timeunit, amount) , key, TAG_NAME);
+		String revised_query = String.format(QUERY_BASE, FIELD_NAME, TABLE_NAME, getTimeStamp(timeunit, amount) , key, TAG_NAME);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase("stat")
