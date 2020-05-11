@@ -62,6 +62,8 @@
     
       <logger name="com.msws.shareplates.Application" level="info"/>    
       
+      <logger name="com.msws.shareplates.framework.aop.StatisticAspect" level="info"/>
+      
       <logger name="com.msws.shareplates.biz.statistic.service.ElasticsearchService" level="info">
       		<appender-ref ref="ELASTIC" />
       </logger>
