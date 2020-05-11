@@ -1,11 +1,13 @@
 package com.msws.shareplates.biz.statistic.controller;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
@@ -36,12 +38,23 @@ public class StatController {
 
 
 	@DisableLogin
-	@GetMapping(path="/test")
-	public Object test() {
+	@GetMapping(path="/test/get")
+	public Object testget(@RequestParam(value = "tag_name", required = false)String tag_name) {
+		
+		if(tag_name == null)
+			return mainService.getData(TimeUnit.DAYS, 1);
+		else
+			return mainService.getData(tag_name, TimeUnit.DAYS, 1);
 
-		Long a = 123457373L;
-		mainService.setData(a);
-		return mainService.getData();
+ 
+	}
+	
+	@DisableLogin
+	@GetMapping(path="/test/set")
+	public void testset(@RequestParam(value = "tag_name", required = true)String tag_name) {
+		
+		mainService.setData(tag_name);
+
 	}
 
 }

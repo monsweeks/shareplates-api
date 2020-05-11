@@ -15,8 +15,11 @@ public class UserAccessCount {
 	@Column(name = "count")
 	private Double count;
 	
-	@Column(name = "name")
-	private String name;
+	@Column(name = "time")
+	private String time;
+	
+	@Column(name = "object", tag = true )
+	private String object;
 
 	
 }

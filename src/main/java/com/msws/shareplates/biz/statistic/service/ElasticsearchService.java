@@ -1,6 +1,7 @@
 package com.msws.shareplates.biz.statistic.service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.jboss.logging.MDC;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,13 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 	}
 	
 	@Override
-	public List<Object> getData() {
+	public List<Object> getData(String key, TimeUnit timeunit, int value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<Object> getData(TimeUnit timeunit, int value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -43,5 +50,7 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 		}
 		MDC.clear();
 	}
+
+
 
 }
