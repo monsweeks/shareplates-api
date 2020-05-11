@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.logging.MDC;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -19,10 +20,12 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 	public Stat_database getName() {
 		return Stat_database.elasticsearch;
 	}
-	
+
+	@Async
 	@Override
 	public void setData(Object data) {
 		// TODO Auto-generated method stub
+		
 	}
 	
 	@Override
@@ -50,6 +53,10 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 		}
 		MDC.clear();
 	}
+
+
+
+
 
 
 
