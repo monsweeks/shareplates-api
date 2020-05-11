@@ -27,8 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class InfluxService implements StatServiceIF<UserAccessCount>{
 	
 	private final InfluxDBResultMapper resultMapper;
-	
-	
+
 	@Value("${stat.table}")
 	private String TABLE_NAME;
 	
@@ -59,25 +58,30 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	public void setData(Object data) {
 		
 		Map<String, String> tags = new HashMap<String, String>();
+		Map<String, Object> field = new HashMap<String, Object>();			
+
+
 		
 		switch(data.getClass().getSimpleName().toLowerCase()) {
 		case "shareinfo" :
-			ShareInfo tempData = (ShareInfo) data;
-			tags.put("shareId", tempData.getShare().getId().toString());
-			tags.put("accessCode", tempData.getShare().getAccessCode() == null ? "DN": tempData.getShare().getAccessCode());
-			tags.put("topicId", tempData.getShare().getTopicId().toString());
-			tags.put("chapterId", tempData.getShare().getCurrentChapterId().toString());
-			tags.put("pageId", tempData.getShare().getCurrentPageId().toString());
+			ShareInfo tempShareData = (ShareInfo) data;
+			
+			tags.put("shareId", tempShareData.getShare().getId().toString());
+			tags.put("topicId", tempShareData.getShare().getTopicId().toString());
+			tags.put("chapterId", tempShareData.getShare().getCurrentChapterId().toString());
+			tags.put("pageId", tempShareData.getShare().getCurrentPageId().toString());
+			tags.put("adminUserEmail", tempShareData.getShare().getAdminUserEmail());
+
+			field.put(FIELD_NAME, tempShareData.getUsers().size());
 			break;
+			
 		default :
 			tags.put("shareId", "DN");  // dont know
 			break;
-			
-		
 		}
 				
-		Map<String, Object> field = new HashMap<String, Object>();
-		field.put(FIELD_NAME, 1);
+
+
 		Point insert_point = Point.measurement(TABLE_NAME)
 				  .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
 				  .fields(field)

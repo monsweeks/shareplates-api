@@ -1,5 +1,20 @@
 package com.msws.shareplates.biz.share.controller;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.msws.shareplates.biz.chapter.entity.Chapter;
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
@@ -9,7 +24,6 @@ import com.msws.shareplates.biz.page.vo.PageModel;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Chat;
 import com.msws.shareplates.biz.share.entity.Share;
-import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
@@ -24,16 +38,9 @@ import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.message.service.ShareMessageService;
 import com.msws.shareplates.framework.session.vo.UserInfo;
+
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Log
 @RestController
