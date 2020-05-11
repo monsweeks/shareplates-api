@@ -18,8 +18,20 @@ public class UserAccessCount {
 	@Column(name = "time")
 	private String time;
 	
-	@Column(name = "object", tag = true )
-	private String object;
+	@Column(name = "shareId", tag = true )
+	private String shareId;
+	
+	@Column(name = "accessCode", tag = true )
+	private String accessCode;
+	
+	@Column(name = "topicId", tag = true )
+	private String topicId;
+	
+	@Column(name = "chapterId", tag = true )
+	private String chapterId;
+	
+	@Column(name = "pageId", tag = true )
+	private String pageId;
 
 	
 }

@@ -13,8 +13,10 @@ import org.influxdb.impl.InfluxDBResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.influxdb.InfluxDBTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
@@ -52,15 +54,34 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		return Stat_database.influxdb;				
 	}	
 
+	@Async
 	@Override
 	public void setData(Object data) {
+		
+		Map<String, String> tags = new HashMap<String, String>();
+		
+		switch(data.getClass().getSimpleName().toLowerCase()) {
+		case "shareinfo" :
+			ShareInfo tempData = (ShareInfo) data;
+			tags.put("shareId", tempData.getShare().getId().toString());
+			tags.put("accessCode", tempData.getShare().getAccessCode() == null ? "DN": tempData.getShare().getAccessCode());
+			tags.put("topicId", tempData.getShare().getTopicId().toString());
+			tags.put("chapterId", tempData.getShare().getCurrentChapterId().toString());
+			tags.put("pageId", tempData.getShare().getCurrentPageId().toString());
+			break;
+		default :
+			tags.put("shareId", "DN");  // dont know
+			break;
+			
+		
+		}
 				
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put(FIELD_NAME, 1);
 		Point insert_point = Point.measurement(TABLE_NAME)
 				  .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
 				  .fields(field)
-				  .tag(TAG_NAME, data.toString())
+				  .tag(tags)
 				  .build();
 		
 		influxDBTemplate.write(insert_point);

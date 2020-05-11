@@ -111,7 +111,7 @@ slack:
   
 stat:
   database: ${statDatabase:influxdb}
-  key: ${statKey:object}
+  key: ${statKey:shareId}
   value: ${statValue:pv}
   table: ${statTable:test}
   
