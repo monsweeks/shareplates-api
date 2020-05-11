@@ -58,7 +58,7 @@ spring:
     
 file:
   upload-dir: c:/fileupload/
-  allowed-extension: txt,pdf,png,jpg,gif
+  allowed-extension: txt,pdf
 
 shareplates:
   locale:
@@ -110,7 +110,10 @@ slack:
   url: https://hooks.slack.com/services/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
   
 stat:
-  database: influxdb
+  database: ${statDatabase:influxdb}
+  key: ${statKey:object}
+  value: ${statValue:pv}
+  table: ${statTable:test}
   
     
 ---
