@@ -21,9 +21,6 @@ public class UserAccessCount {
 	@Column(name = "shareId", tag = true )
 	private String shareId;
 	
-	@Column(name = "accessCode", tag = true )
-	private String accessCode;
-	
 	@Column(name = "topicId", tag = true )
 	private String topicId;
 	
@@ -32,6 +29,11 @@ public class UserAccessCount {
 	
 	@Column(name = "pageId", tag = true )
 	private String pageId;
+	
+	@Column(name = "adminUserEmail", tag = true )
+	private String 	adminUserEmail;
+	
+
 
 	
 }
