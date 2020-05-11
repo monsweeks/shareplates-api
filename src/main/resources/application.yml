@@ -47,7 +47,9 @@ spring:
      enabled: true
      file-size-threshold: 2KB
      max-file-size: 200MB
-     max-request-size: 215MB  influxdb:    url: http://mindplates.com:8086
+     max-request-size: 215MB
+  influxdb:
+    url: http://mindplates.com:8086
     database: stat
     retention-policy: autogen
     username: test

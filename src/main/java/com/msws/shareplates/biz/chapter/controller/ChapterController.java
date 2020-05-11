@@ -49,6 +49,13 @@ public class ChapterController {
                 .build();
     }
 
+    @ApiOperation(value = "챕터 속성 수정")
+    @PutMapping("/{chapterId}/content")
+    public EmptyResponse updateChapterContent(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {
+        chapterService.updateChapterContent(chapterId, chapterRequest.getContent());
+        return EmptyResponse.getInstance();
+    }
+
     @ApiOperation(value = "챕터 제목 수정")
     @PutMapping("/{chapterId}/title")
     public ChapterResponse updateChapterTitle(@PathVariable(value = "topic-id") long topicId, @PathVariable("chapterId") long chapterId, @RequestBody ChapterRequest chapterRequest, UserInfo userInfo) {

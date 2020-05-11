@@ -18,6 +18,7 @@ public class ChapterModel extends RepresentationModel<ChapterModel>{
 	private long topicId;
 	private long id;
 	private int pageCount;
+	private String content;
 	
 	public ChapterModel buildChapterModel(Chapter chapter) {
 		
@@ -28,6 +29,7 @@ public class ChapterModel extends RepresentationModel<ChapterModel>{
 		topicId = chapter.getTopic().getId();
 		id = chapter.getId();
 		pageCount = chapter.getPageCount() != null ? chapter.getPageCount() : 0;
+		content = chapter.getContent();
 		
 		return this;
 	}
