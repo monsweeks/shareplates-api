@@ -1,12 +1,14 @@
 package com.msws.shareplates.biz.share.repository;
 
-import com.msws.shareplates.biz.share.entity.Share;
+import java.util.List;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import com.msws.shareplates.biz.share.entity.Share;
 
 public interface ShareRepository extends JpaRepository<Share, Long> {
 
@@ -17,8 +19,8 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
 
     @Query(" SELECT new Share(s.id, s.name, s.openYn, s.privateYn, s.memo, s.accessCode, c.id, c.title, p.id, p.title, s.lastOpenDate, s.lastCloseDate, s.startedYn, s.topic.id, s.topic.name, s.adminUser.id, s.adminUser.email, s.adminUser.name, s.adminUser.info ) " +
             " FROM Share s LEFT OUTER JOIN Page p ON s.currentPage.id = p.id LEFT OUTER JOIN Chapter c ON s.currentChapter.id = c.id" +
-            " WHERE s.openYn = true AND (s.privateYn = false OR s.adminUser.id = :userId)")
-    List<Share> selectOpenShareList(@Param("userId") Long userId);
+            " WHERE s.openYn = true AND (s.privateYn = false OR s.adminUser.id = :userId) AND s.name LIKE CONCAT(:name, '%')")
+    List<Share> selectOpenShareList(@Param("userId") Long userId, @Param("name") String name, Sort sort);
 
     @Query(" SELECT new Share(s.id, s.name, s.openYn, s.privateYn, s.memo, s.accessCode, c.id, c.title, p.id, p.title, s.lastOpenDate, s.lastCloseDate, s.startedYn, s.topic.id, s.topic.name, s.adminUser.id, s.adminUser.email, s.adminUser.name, s.adminUser.info ) " +
             " FROM Share s LEFT OUTER JOIN Page p ON s.currentPage.id = p.id LEFT OUTER JOIN Chapter c ON s.currentChapter.id = c.id" +
