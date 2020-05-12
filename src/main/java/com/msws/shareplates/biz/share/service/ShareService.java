@@ -1,19 +1,26 @@
 package com.msws.shareplates.biz.share.service;
 
-import com.msws.shareplates.biz.share.entity.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.msws.shareplates.biz.share.entity.AccessCode;
+import com.msws.shareplates.biz.share.entity.Chat;
+import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
+import com.msws.shareplates.biz.share.entity.ShareUserSocket;
 import com.msws.shareplates.biz.share.repository.ChatRepository;
 import com.msws.shareplates.biz.share.repository.ShareRepository;
 import com.msws.shareplates.biz.share.repository.ShareUserRepository;
 import com.msws.shareplates.biz.share.repository.ShareUserSocketRepository;
+import com.msws.shareplates.biz.share.vo.request.ShareSearchConditions;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Transactional
@@ -83,8 +90,8 @@ public class ShareService {
         shareRepository.delete(share);
     }
 
-    public List<Share> selectOpenShareList(Long userId) {
-        return shareRepository.selectOpenShareList(userId);
+    public List<Share> selectOpenShareList(Long userId, ShareSearchConditions conditions) {
+        return shareRepository.selectOpenShareList(userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
     }
 
 
