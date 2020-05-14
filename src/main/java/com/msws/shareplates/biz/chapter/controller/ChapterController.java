@@ -11,6 +11,7 @@ import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.common.code.AuthCode;
 import com.msws.shareplates.common.vo.EmptyResponse;
+import com.msws.shareplates.framework.aop.annotation.CheckTopicAuth;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/topics/{topic-id}/chapters")
+@CheckTopicAuth
 public class ChapterController {
 
     @Autowired

@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum RoleCode {
-	
+
+	SUPER_MAN("System Admin"),
 	MEMBER("MEMBER"),
 	ADMIN("ADMIN");
 	

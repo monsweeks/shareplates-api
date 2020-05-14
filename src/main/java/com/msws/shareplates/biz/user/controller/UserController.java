@@ -170,7 +170,7 @@ public class UserController {
 
         User user = userService.login(account.get("email"), account.get("password"));
         if (user != null) {
-            sessionUtil.login(request, user.getId());
+            sessionUtil.login(request, user);
             return true;
         }
 

@@ -1,13 +1,15 @@
 package com.msws.shareplates.common.util;
 
-import com.msws.shareplates.framework.session.vo.UserInfo;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Optional;
-import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.framework.session.vo.UserInfo;
 
 @Component
 public class SessionUtil {
@@ -60,7 +62,7 @@ public class SessionUtil {
         return session != null && "Y".equals(session.getAttribute("adminYn"));
     }
 
-    public void login(HttpServletRequest request, Long id) {
+    public void login(HttpServletRequest request, User user) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
@@ -68,7 +70,8 @@ public class SessionUtil {
         session = request.getSession(true);
 
         UserInfo info = UserInfo.builder()
-                .id(id)
+                .id(user.getId())
+                .roleCode(user.getRoleCode())
                 .registered(true)
                 .build();
 

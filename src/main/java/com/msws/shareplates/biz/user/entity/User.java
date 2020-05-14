@@ -10,6 +10,10 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
+
+import com.msws.shareplates.common.code.RoleCode;
 
 @Entity
 @Builder
@@ -100,4 +104,8 @@ public class User extends CommonEntity {
 
     @Column(name = "registered")
     private Boolean registered;
+    
+    @Column(name="role_code", columnDefinition = "VARCHAR(15)")
+    @Enumerated(EnumType.STRING)
+    private RoleCode roleCode;
 }
