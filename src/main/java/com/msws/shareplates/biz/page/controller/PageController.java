@@ -1,5 +1,22 @@
 package com.msws.shareplates.biz.page.controller;
 
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
 import com.msws.shareplates.biz.file.entity.FileInfo;
@@ -14,19 +31,14 @@ import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.TopicModel;
 import com.msws.shareplates.common.vo.EmptyResponse;
+import com.msws.shareplates.framework.aop.annotation.CheckTopicAuth;
 import com.msws.shareplates.framework.session.vo.UserInfo;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api/topics/{topic-id}/chapters/{chapter-id}/pages")
+@CheckTopicAuth
 public class PageController {
 
     @Autowired
