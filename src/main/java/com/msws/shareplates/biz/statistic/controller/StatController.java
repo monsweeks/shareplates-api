@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 import com.msws.shareplates.biz.statistic.service.StatServiceIF;
 import com.msws.shareplates.common.exception.StatDBException;
-import com.msws.shareplates.framework.annotation.DisableLogin;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +26,8 @@ public class StatController {
 	@Autowired
 	public StatController(List<StatServiceIF<?>> services, @Value("${stat.database}") Stat_database database) {
 		
+		
+		
 		log.debug("same result {}", database == Stat_database.influxdb);
 		this.mainService = services.stream().filter( e -> e.getName() == database)
 				.findFirst()
@@ -35,26 +36,15 @@ public class StatController {
 				);
  
 	}
-
-
-	@DisableLogin
-	@GetMapping(path="/test/get")
-	public Object testget(@RequestParam(value = "tag_name", required = false)String tag_name) {
+	
+	
+	
+	@GetMapping(path="/get")
+	public Object testget(@RequestParam(value = "amount", defaultValue = "1", required = true) int amount) {
 		
-		if(tag_name == null)
-			return mainService.getData(TimeUnit.DAYS, 1);
-		else
-			return mainService.getData(tag_name, TimeUnit.DAYS, 1);
-
+		return mainService.getData(TimeUnit.DAYS, amount);
  
 	}
 	
-	@DisableLogin
-	@GetMapping(path="/test/set")
-	public void testset(@RequestParam(value = "tag_name", required = true)String tag_name) {
-		
-		mainService.setData(tag_name);
-
-	}
 
 }
