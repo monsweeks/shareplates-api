@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 import com.msws.shareplates.biz.statistic.service.StatServiceIF;
 import com.msws.shareplates.common.exception.StatDBException;
+import com.msws.shareplates.framework.annotation.DisableLogin;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +40,7 @@ public class StatController {
 	
 	
 	
+	@DisableLogin
 	@GetMapping(path="/get")
 	public Object testget(@RequestParam(value = "amount", defaultValue = "1", required = true) int amount) {
 		
