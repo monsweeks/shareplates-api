@@ -16,9 +16,12 @@ import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.msws.shareplates.biz.share.vo.response.ShareInfo;
+import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
+import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.common.code.SocketStatusCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +43,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Autowired
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
-	private final String QUERY_BASE = "SELECT count(%s) as count FROM %s where time > %s %s group by \"%s\"";
+	private final String QUERY_BASE = "SELECT %s as count FROM %s where time > %s %s group by \"%s\"";
 	
 	
 	public InfluxService() {
@@ -63,16 +66,36 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 
 		
 		switch(data.getClass().getSimpleName().toLowerCase()) {
-		case "shareinfo" :
-			ShareInfo tempShareData = (ShareInfo) data;
+		case "share" :
+			Share tempShareData = (Share) data;
 			
-			tags.put("shareId", tempShareData.getShare().getId().toString());
-			tags.put("topicId", tempShareData.getShare().getTopicId().toString());
-			tags.put("chapterId", tempShareData.getShare().getCurrentChapterId().toString());
-			tags.put("pageId", tempShareData.getShare().getCurrentPageId().toString());
-			tags.put("adminUserEmail", tempShareData.getShare().getAdminUserEmail());
+			tags.put("shareId", tempShareData.getId().toString());
+			tags.put("topicId", tempShareData.getTopic().getId().toString());
+			tags.put("chapterId", tempShareData.getCurrentChapter().getId().toString());
+			tags.put("pageId", tempShareData.getCurrentPage().getId().toString());
+			tags.put("adminUserEmail", tempShareData.getAdminUser().getEmail());
 
-			field.put(FIELD_NAME, tempShareData.getUsers().size());
+			for(String each : FIELD_NAME.split(",")) {
+				
+				switch(each.trim()) {
+				case "pv" :
+					field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> e.getRole() == RoleCode.MEMBER && e.getStatus() == SocketStatusCode.ONLINE).count());
+					break;
+				case "socketCnt" :
+					
+					int socketCnt = 0;
+					for( ShareUser shareuser : tempShareData.getShareUsers()) {
+						socketCnt += shareuser.getShareUserSocketList().size();						
+					}
+					field.put(each.trim(), socketCnt);
+					break;
+				
+				default :
+						break;
+				}
+			}
+			
+			
 			break;
 			
 		default :
@@ -95,7 +118,8 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Override
 	public List<UserAccessCount> getData(TimeUnit timeunit, int amount) {
 		
-		String revised_query = String.format(QUERY_BASE, FIELD_NAME, TABLE_NAME, getTimeStamp(timeunit, amount)  , "", TAG_NAME);
+		
+		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount)  , "", TAG_NAME);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase("stat")
@@ -111,7 +135,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	public List<UserAccessCount> getData(String key, TimeUnit timeunit, int amount) {
 		
 		key = String.format("and %s = '%s'", TAG_NAME, key);
-		String revised_query = String.format(QUERY_BASE, FIELD_NAME, TABLE_NAME, getTimeStamp(timeunit, amount) , key, TAG_NAME);
+		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key, TAG_NAME);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase("stat")
@@ -119,6 +143,21 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 
 		QueryResult queryResult = influxDBTemplate.query(query);
 		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
+	}
+	
+	private String getCountFieldSentence() {
+		
+		StringBuilder count_field = new StringBuilder();
+		
+		String prefix = "";
+		for(String each : FIELD_NAME.split(",")) {
+			count_field.append(prefix);
+			prefix = ",";
+			count_field.append(String.format("count(%s)", each));
+		}
+
+		return count_field.toString();
+		
 	}
 	
 	private String getTimeStamp(TimeUnit timeunit, int amount) {
