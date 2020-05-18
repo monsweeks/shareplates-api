@@ -11,7 +11,6 @@ public class TopicRequest {
 	private String name;
 	private String summary;
 	private Long grpId;
-	private Integer iconIndex;
 	private Boolean privateYn;
 	private String content;
 	private List<User> users;
