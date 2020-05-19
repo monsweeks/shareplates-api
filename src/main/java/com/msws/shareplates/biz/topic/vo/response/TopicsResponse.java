@@ -19,7 +19,6 @@ public class TopicsResponse extends RepresentationModel<TopicsResponse> {
                 .id(topic.getId())
                 .name(topic.getName())
                 .summary(topic.getSummary())
-                .iconIndex(topic.getIconIndex())
                 .privateYn(topic.getPrivateYn())
                 .chapterCount(topic.getChapterCount())
                 .pageCount(topic.getPageCount())
@@ -32,7 +31,6 @@ public class TopicsResponse extends RepresentationModel<TopicsResponse> {
         private long id;
         private String name;
         private String summary;
-        private Integer iconIndex;
         private Boolean privateYn;
         private Integer chapterCount;
         private Integer pageCount;

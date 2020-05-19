@@ -112,7 +112,7 @@ slack:
 stat:
   database: ${statDatabase:influxdb}
   key: ${statKey:shareId}
-  value: ${statValue:pv}
+  value: ${statValue:pv,socketCnt}
   table: ${statTable:test}
   
     

@@ -17,7 +17,6 @@ public class SimpleTopic extends RepresentationModel<SimpleTopic> {
     private Long id;
     private String name;
     private String summary;
-    private Integer iconIndex;
     private Boolean privateYn;
     private Integer chapterCount;
     private Integer pageCount;
@@ -27,7 +26,6 @@ public class SimpleTopic extends RepresentationModel<SimpleTopic> {
         this.id = topic.getId();
         this.name = topic.getName();
         this.summary = topic.getSummary();
-        this.iconIndex = topic.getIconIndex();
         this.privateYn = topic.getPrivateYn();
         this.chapterCount = topic.getChapterCount();
         this.pageCount = topic.getPageCount();
