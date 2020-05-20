@@ -16,7 +16,6 @@ public class TopicModel extends RepresentationModel<TopicModel> {
     private String summary;
     private Long grpId;
     private String grpName;
-    private Integer iconIndex;
     private Boolean privateYn;
     private LocalDateTime creationDate;
     private Integer chapterCount;
@@ -31,7 +30,6 @@ public class TopicModel extends RepresentationModel<TopicModel> {
         if (topic.getGrp() != null) {
             this.grpName = topic.getGrp().getName();
         }
-        this.iconIndex = topic.getIconIndex();
         this.privateYn = topic.getPrivateYn();
         this.creationDate = topic.getCreationDate();
         this.chapterCount = topic.getChapterCount();

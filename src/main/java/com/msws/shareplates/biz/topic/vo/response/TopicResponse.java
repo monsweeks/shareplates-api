@@ -22,7 +22,6 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
     private String summary;
     private Long grpId;
     private String grpName;
-    private Integer iconIndex;
     private Boolean privateYn;
     private List<TopicResponse.User> users;
     private LocalDateTime creationDate;
@@ -38,7 +37,6 @@ public class TopicResponse extends RepresentationModel<TopicResponse> {
         if (topic.getGrp() != null) {
             this.grpName = topic.getGrp().getName();
         }
-        this.iconIndex = topic.getIconIndex();
         this.privateYn = topic.getPrivateYn();
         this.creationDate = topic.getCreationDate();
         this.chapterCount = topic.getChapterCount();

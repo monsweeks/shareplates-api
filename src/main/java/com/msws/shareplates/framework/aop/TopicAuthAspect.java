@@ -18,16 +18,16 @@ public class TopicAuthAspect {
 	@Autowired
 	private AuthService authService;
 	
-	@Pointcut("@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) && execution(* com.msws.shareplates..create*(..))")
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..create*(..))")
 	private void createOperator() {};
 	
-	@Pointcut("@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) && execution(* com.msws.shareplates..update*(..))")
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..update*(..))")
 	private void chapterUpdateOperator() {};
 	
-	@Pointcut("@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) && execution(* com.msws.shareplates..delete*(..))")
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..delete*(..))")
 	private void deleteOperator() {};
 
-	@Pointcut("@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) && execution(* com.msws.shareplates..select*(..))")
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..select*(..))")
 	private void selectOperator() {};
 	
 	@Pointcut("createOperator() || chapterUpdateOperator() || selectOperator()")

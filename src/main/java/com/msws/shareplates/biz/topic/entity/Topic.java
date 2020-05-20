@@ -44,9 +44,6 @@ public class Topic extends CommonEntity {
     @Column(name = "grp_id")
     private Long grpId;
 
-    @Column(name = "icon_index")
-    private Integer iconIndex;
-
     @Column(name = "private_yn")
     private Boolean privateYn;
 
@@ -67,11 +64,10 @@ public class Topic extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<TopicUser> topicUsers;
 
-    public Topic(Long id, String name, String summary, Integer iconIndex, Boolean privateYn, Integer chapterCount, Integer pageCount) {
+    public Topic(Long id, String name, String summary, Boolean privateYn, Integer chapterCount, Integer pageCount) {
         this.id = id;
         this.name = name;
         this.summary = summary;
-        this.iconIndex = iconIndex;
         this.privateYn = privateYn;
         this.chapterCount = chapterCount;
         this.pageCount = pageCount;
@@ -81,7 +77,6 @@ public class Topic extends CommonEntity {
         this.id = topicRequest.getId();
         this.name = topicRequest.getName();
         this.summary = topicRequest.getSummary();
-        this.iconIndex = topicRequest.getIconIndex();
         this.privateYn = topicRequest.getPrivateYn();
         this.grpId = topicRequest.getGrpId();
         this.useYn = true;
