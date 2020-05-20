@@ -89,7 +89,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeChangeInterceptor());
         registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/api/oauth/**")
                 .excludePathPatterns("/test/**/")
                 .excludePathPatterns("/swagger-ui.html")
                 .excludePathPatterns("/webjars/**")
