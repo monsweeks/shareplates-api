@@ -73,7 +73,6 @@ public class TopicService {
         topic.setName(topicInfo.getName());
         topic.setSummary(topicInfo.getSummary());
         topic.setGrpId(topicInfo.getGrpId());
-        topic.setIconIndex(topicInfo.getIconIndex());
         topic.setPrivateYn(topicInfo.getPrivateYn());
 
         // REMOVE

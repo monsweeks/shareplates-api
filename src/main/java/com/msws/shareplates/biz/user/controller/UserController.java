@@ -4,6 +4,7 @@ import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
+import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.mail.MailService;
@@ -91,7 +92,7 @@ public class UserController {
         return userService.checkEmail(email);
     }
 
-    @GetMapping("")
+    @GetMapping("/search")
     public List<User> selectUsers(@RequestParam Long grpId, @RequestParam String condition) {
         return userService.selectUserList(grpId, condition);
     }
@@ -159,7 +160,7 @@ public class UserController {
     }
 
     @AdminOnly
-    @GetMapping("/all")
+    @GetMapping("")
     public List<User> selectUsers() {
         return userService.selectUserList();
     }
