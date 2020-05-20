@@ -1,11 +1,13 @@
 package com.msws.shareplates.framework.session.vo;
 
+import java.io.Serializable;
+
+import com.msws.shareplates.common.code.RoleCode;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Builder
 @Data
@@ -14,4 +16,5 @@ import java.io.Serializable;
 public class UserInfo implements Serializable {
     private long id;
     private Boolean registered;
+    private RoleCode roleCode;
 }

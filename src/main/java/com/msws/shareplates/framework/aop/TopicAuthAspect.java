@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.msws.shareplates.biz.common.service.AuthService;
+import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 
 @Aspect
@@ -17,45 +18,32 @@ public class TopicAuthAspect {
 	@Autowired
 	private AuthService authService;
 	
-	@Pointcut("execution(* com.msws.shareplates..controller.ChapterController.create*(..))")
-	private void chapterCreateOperator() {};
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..create*(..))")
+	private void createOperator() {};
 	
-	@Pointcut("execution(* com.msws.shareplates..controller.ChapterController.update*(..))")
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..update*(..))")
 	private void chapterUpdateOperator() {};
 	
-	@Pointcut("execution(* com.msws.shareplates..controller.ChapterController.delete*(..))")
-	private void chapterDeleteOperator() {};
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..delete*(..))")
+	private void deleteOperator() {};
 
-	@Pointcut("execution(* com.msws.shareplates..controller.ChapterController.select*(..))")
-	private void chapterSelectOperator() {};
+	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..select*(..))")
+	private void selectOperator() {};
 	
-	@Pointcut("chapterCreateOperator() || chapterUpdateOperator() || chapterDeleteOperator()")
-	private void chapterCUDOperator() {};
-	
-	@Pointcut("execution(* com.msws.shareplates..controller.PageController.create*(..))")
-	private void pageCreateOperator() {};
-	
-	@Pointcut("execution(* com.msws.shareplates..controller.PageController.update*(..))")
-	private void pageUpdateOperator() {};
-	
-	@Pointcut("execution(* com.msws.shareplates..controller.PageController.delete*(..))")
-	private void pageDeleteOperator() {};
+	@Pointcut("createOperator() || chapterUpdateOperator() || selectOperator()")
+	private void cudOperator() {};
 
-	@Pointcut("execution(* com.msws.shareplates..controller.PageController.select*(..))")
-	private void pageSelectOperator() {};
-	
-	@Pointcut("pageCreateOperator() || pageUpdateOperator() || pageDeleteOperator()")
-	private void pageCUDOperator() {};
-
-	@Before("(pageCUDOperator() || chapterCUDOperator()) && args(topicId, .., userInfo)")
-	public void checkUserHasReadRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
-
-		 authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
-	}
-
-	@Before("(pageSelectOperator() || chapterSelectOperator()) && args(topicId, .., userInfo)")
+	@Before("cudOperator() && args(topicId, .., userInfo)")
 	public void checkUserHasWriteRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
 
+		if(userInfo.getRoleCode() != RoleCode.SUPER_MAN)
+			authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
+	}
+
+	@Before("selectOperator() && args(topicId, .., userInfo)")
+	public void checkUserHasReadRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
+		
+		if(userInfo.getRoleCode() != RoleCode.SUPER_MAN)
 		 authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
 	}
 }
