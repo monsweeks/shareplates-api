@@ -74,6 +74,7 @@ public class TopicService {
         topic.setSummary(topicInfo.getSummary());
         topic.setGrpId(topicInfo.getGrpId());
         topic.setPrivateYn(topicInfo.getPrivateYn());
+        topic.setContent(topicInfo.getContent());
 
         // REMOVE
         HashMap<Long, Boolean> currentUserMap = new HashMap<>();

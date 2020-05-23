@@ -57,10 +57,11 @@ public class TopicController {
 
     @DisableLogin
     @GetMapping("")
-    public TopicsResponse selectTopicList(@RequestParam Long grpId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, UserInfo info) {   
+    public TopicsResponse selectTopicList(@RequestParam Long grpId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, UserInfo info) {
+        Long userId = info != null ? info.getId() : null;
         // 그룹의 읽기 권한 확인
-        authService.checkUserHasReadRoleAboutGrp(grpId, info.getId());
-        return new TopicsResponse(topicService.selectTopicList(info.getId(), grpId, searchWord, order, direction));
+        authService.checkUserHasReadRoleAboutGrp(grpId, userId);
+        return new TopicsResponse(topicService.selectTopicList(userId, grpId, searchWord, order, direction));
     }
 
     @GetMapping("/{topicId}")
