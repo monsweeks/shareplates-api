@@ -14,6 +14,8 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
 
     Long countByGrpIdAndName(Long grpId, String name);
 
+    Long countByGrpIdAndNameAndIdNot(Long grpId, String name, Long id);
+
     Long countByGrpId(Long grpId);
 
     Optional<Topic> findByIdAndUseYnTrue(Long id);
