@@ -42,7 +42,7 @@ public class GrpResponse extends RepresentationModel<GrpResponse> {
         this.role = grp.getRole();
         this.creationDate = grp.getCreationDate();
 
-        this.admins = grp.getUsers().stream().filter(grpUser -> grpUser.getRole().equals(RoleCode.ADMIN.getCode())).map(grpUser
+        this.admins = grp.getUsers().stream().filter(grpUser -> RoleCode.ADMIN.equals(grpUser.getRole())).map(grpUser
                 -> User.builder()
                 .id(grpUser.getUser().getId())
                 .email(grpUser.getUser().getEmail())
@@ -50,7 +50,7 @@ public class GrpResponse extends RepresentationModel<GrpResponse> {
                 .info(grpUser.getUser().getInfo())
                 .build()).collect(Collectors.toList());
 
-        this.members = grp.getUsers().stream().filter(grpUser -> grpUser.getRole().equals(RoleCode.MEMBER.getCode())).map(grpUser
+        this.members = grp.getUsers().stream().filter(grpUser -> RoleCode.MEMBER.equals(grpUser.getRole())).map(grpUser
                 -> User.builder()
                 .id(grpUser.getUser().getId())
                 .email(grpUser.getUser().getEmail())

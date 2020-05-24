@@ -25,14 +25,14 @@ public class GrpsResponse extends RepresentationModel<GrpsResponse> {
                 .userCount(grp.getUserCount())
                 .topicCount(grp.getTopicCount())
                 .role(grp.getRole())
-                .admins(grp.getUsers().stream().filter(grpUser -> grpUser.getRole().equals(RoleCode.ADMIN.getCode())).map(grpUser
+                .admins(grp.getUsers().stream().filter(grpUser -> RoleCode.ADMIN.equals(grpUser.getRole())).map(grpUser
                         -> User.builder()
                         .id(grpUser.getUser().getId())
                         .email(grpUser.getUser().getName())
                         .name(grpUser.getUser().getName())
                         .info(grpUser.getUser().getInfo())
                         .build()).collect(Collectors.toList()))
-                .members(grp.getUsers().stream().filter(grpUser -> grpUser.getRole().equals(RoleCode.MEMBER.getCode())).map(grpUser
+                .members(grp.getUsers().stream().filter(grpUser -> RoleCode.MEMBER.equals(grpUser.getRole())).map(grpUser
                         -> User.builder()
                         .id(grpUser.getUser().getId())
                         .email(grpUser.getUser().getName())

@@ -79,7 +79,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 				
 				switch(each.trim()) {
 				case "pv" :
-					field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> e.getRole() == RoleCode.MEMBER && e.getStatus() == SocketStatusCode.ONLINE).count());
+					field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
 					break;
 				case "socketCnt" :
 					
