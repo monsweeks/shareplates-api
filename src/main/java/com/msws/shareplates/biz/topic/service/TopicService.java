@@ -49,7 +49,7 @@ public class TopicService {
     }
 
     public Topic createTopic(Topic topic) {
-        if (selectIsTopicNameExist(topic.getGrpId(), topic.getName())) {
+        if (selectIsTopicNameExist(topic.getGrpId(), topic.getName(), null)) {
             throw new ServiceException(ServiceExceptionCode.TOPIC_ALREADY_EXISTS);
         }
 
@@ -74,6 +74,7 @@ public class TopicService {
         topic.setSummary(topicInfo.getSummary());
         topic.setGrpId(topicInfo.getGrpId());
         topic.setPrivateYn(topicInfo.getPrivateYn());
+        topic.setContent(topicInfo.getContent());
 
         // REMOVE
         HashMap<Long, Boolean> currentUserMap = new HashMap<>();
@@ -110,8 +111,13 @@ public class TopicService {
         return topicRepository.findByIdAndUseYnTrue(id).orElse(null);
     }
 
-    public Boolean selectIsTopicNameExist(long grpId, String name) {
-        return topicRepository.countByGrpIdAndName(grpId, name) > 0;
+    public Boolean selectIsTopicNameExist(long grpId, String name, Long topicId) {
+        if (topicId == null) {
+            return topicRepository.countByGrpIdAndName(grpId, name) > 0;
+        } else {
+            return topicRepository.countByGrpIdAndNameAndIdNot(grpId, name, topicId) > 0;
+        }
+
     }
 
     public void deleteTopic(long id) {

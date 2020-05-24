@@ -49,18 +49,19 @@ public class TopicController {
     }
 
     @GetMapping("/exist")
-    public Boolean selectTopicNameExist(@RequestParam Long grpId, @RequestParam String name, UserInfo userInfo) {
+    public Boolean selectTopicNameExist(@RequestParam Long grpId, @RequestParam String name, @RequestParam(required = false) Long topicId, UserInfo userInfo) {
         // 그룹의 읽기 권한 확인
         authService.checkUserHasReadRoleAboutGrp(grpId, userInfo.getId());
-        return topicService.selectIsTopicNameExist(grpId, name);
+        return topicService.selectIsTopicNameExist(grpId, name, topicId);
     }
 
     @DisableLogin
     @GetMapping("")
-    public TopicsResponse selectTopicList(@RequestParam Long grpId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, UserInfo info) {   
+    public TopicsResponse selectTopicList(@RequestParam Long grpId, @RequestParam String searchWord, @RequestParam String order, @RequestParam String direction, UserInfo info) {
+        Long userId = info != null ? info.getId() : null;
         // 그룹의 읽기 권한 확인
-        authService.checkUserHasReadRoleAboutGrp(grpId, info.getId());
-        return new TopicsResponse(topicService.selectTopicList(info.getId(), grpId, searchWord, order, direction));
+        authService.checkUserHasReadRoleAboutGrp(grpId, userId);
+        return new TopicsResponse(topicService.selectTopicList(userId, grpId, searchWord, order, direction));
     }
 
     @GetMapping("/{topicId}")

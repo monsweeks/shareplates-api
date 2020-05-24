@@ -61,7 +61,7 @@ public class GrpService {
             throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_FOUND);
         }
 
-        boolean isAdminUser = grp.getUsers().stream().filter(grpUser -> grpUser.getUser().getId().equals(userId) && grpUser.getRole() == RoleCode.ADMIN).count() > 0;
+        boolean isAdminUser = grp.getUsers().stream().filter(grpUser -> grpUser.getUser().getId().equals(userId) && RoleCode.ADMIN.equals(grpUser.getRole())).count() > 0;
         if (isAdminUser) {
             return;
         }
@@ -129,7 +129,7 @@ public class GrpService {
             }
         }
 
-        if (users.size() < 1 || users.stream().filter(user -> user.getRole().equals(RoleCode.ADMIN.getCode())).count() < 1) {
+        if (users.size() < 1 || users.stream().filter(user -> RoleCode.ADMIN.equals(user.getRole())).count() < 1) {
             throw new ServiceException(ServiceExceptionCode.NO_MANAGER_ASSIGNED);
         }
 

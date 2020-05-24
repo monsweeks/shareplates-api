@@ -52,7 +52,7 @@ public class MessageSendService {
 	// TODO 접속 사용자 캐시로 변경할지 말지
 	public void sendToShareGroup(long shareId, RoleCode targetGroup, MessageData messageData, UserInfo userInfo) {
 		shareService.selectShare(shareId).getShareUsers().stream()
-				.filter(shareUser -> shareUser.getRole() == targetGroup)
+				.filter(shareUser -> shareUser.getRole().equals(targetGroup))
 				.forEach(shareUser -> messageBroker.pubMessage(MessageInfo.builder()
 						.userId(String.valueOf(shareUser.getUser().getId()))
 						.topicUrl(ChannelCode.SHARE_ROOM.getCode() + "/" + shareId)

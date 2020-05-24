@@ -1,15 +1,14 @@
 package com.msws.shareplates.framework.aop;
 
+import com.msws.shareplates.biz.common.service.AuthService;
+import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.framework.session.vo.UserInfo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.msws.shareplates.biz.common.service.AuthService;
-import com.msws.shareplates.common.code.RoleCode;
-import com.msws.shareplates.framework.session.vo.UserInfo;
 
 @Aspect
 @Component
@@ -35,15 +34,14 @@ public class TopicAuthAspect {
 
 	@Before("cudOperator() && args(topicId, .., userInfo)")
 	public void checkUserHasWriteRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
-
-		if(userInfo.getRoleCode() != RoleCode.SUPER_MAN)
+		if(!RoleCode.SUPER_MAN.equals(userInfo.getRoleCode())) {
 			authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
+		}
 	}
 
 	@Before("selectOperator() && args(topicId, .., userInfo)")
 	public void checkUserHasReadRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
-		
-		if(userInfo.getRoleCode() != RoleCode.SUPER_MAN)
+		if(!RoleCode.SUPER_MAN.equals(userInfo.getRoleCode()))
 		 authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
 	}
 }
