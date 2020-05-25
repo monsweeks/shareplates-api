@@ -58,7 +58,7 @@ spring:
     
 file:
   upload-dir: c:/fileupload/
-  allowed-extension: txt,pdf
+  allowed-extension: txt,pdf,png,jpg,gif
 
 shareplates:
   locale:

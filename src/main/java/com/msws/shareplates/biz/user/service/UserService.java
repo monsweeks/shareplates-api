@@ -49,16 +49,24 @@ public class UserService {
     }
 
     private String generateUserAvatar() {
-        HashMap<String, Integer> info = new HashMap<>();
-        info.put("bgStyleNumber", (int) Math.random() * 9);
-        info.put("formNumber", (int) Math.random() * 6);
-        info.put("hairNumber", (int) Math.random() * 13);
-        info.put("faceNumber", (int) Math.random() * 18);
-        info.put("accessoryNumber", 0);
-        info.put("faceColorNumber", (int) Math.random() * 12);
-        info.put("hairColorNumber", (int) Math.random() * 9);
-        info.put("accessoryColorNumber", (int) Math.random() * 24);
-        info.put("clothColorNumber", (int) Math.random() * 20);
+        HashMap<String, Integer> data = new HashMap<>();
+        data.put("bgStyleNumber", (int) Math.random() * 9);
+        data.put("formNumber", (int) Math.random() * 6);
+        data.put("hairNumber", (int) Math.random() * 13);
+        data.put("faceNumber", (int) Math.random() * 18);
+        data.put("accessoryNumber", 0);
+        data.put("faceColorNumber", (int) Math.random() * 12);
+        data.put("hairColorNumber", (int) Math.random() * 9);
+        data.put("accessoryColorNumber", (int) Math.random() * 24);
+        data.put("clothColorNumber", (int) Math.random() * 20);
+
+        HashMap<String, Object> icon = new HashMap<>();
+        icon.put("type" , "avatar");
+        icon.put("data" , data);
+
+        HashMap<String, Object> info = new HashMap<>();
+        info.put("icon", icon);
+
         return new Gson().toJson(info);
 
     }

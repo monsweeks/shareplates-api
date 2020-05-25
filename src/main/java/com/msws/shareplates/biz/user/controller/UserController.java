@@ -1,10 +1,12 @@
 package com.msws.shareplates.biz.user.controller;
 
+import com.msws.shareplates.biz.file.entity.FileInfo;
+import com.msws.shareplates.biz.file.service.FileInfoService;
+import com.msws.shareplates.biz.file.vo.FileInfoResponse;
 import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
-import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.mail.MailService;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -24,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,6 +46,12 @@ public class UserController {
 
     @Autowired
     MessageSourceAccessor messageSourceAccessor;
+
+    @Autowired
+    private FileInfoService fileStorageService;
+
+    @Autowired
+    private FileInfoService fileInfoService;
 
     @DisableLogin
     @PostMapping("")
@@ -182,6 +192,27 @@ public class UserController {
     @DeleteMapping("/logout")
     public void logout(HttpServletRequest request) {
         sessionUtil.logout(request);
+    }
+
+    @PostMapping("/{userId}/image")
+    public FileInfoResponse uploadFile(@PathVariable(value = "userId") long userId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type, HttpServletRequest req, UserInfo userInfo) {
+
+        if (userInfo.getId() != userId) {
+            throw new ServiceException(ServiceExceptionCode.BAD_REQUEST);
+        }
+        String fileName = fileStorageService.storeFile(file, req);
+
+        FileInfo fileInfo = FileInfo.builder().userId(userId)
+                .path(fileName)
+                .name(name)
+                .size(size)
+                .type("user")
+                .uuid(UUID.randomUUID().toString().replaceAll("-", ""))
+                .build();
+
+        fileInfoService.createFileInfo(fileInfo);
+
+        return new FileInfoResponse(fileInfo.getId(), fileInfo.getUuid());
     }
 
 }
