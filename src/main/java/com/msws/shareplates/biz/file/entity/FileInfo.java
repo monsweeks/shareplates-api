@@ -36,6 +36,9 @@ public class FileInfo extends CommonEntity {
     @Column(name = "page_id")
     private Long pageId;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @NotBlank
     @Length(min = 1, max = 100)
     @Column(name = "name", nullable = false)

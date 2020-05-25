@@ -19,7 +19,7 @@ public interface GrpRepository extends JpaRepository<Grp, Long> {
     @Query("SELECT new Grp(o.id, o.name, o.publicYn) FROM GrpUser ou INNER JOIN ou.user u INNER JOIN ou.grp o where o.useYn = :useYn and u.id = :userId")
     List<Grp> findUserGrp(@Param("useYn") Boolean useYn, @Param("userId") Long userId);
 
-    @Query("SELECT new Grp(t.id, t.name, t.description, t.publicYn, t.creationDate, COUNT(u.id), (SELECT COUNT(t.id) FROM Topic t WHERE t.grp.id = t.id), (SELECT iou.role FROM GrpUser iou WHERE iou.user.id = :userId AND iou.grp.id = t.id)) " +
+    @Query("SELECT new Grp(t.id, t.name, t.description, t.publicYn, t.creationDate, COUNT(u.id), (SELECT COUNT(t.id) FROM Topic t WHERE t.grp.id = ou.grp.id), (SELECT iou.role FROM GrpUser iou WHERE iou.user.id = :userId AND iou.grp.id = t.id)) " +
             " FROM GrpUser ou INNER JOIN ou.user u INNER JOIN ou.grp t " +
             " WHERE t.useYn = :useYn AND t.name LIKE CONCAT(:searchWord, '%') AND t.id IN (SELECT iou.grp.id FROM GrpUser iou WHERE iou.user.id = :userId) " +
             " GROUP BY t.id, t.name, t.publicYn, t.creationDate ")
