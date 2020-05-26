@@ -1,20 +1,5 @@
 package com.msws.shareplates.biz.share.controller;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.msws.shareplates.biz.chapter.entity.Chapter;
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
@@ -24,6 +9,7 @@ import com.msws.shareplates.biz.page.vo.PageModel;
 import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Chat;
 import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
@@ -34,13 +20,21 @@ import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.message.service.ShareMessageService;
 import com.msws.shareplates.framework.session.vo.UserInfo;
-
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Log
 @RestController
@@ -72,10 +66,27 @@ public class ShareContentsHttpController {
     public ShareInfo selectShareContent(@PathVariable(value = "share-id") long shareId, UserInfo userInfo) {
 
         Share share = shareService.selectShare(shareId);
-        // TODO private인 경우, 코드가 입력되었는지 확인해야 한다.
 
+        // 어드민으로부터 차단된 유저
         if (shareService.selectIsBanUser(shareId, userInfo.getId())) {
             throw new ServiceException(ServiceExceptionCode.SHARE_BANNED_USER);
+        }
+
+        // 프라이빗 공유의 경우, 엑세스 코드 입력 화면을 통해 이 API 전에 ShareUser 사용자가 만들어져 있어야 접근이 가능
+        if (share.getPrivateYn()) {
+            ShareUser shareUser = shareService.selectShareUser(share.getId(), userInfo.getId());
+
+            // 프라이빗인데 어드민이면, 사용자 정보 추가
+            if (share.getAdminUser().getId().equals(userInfo.getId())) {
+                ShareUser info = ShareUser.builder().user(User.builder().id(userInfo.getId()).build())
+                        .share(Share.builder().id(share.getId()).build())
+                        .status(SocketStatusCode.OFFLINE)
+                        .role(RoleCode.ADMIN )
+                        .banYn(false).build();
+                shareService.createOrUpdateShareUser(info);
+            } else if (shareUser == null) {
+                throw new ServiceException(ServiceExceptionCode.SHARE_NEED_ACCESS_CODE);
+            }
         }
 
         return ShareInfo.builder().topic(new TopicResponse(topicService.selectTopic(share.getTopic().getId())))

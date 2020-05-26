@@ -1,14 +1,14 @@
 package com.msws.shareplates.biz.share.repository;
 
-import java.util.List;
-
+import com.msws.shareplates.biz.share.entity.Share;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.msws.shareplates.biz.share.entity.Share;
+import java.util.List;
+import java.util.Optional;
 
 public interface ShareRepository extends JpaRepository<Share, Long> {
 
@@ -34,6 +34,11 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     @Modifying
     @Query("UPDATE Share s SET s.currentChapter.id = null, s.currentPage.id = null WHERE s.topic.id = :topicId AND s.currentChapter.id = :chapterId")
     void updateCurrentChapterAndPageNull(@Param("topicId") Long topicId, @Param("chapterId") Long chapterId);
+
+    Optional<Share> findByAccessCode(String accessCode);
+
+    Optional<Share> findByIdAndAccessCode(long shareId, String accessCode);
+
 
 }
 

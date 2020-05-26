@@ -18,4 +18,5 @@ public class ShareInfo extends RepresentationModel<ShareInfo> {
     private AccessCodeResponse accessCode;
     private ShareResponse share;
     private List<UserResponse> users;
+    private Boolean access;
 }

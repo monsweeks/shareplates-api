@@ -1,44 +1,35 @@
 package com.msws.shareplates.biz.share.controller;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
 import com.msws.shareplates.biz.common.service.AuthService;
 import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.AccessCodeService;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ShareRequest;
 import com.msws.shareplates.biz.share.vo.request.ShareSearchConditions;
-import com.msws.shareplates.biz.share.vo.response.AccessCodeResponse;
-import com.msws.shareplates.biz.share.vo.response.ShareInfo;
-import com.msws.shareplates.biz.share.vo.response.ShareResponse;
-import com.msws.shareplates.biz.share.vo.response.SharesResponse;
+import com.msws.shareplates.biz.share.vo.response.*;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.message.service.ShareMessageService;
 import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.annotation.DisableLogin;
 import com.msws.shareplates.framework.session.vo.UserInfo;
-
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.stream.Collectors;
 
 @Log
 @RestController
@@ -68,6 +59,40 @@ public class ShareController {
     public SharesResponse selectOpenShareList(HttpServletRequest request, UserInfo userInfo, ShareSearchConditions conditions) {
         Long userId = SessionUtil.getUserId(request);
         return new SharesResponse(shareService.selectOpenShareList(userId, conditions));
+    }
+
+    private ShareResponse getShareResponse(UserInfo userInfo, Share share) {
+
+        ShareUser info = ShareUser.builder().user(User.builder().id(userInfo.getId()).build())
+                .share(Share.builder().id(share.getId()).build())
+                .status(SocketStatusCode.OFFLINE)
+                .role(share.getAdminUser().getId().equals(userInfo.getId()) ? RoleCode.ADMIN : RoleCode.MEMBER)
+                .banYn(false).build();
+
+        shareService.createOrUpdateShareUser(info);
+
+        return new ShareResponse(share);
+    }
+
+    @ApiOperation(value = "엑세스 코드로 공유 정보 조회")
+    @PostMapping("/code")
+    public ShareResponse joinShareByAccessCode(@RequestParam("accessCode") String accessCode, UserInfo userInfo) {
+        Share share = shareService.selectShare(accessCode);
+        return getShareResponse(userInfo, share);
+    }
+
+    @ApiOperation(value = "공유 ID와 엑세스 코드로 공유 정보 조회 ")
+    @PostMapping("/{shareId}/register")
+    public ShareResponse registerUserToPrivateShare(@PathVariable Long shareId, @RequestParam("accessCode") String accessCode, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId, accessCode);
+        return getShareResponse(userInfo, share);
+    }
+
+    @ApiOperation(value = "토픽 공유 상태 조회 (ID, 열림, 프라이빗)")
+    @GetMapping("/{shareId}/status")
+    public ShareStatusResponse shareStatus(@PathVariable Long shareId) {
+        Share share = shareService.selectShare(shareId);
+        return new ShareStatusResponse(share);
     }
 
     @ApiOperation(value = "토픽 정보 조회 (공유 생성을 위한 기초 정보")

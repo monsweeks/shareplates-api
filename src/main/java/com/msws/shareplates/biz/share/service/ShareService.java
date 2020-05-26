@@ -1,18 +1,6 @@
 package com.msws.shareplates.biz.share.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.msws.shareplates.biz.share.entity.AccessCode;
-import com.msws.shareplates.biz.share.entity.Chat;
-import com.msws.shareplates.biz.share.entity.Share;
-import com.msws.shareplates.biz.share.entity.ShareUser;
-import com.msws.shareplates.biz.share.entity.ShareUserSocket;
+import com.msws.shareplates.biz.share.entity.*;
 import com.msws.shareplates.biz.share.repository.ChatRepository;
 import com.msws.shareplates.biz.share.repository.ShareRepository;
 import com.msws.shareplates.biz.share.repository.ShareUserRepository;
@@ -21,6 +9,15 @@ import com.msws.shareplates.biz.share.vo.request.ShareSearchConditions;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
+import com.msws.shareplates.common.exception.ServiceException;
+import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -78,7 +75,15 @@ public class ShareService {
     }
 
     public Share selectShare(long shareId) {
-        return shareRepository.findById(shareId).orElse(null);
+        return shareRepository.findById(shareId).orElseThrow(() -> new ServiceException(ServiceExceptionCode.SHARE_NOT_EXISTS_SHARE));
+    }
+
+    public Share selectShare(String accessCode) {
+        return shareRepository.findByAccessCode(accessCode).orElseThrow(() -> new ServiceException(ServiceExceptionCode.SHARE_NOT_EXISTS_SHARE));
+    }
+
+    public Share selectShare(long shareId, String accessCode) {
+        return shareRepository.findByIdAndAccessCode(shareId, accessCode).orElseThrow(() -> new ServiceException(ServiceExceptionCode.SHARE_NOT_EXISTS_SHARE));
     }
 
     public Share selectShareInfo(long shareId) {
