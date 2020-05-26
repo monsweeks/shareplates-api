@@ -38,6 +38,8 @@ public enum ServiceExceptionCode {
     SHARE_CANT_STOP_NO_ADMIN_USER(HttpStatus.BAD_REQUEST, "share.cant.no.admin.user"),
     SHARE_NOT_OPENED(HttpStatus.BAD_REQUEST, "share.not.opened"),
     SHARE_BANNED_USER(HttpStatus.BAD_REQUEST, "share.banned.user"),
+    SHARE_NEED_ACCESS_CODE(HttpStatus.BAD_REQUEST, "share.need.access.code"),
+    SHARE_NOT_EXISTS_SHARE(HttpStatus.BAD_REQUEST, "share.not.exists.share"),
     
     //챕터
     NOT_EXISTS_TOPIC(HttpStatus.NOT_FOUND, "chapter.error.not_exists_topic"),
