@@ -78,6 +78,12 @@ public class Share extends CommonEntity {
     @Column(name = "started_yn")
     private Boolean startedYn;
 
+    @Transient
+    private Long onLineUserCount;
+
+    @Transient
+    private Long offLineUserCount;
+
     public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startedYn, Long topicId, Long adminUserId) {
         this.id = id;
         this.name = name;
@@ -108,6 +114,24 @@ public class Share extends CommonEntity {
         this.lastCloseDate = lastCloseDate;
         this.startedYn = startedYn;
         this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
+    }
+
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startedYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo, Long onLineUserCount, Long offLineUserCount) {
+        this.id = id;
+        this.name = name;
+        this.openYn = openYn;
+        this.privateYn = privateYn;
+        this.memo = memo;
+        this.accessCode = accessCode;
+        this.currentChapter = Chapter.builder().id(currentChapterId).title(chapterTitle).build();
+        this.currentPage = Page.builder().id(currentPageId).title(pageTitle).build();
+        this.topic = Topic.builder().id(topicId).name(topicName).build();
+        this.lastOpenDate = lastOpenDate;
+        this.lastCloseDate = lastCloseDate;
+        this.startedYn = startedYn;
+        this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
+        this.onLineUserCount = onLineUserCount;
+        this.offLineUserCount = offLineUserCount;
     }
 
     public Share(ShareRequest shareRequest) {
