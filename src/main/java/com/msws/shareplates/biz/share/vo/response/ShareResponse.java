@@ -32,7 +32,8 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private String adminUserEmail;
     private String adminUserName;
     private String adminUserInfo;
-
+    private Long onLineUserCount;
+    private Long offLineUserCount;
 
     public ShareResponse(com.msws.shareplates.biz.share.entity.Share share) {
         this.id = share.getId();
@@ -53,6 +54,8 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.adminUserEmail = share.getAdminUser().getEmail();
         this.adminUserName = share.getAdminUser().getName();
         this.adminUserInfo = share.getAdminUser().getInfo();
+        this.onLineUserCount = share.getOnLineUserCount();
+        this.offLineUserCount = share.getOffLineUserCount();
     }
 
 }
