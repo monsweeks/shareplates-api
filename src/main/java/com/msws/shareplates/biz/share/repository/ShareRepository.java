@@ -24,6 +24,12 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     )
     List<Share> selectOpenShareList(@Param("userId") Long userId, @Param("name") String name, Sort sort);
 
+    @Query(" SELECT new java.lang.Long(count(s.id)) " +
+            " FROM Share s LEFT OUTER JOIN ShareUser su ON s.id = su.share.id " +
+            " WHERE s.openYn = true AND (s.privateYn = false OR s.adminUser.id = :userId) "
+    )
+    Long selectOpenShareCount(@Param("userId") Long userId);
+
     @Query(" SELECT new Share(s.id, s.name, s.openYn, s.privateYn, s.memo, s.accessCode, c.id, c.title, p.id, p.title, s.lastOpenDate, s.lastCloseDate, s.startedYn, s.topic.id, s.topic.name, s.adminUser.id, s.adminUser.email, s.adminUser.name, s.adminUser.info ) " +
             " FROM Share s LEFT OUTER JOIN Page p ON s.currentPage.id = p.id LEFT OUTER JOIN Chapter c ON s.currentChapter.id = c.id" +
             " WHERE s.id = :shareId")

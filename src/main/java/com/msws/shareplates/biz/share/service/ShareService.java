@@ -99,6 +99,9 @@ public class ShareService {
         return shareRepository.selectOpenShareList(userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
     }
 
+    public Long selectOpenShareCount(Long userId) {
+        return shareRepository.selectOpenShareCount(userId);
+    }
 
     public ShareUser createOrUpdateShareUser(ShareUser shareUser) {
         ShareUser sUser = shareUserRepository.findByShareIdAndUserId(shareUser.getShare().getId(), shareUser.getUser().getId());
