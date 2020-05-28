@@ -5,6 +5,7 @@ import com.msws.shareplates.biz.file.service.FileInfoService;
 import com.msws.shareplates.biz.file.vo.FileInfoResponse;
 import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.service.GrpService;
+import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
 import com.msws.shareplates.common.exception.ServiceException;
@@ -52,6 +53,9 @@ public class UserController {
 
     @Autowired
     private FileInfoService fileInfoService;
+
+    @Autowired
+    private ShareService shareService;
 
     @DisableLogin
     @PostMapping("")
@@ -112,16 +116,19 @@ public class UserController {
     public Map selectMyInfo(UserInfo userInfo) {
         Map<String, Object> info = new HashMap<>();
 
+        Long shareCount = shareService.selectOpenShareCount(userInfo != null ? userInfo.getId() : null);
+        info.put("shareCount", shareCount);
+
         if (userInfo == null) {
             info.put("user", null);
             info.put("grps", grpService.selectPublicGrpList());
+
         } else {
             User user = userService.selectUser(userInfo.getId());
             info.put("user", user);
             List<Grp> grps = grpService.selectUserGrpList(userInfo.getId(), true);
             info.put("grps", grps);
         }
-
 
         return info;
     }
