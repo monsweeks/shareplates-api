@@ -1,4 +1,4 @@
-package com.msws.shareplates.framework.annotation;
+package com.msws.shareplates.framework.aop.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -3,7 +3,7 @@ package com.msws.shareplates.biz.file.controller;
 
 import com.msws.shareplates.biz.file.entity.FileInfo;
 import com.msws.shareplates.biz.file.service.FileInfoService;
-import com.msws.shareplates.framework.annotation.AdminOnly;
+import com.msws.shareplates.framework.aop.annotation.AdminOnly;
 import com.msws.shareplates.framework.config.FileConfig;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import lombok.extern.slf4j.Slf4j;

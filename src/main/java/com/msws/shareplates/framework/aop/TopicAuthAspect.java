@@ -34,14 +34,14 @@ public class TopicAuthAspect {
 
 	@Before("cudOperator() && args(topicId, .., userInfo)")
 	public void checkUserHasWriteRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
-		if(!RoleCode.SUPER_MAN.equals(userInfo.getRoleCode())) {
+		if(RoleCode.SUPER_MAN != userInfo.getRoleCode()) {
 			authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
 		}
 	}
 
 	@Before("selectOperator() && args(topicId, .., userInfo)")
 	public void checkUserHasReadRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
-		if(!RoleCode.SUPER_MAN.equals(userInfo.getRoleCode()))
+		if(RoleCode.SUPER_MAN != userInfo.getRoleCode())
 		 authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
 	}
 }
