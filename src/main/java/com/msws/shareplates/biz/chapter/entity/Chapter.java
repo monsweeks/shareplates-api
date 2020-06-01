@@ -1,32 +1,19 @@
 package com.msws.shareplates.biz.chapter.entity;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.validator.constraints.Length;
-
 import com.msws.shareplates.biz.page.entity.Page;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.common.data.domain.CommonEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.Length;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Entity
 @Builder
@@ -73,5 +60,13 @@ public class Chapter extends CommonEntity {
     	this.title = title;
     	
     	return this;
+    }
+
+    public Integer getPageCount() {
+        if (this.pageCount == null) {
+            return 0;
+        }
+
+        return this.pageCount;
     }
 }
