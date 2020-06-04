@@ -1,5 +1,31 @@
 package com.msws.shareplates.biz.user.controller;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.msws.shareplates.biz.file.entity.FileInfo;
 import com.msws.shareplates.biz.file.service.FileInfoService;
 import com.msws.shareplates.biz.file.vo.FileInfoResponse;
@@ -8,27 +34,15 @@ import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
+import com.msws.shareplates.biz.user.vo.response.UserManagementResponse;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.mail.MailService;
 import com.msws.shareplates.common.util.SessionUtil;
-import com.msws.shareplates.framework.annotation.AdminOnly;
 import com.msws.shareplates.framework.annotation.DisableLogin;
+import com.msws.shareplates.framework.aop.annotation.AdminOnly;
 import com.msws.shareplates.framework.exception.BizException;
 import com.msws.shareplates.framework.session.vo.UserInfo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -178,8 +192,28 @@ public class UserController {
 
     @AdminOnly
     @GetMapping("")
-    public List<User> selectUsers() {
-        return userService.selectUserList();
+    public UserManagementResponse selectUsers() {
+    	userService.selectUserList();
+        return UserManagementResponse.builder()
+        		.userList(userService.selectUserList().stream().map(user -> UserManagementResponse.User.builder()
+    					.email(user.getEmail())
+    					.id(user.getId())
+    					.name(user.getName())
+    					.build()).collect(Collectors.toList()))
+        		.build();
+    }
+    
+    @AdminOnly
+    @GetMapping("/{user-id}")
+    public UserManagementResponse selectUser(@PathVariable("user-id") long userId) {   	
+    	
+    	return UserManagementResponse.builder()
+    			.user(Optional.ofNullable(userService.selectUser(userId)).map(user -> UserManagementResponse.User.builder()
+    					.email(user.getEmail())
+    					.id(user.getId())
+    					.name(user.getName())
+    					.build()).orElse(null))
+    			.build();
     }
 
     @DisableLogin
