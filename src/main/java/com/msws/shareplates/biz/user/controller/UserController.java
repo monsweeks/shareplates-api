@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +38,7 @@ import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.mail.MailService;
 import com.msws.shareplates.common.util.SessionUtil;
+import com.msws.shareplates.common.vo.EmptyResponse;
 import com.msws.shareplates.framework.annotation.DisableLogin;
 import com.msws.shareplates.framework.aop.annotation.AdminOnly;
 import com.msws.shareplates.framework.exception.BizException;
@@ -214,6 +214,24 @@ public class UserController {
     					.name(user.getName())
     					.build()).orElse(null))
     			.build();
+    }
+    
+    @AdminOnly
+    @DeleteMapping("/{user-id}")
+    public EmptyResponse deleteUser(@PathVariable("user-id") long userId) {
+    	
+    	userService.deleteUser(userId);
+    	
+    	return EmptyResponse.builder().build();
+    }
+    
+    //TODO 수정항목 파악수 수정 필요
+    @AdminOnly
+    @PutMapping("/{user-id}")
+    public EmptyResponse updateUser(@PathVariable("user-id") long userId) {
+    	
+    	
+    	return EmptyResponse.builder().build();
     }
 
     @DisableLogin
