@@ -200,9 +200,15 @@ public class UserController {
         userService.selectUserList();
         return UserManagementResponse.builder()
                 .userList(userService.selectUserList().stream().map(user -> UserManagementResponse.User.builder()
-                        .email(user.getEmail())
                         .id(user.getId())
+                        .email(user.getEmail())
                         .name(user.getName())
+                        .info(user.getInfo())
+                        .dateTimeFormat(user.getDateTimeFormat())
+                        .language(user.getLanguage())
+                        .registered(user.getRegistered())
+                        .roleCode(user.getRoleCode())
+                        .activeRoleCode(user.getActiveRoleCode())
                         .build()).collect(Collectors.toList()))
                 .build();
     }
@@ -213,9 +219,15 @@ public class UserController {
 
         return UserManagementResponse.builder()
                 .user(Optional.ofNullable(userService.selectUser(userId)).map(user -> UserManagementResponse.User.builder()
-                        .email(user.getEmail())
                         .id(user.getId())
+                        .email(user.getEmail())
                         .name(user.getName())
+                        .info(user.getInfo())
+                        .dateTimeFormat(user.getDateTimeFormat())
+                        .language(user.getLanguage())
+                        .registered(user.getRegistered())
+                        .roleCode(user.getRoleCode())
+                        .activeRoleCode(user.getActiveRoleCode())
                         .build()).orElse(null))
                 .build();
     }

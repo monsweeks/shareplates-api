@@ -71,7 +71,7 @@ public class OauthController {
             siteUser = userService.createUser(user, true);
         }
 
-        sessionUtil.login(req, siteUser.getId(), siteUser.getRegistered());
+        sessionUtil.login(req, siteUser, siteUser.getRegistered());
 
         log.info("received token info is {}", ti);
 

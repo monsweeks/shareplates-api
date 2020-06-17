@@ -17,7 +17,7 @@ import com.msws.shareplates.biz.share.vo.response.ShareResponse;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.biz.user.vo.response.UserResponse;
+import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
@@ -96,7 +96,7 @@ public class ShareContentsHttpController {
                 .share(new ShareResponse(share))
                 .users(share.getShareUsers().stream()
                         .filter(distinctByKey(shareUser -> shareUser.getUser().getId()))
-                        .map(shareUser -> new UserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage(), shareUser.getBanYn())).collect(Collectors.toList()))
+                        .map(shareUser -> new ShareUserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage(), shareUser.getBanYn())).collect(Collectors.toList()))
                 .build();
     }
 

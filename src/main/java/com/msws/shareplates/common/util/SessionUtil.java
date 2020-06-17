@@ -1,15 +1,14 @@
 package com.msws.shareplates.common.util;
 
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.framework.session.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.framework.session.vo.UserInfo;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 @Component
 public class SessionUtil {
@@ -59,10 +58,19 @@ public class SessionUtil {
 
     public boolean isAdmin(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        return session != null && "Y".equals(session.getAttribute("adminYn"));
+        if (session != null) {
+            UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
+            return userInfo.getRoleCode() == RoleCode.SUPER_MAN;
+        }
+
+        return false;
     }
 
     public void login(HttpServletRequest request, User user) {
+        this.login(request, user, true);
+    }
+
+    public void login(HttpServletRequest request, User user, Boolean register) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
@@ -72,22 +80,6 @@ public class SessionUtil {
         UserInfo info = UserInfo.builder()
                 .id(user.getId())
                 .roleCode(user.getActiveRoleCode())
-                .registered(true)
-                .build();
-
-        session.setAttribute("userInfo", info);
-
-    }
-
-    public void login(HttpServletRequest request, Long id, Boolean register) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-        session = request.getSession(true);
-
-        UserInfo info = UserInfo.builder()
-                .id(id)
                 .registered(register)
                 .build();
 
