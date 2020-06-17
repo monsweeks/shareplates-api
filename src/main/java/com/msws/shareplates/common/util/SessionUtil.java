@@ -71,7 +71,7 @@ public class SessionUtil {
 
         UserInfo info = UserInfo.builder()
                 .id(user.getId())
-                .roleCode(user.getRoleCode())
+                .roleCode(user.getActiveRoleCode())
                 .registered(true)
                 .build();
 

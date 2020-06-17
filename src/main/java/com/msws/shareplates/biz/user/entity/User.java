@@ -108,4 +108,8 @@ public class User extends CommonEntity {
     @Column(name="role_code", columnDefinition = "VARCHAR(15)")
     @Enumerated(EnumType.STRING)
     private RoleCode roleCode;
+
+    @Column(name="active_role_code", columnDefinition = "VARCHAR(15)")
+    @Enumerated(EnumType.STRING)
+    private RoleCode activeRoleCode;
 }
