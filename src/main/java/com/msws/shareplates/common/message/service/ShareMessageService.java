@@ -3,7 +3,7 @@ package com.msws.shareplates.common.message.service;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.service.UserService;
-import com.msws.shareplates.biz.user.vo.response.UserResponse;
+import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
@@ -43,7 +43,7 @@ public class ShareMessageService {
     }
 
     public void sendUserJoined(long shareId, UserInfo userInfo, RoleCode role) {
-        UserResponse user = new UserResponse(userService.selectUser(userInfo.getId()));
+        ShareUserResponse user = new ShareUserResponse(userService.selectUser(userInfo.getId()));
         user.setMessage(shareService.selectLastReadyChat(shareId, userInfo.getId()).getMessage());
         user.setShareRoleCode(role);
         user.setStatus(SocketStatusCode.ONLINE);
@@ -54,7 +54,7 @@ public class ShareMessageService {
 
     public void sendUserStatusChange(long shareId, UserInfo userInfo, SocketStatusCode statusCode) {
         ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId());
-        UserResponse user = new UserResponse(shareUser.getUser());
+        ShareUserResponse user = new ShareUserResponse(shareUser.getUser());
         user.setStatus(statusCode);
         user.setShareRoleCode(shareUser.getRole());
         MessageData data = MessageData.builder().type(MessageData.MessageType.USER_STATUS_CHANGE).build();

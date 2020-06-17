@@ -13,7 +13,7 @@ import org.springframework.hateoas.RepresentationModel;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UserResponse extends RepresentationModel<UserResponse> {
+public class ShareUserResponse extends RepresentationModel<ShareUserResponse> {
 
     private Long id;
     private String email;
@@ -24,14 +24,14 @@ public class UserResponse extends RepresentationModel<UserResponse> {
     private String message;
     private Boolean banYn;
 
-    public UserResponse(User user) {
+    public ShareUserResponse(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();
         this.info = user.getInfo();
     }
 
-    public UserResponse(User user, RoleCode roleCode, SocketStatusCode status, String message, Boolean banYn) {
+    public ShareUserResponse(User user, RoleCode roleCode, SocketStatusCode status, String message, Boolean banYn) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();

@@ -3,6 +3,7 @@ package com.msws.shareplates.biz.user.service;
 import com.google.gson.Gson;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.repository.UserRepository;
+import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.util.EncryptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +79,8 @@ public class UserService {
         user.setCreationDate(now);
         user.setLastUpdateDate(now);
         user.setAllowSearchYn(true);
+        user.setRoleCode(RoleCode.MEMBER);
+        user.setActiveRoleCode(RoleCode.MEMBER);
 
         String plainText = user.getPassword();
         byte[] saltBytes = encryptUtil.getSaltByteArray();
