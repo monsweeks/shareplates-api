@@ -3,6 +3,7 @@ package com.msws.shareplates.biz.topic.service;
 import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.entity.TopicUser;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
+import com.msws.shareplates.biz.topic.repository.TopicUserRepository;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.AuthCode;
 import com.msws.shareplates.common.code.RoleCode;
@@ -23,6 +24,9 @@ public class TopicService {
 
     @Autowired
     private TopicRepository topicRepository;
+
+    @Autowired
+    private TopicUserRepository topicUserRepository;
 
     public void checkUserHasTopicReadRole(Long topicId, Long userId) {
         Topic topic = selectTopic(topicId);
@@ -159,6 +163,10 @@ public class TopicService {
             }
             return AuthCode.NONE;
         }
+    }
+
+    public void deleteAllUserTopicInfo(Long userId) {
+        topicUserRepository.deleteAllByUserId(userId);
     }
 
 }

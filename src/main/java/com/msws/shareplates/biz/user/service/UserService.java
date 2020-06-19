@@ -1,6 +1,9 @@
 package com.msws.shareplates.biz.user.service;
 
 import com.google.gson.Gson;
+import com.msws.shareplates.biz.grp.service.GrpService;
+import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.repository.UserRepository;
 import com.msws.shareplates.common.code.RoleCode;
@@ -24,6 +27,15 @@ public class UserService {
 
     @Autowired
     private EncryptUtil encryptUtil;
+
+    @Autowired
+    private ShareService shareService;
+
+    @Autowired
+    private TopicService topicService;
+
+    @Autowired
+    private GrpService grpService;
 
     public List<User> selectUserList() {
         return userRepository.findAll();
@@ -165,8 +177,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(long id) {
-        userRepository.deleteById(id);
+    public void deleteUser(long userId) {
+        grpService.deleteAllUserGrpInfo(userId);
+        shareService.deleteAllUserShareInfo(userId);
+        topicService.deleteAllUserTopicInfo(userId);
+        userRepository.deleteById(userId);
     }
 
 }

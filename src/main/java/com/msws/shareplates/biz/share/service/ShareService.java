@@ -165,6 +165,7 @@ public class ShareService {
         return chatRepository.save(chat);
     }
 
+
     public void updateStatusById(Long id, SocketStatusCode code) {
         shareUserRepository.updateStatusById(id, code);
     }
@@ -202,6 +203,11 @@ public class ShareService {
         }
 
         return false;
+    }
+
+    public void deleteAllUserShareInfo(Long userId) {
+        shareUserRepository.deleteAllShareUserByUserId(userId);
+        chatRepository.deleteAllByUserId(userId);
     }
 
 }

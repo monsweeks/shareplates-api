@@ -8,7 +8,8 @@ import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
-import com.msws.shareplates.biz.user.vo.response.UserManagementResponse;
+import com.msws.shareplates.biz.user.vo.request.UserRequest;
+import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
@@ -196,10 +197,10 @@ public class UserController {
 
     @AdminOnly
     @GetMapping("")
-    public UserManagementResponse selectUsers() {
+    public UserResponse selectUsers() {
         userService.selectUserList();
-        return UserManagementResponse.builder()
-                .userList(userService.selectUserList().stream().map(user -> UserManagementResponse.User.builder()
+        return UserResponse.builder()
+                .userList(userService.selectUserList().stream().map(user -> UserResponse.User.builder()
                         .id(user.getId())
                         .email(user.getEmail())
                         .name(user.getName())
@@ -215,10 +216,10 @@ public class UserController {
 
     @AdminOnly
     @GetMapping("/{user-id}")
-    public UserManagementResponse selectUser(@PathVariable("user-id") long userId) {
+    public UserResponse selectUser(@PathVariable("user-id") long userId) {
 
-        return UserManagementResponse.builder()
-                .user(Optional.ofNullable(userService.selectUser(userId)).map(user -> UserManagementResponse.User.builder()
+        return UserResponse.builder()
+                .user(Optional.ofNullable(userService.selectUser(userId)).map(user -> UserResponse.User.builder()
                         .id(user.getId())
                         .email(user.getEmail())
                         .name(user.getName())
@@ -241,13 +242,33 @@ public class UserController {
         return EmptyResponse.builder().build();
     }
 
-    //TODO 수정항목 파악수 수정 필요
     @AdminOnly
     @PutMapping("/{user-id}")
-    public EmptyResponse updateUser(@PathVariable("user-id") long userId) {
+    public UserResponse updateUser(@Validated(User.ValidationUpdate.class) @RequestBody UserRequest user) {
+
+        User currentUser = userService.selectUser(user.getId());
+        currentUser.setInfo(user.getInfo());
+        currentUser.setName(user.getName());
+        currentUser.setDateTimeFormat(user.getDateTimeFormat());
+        currentUser.setLanguage(user.getLanguage());
+        currentUser.setActiveRoleCode(user.getActiveRoleCode());
+        currentUser.setRoleCode(user.getRoleCode());
+        userService.updateUser(currentUser);
+
+        return UserResponse.builder()
+                .user(UserResponse.User.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .info(user.getInfo())
+                        .dateTimeFormat(user.getDateTimeFormat())
+                        .language(user.getLanguage())
+                        .registered(user.getRegistered())
+                        .roleCode(user.getRoleCode())
+                        .activeRoleCode(user.getActiveRoleCode())
+                        .build()).build();
 
 
-        return EmptyResponse.builder().build();
     }
 
     @DisableLogin
@@ -272,9 +293,10 @@ public class UserController {
     @PostMapping("/{userId}/image")
     public FileInfoResponse uploadFile(@PathVariable(value = "userId") long userId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type, HttpServletRequest req, UserInfo userInfo) {
 
-        if (userInfo.getId() != userId) {
+        if (!(userInfo.getId() == userId || sessionUtil.isAdmin(req))) {
             throw new ServiceException(ServiceExceptionCode.BAD_REQUEST);
         }
+
         String fileName = fileStorageService.storeFile(file, req);
 
         FileInfo fileInfo = FileInfo.builder().userId(userId)
