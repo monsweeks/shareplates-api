@@ -1,25 +1,25 @@
 package com.msws.shareplates.biz.grp.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.entity.GrpUser;
 import com.msws.shareplates.biz.grp.repository.GrpRepository;
+import com.msws.shareplates.biz.grp.repository.GrpUserRepository;
 import com.msws.shareplates.biz.topic.repository.TopicRepository;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.AuthCode;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -27,6 +27,9 @@ public class GrpService {
 
     @Autowired
     private GrpRepository grpRepository;
+
+    @Autowired
+    private GrpUserRepository grpUserRepository;
 
     @Autowired
     private TopicRepository topicRepository;
@@ -165,6 +168,10 @@ public class GrpService {
             }
             return AuthCode.NONE;
         }
+    }
+
+    public void deleteAllUserGrpInfo(Long userId) {
+        grpUserRepository.deleteAllGrpUserByUserId(userId);
     }
 
 }

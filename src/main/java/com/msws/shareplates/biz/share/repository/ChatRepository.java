@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     Optional<Chat> findFirstByTypeAndShareIdAndUserIdOrderByCreationDateDesc(ChatTypeCode type, long shareId, long userId);
+
+    void deleteAllByUserId(Long userId);
 }
 
