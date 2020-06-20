@@ -11,7 +11,6 @@ public class ChapterOrdersRequest {
 
     private Long topicId;
 
-    @ApiModelProperty(value = "챕터 ID, ORDER 리스트", example = "[{id=101,orderNo=1},id=102,orderNo=2]")
     private List<Chapter> chapters;
 
     public List<com.msws.shareplates.biz.chapter.entity.Chapter> buildChaterListEntity() {

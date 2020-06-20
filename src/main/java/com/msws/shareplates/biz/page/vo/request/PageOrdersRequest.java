@@ -11,7 +11,6 @@ public class PageOrdersRequest {
 
     private Long topicId;
 
-    @ApiModelProperty(value = "페이지 ID, ORDER 리스트", example = "[{id=101,orderNo=1},id=102,orderNo=2]")
     private List<Page> pages;
 
     public List<com.msws.shareplates.biz.page.entity.Page> buildPageListEntity() {
