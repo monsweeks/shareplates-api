@@ -21,7 +21,7 @@ public class ChapterRequest {
 	private long topicId;
 	@ApiModelProperty(value="챕터 ID", example = "1")
 	private long id;
-	@ApiModelProperty(value="챕터 컨텐츠", example = "{chapterProperties: {backgroundColor : '#333'}")
+	@ApiModelProperty(value="챕터 컨텐츠", example = "")
 	private String content;
 	
 	public Chapter buildChapterEntity() {
