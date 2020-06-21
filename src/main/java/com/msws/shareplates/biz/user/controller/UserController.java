@@ -198,7 +198,6 @@ public class UserController {
     @AdminOnly
     @GetMapping("")
     public UserResponse selectUsers() {
-        userService.selectUserList();
         return UserResponse.builder()
                 .userList(userService.selectUserList().stream().map(user -> UserResponse.User.builder()
                         .id(user.getId())

@@ -78,6 +78,9 @@ public class Share extends CommonEntity {
     @Column(name = "started_yn")
     private Boolean startedYn;
 
+    @Column(name = "share_duration")
+    private Long shareDuration;
+
     @Transient
     private Long onLineUserCount;
 
@@ -116,7 +119,7 @@ public class Share extends CommonEntity {
         this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
     }
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startedYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo, Long onLineUserCount, Long offLineUserCount) {
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startedYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo, Long onLineUserCount, Long offLineUserCount, Long shareDuration) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
@@ -132,6 +135,7 @@ public class Share extends CommonEntity {
         this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
         this.onLineUserCount = onLineUserCount;
         this.offLineUserCount = offLineUserCount;
+        this.shareDuration = shareDuration;
     }
 
     public Share(ShareRequest shareRequest) {

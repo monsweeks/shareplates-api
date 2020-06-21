@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -42,6 +43,7 @@ public class ShareService {
         share.setOpenYn(true);
         share.setAdminUser(User.builder().id(userId).build());
         share.setLastOpenDate(LocalDateTime.now());
+        share.setShareDuration(0L);
 
         AccessCode accessCode = accessCodeService.selectAccessCodeByCode(share.getAccessCode());
         accessCode.setShare(share);
@@ -64,14 +66,19 @@ public class ShareService {
     }
 
     public Share updateShareStop(Share share) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime openDate = share.getLastOpenDate();
+        Long endTime = now.atZone(ZoneId.systemDefault()).toEpochSecond();
+        Long startTime = openDate.atZone(ZoneId.systemDefault()).toEpochSecond();
+        share.setShareDuration(share.getShareDuration() + (endTime - startTime));
         share.setStartedYn(false);
         share.setOpenYn(false);
-        share.setLastCloseDate(LocalDateTime.now());
+        share.setLastCloseDate(now);
         return shareRepository.save(share);
     }
 
-    public List<Share> selectShareListByTopicId(Long topicId, Long userId) {
-        return shareRepository.selectShareListByTopicId(topicId, userId);
+    public List<Share> selectShareListByTopicId(Long topicId) {
+        return shareRepository.selectShareListByTopicId(topicId);
     }
 
     public Share selectShare(long shareId) {
