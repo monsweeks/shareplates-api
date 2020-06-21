@@ -94,8 +94,8 @@ public class TopicController {
 
     @GetMapping("/{topicId}/shares")
     @CheckTopicAuth
-    public SharesResponse selectTopicShareList(@PathVariable Long topicId, UserInfo userInfo) {
-        return new SharesResponse(shareService.selectShareListByTopicId(topicId, userInfo.getId()));
+    public SharesResponse selectTopicShareList(@PathVariable Long topicId) {
+        return new SharesResponse(shareService.selectShareListByTopicId(topicId));
     }
 
 }
