@@ -78,14 +78,8 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 							field.put( each.trim(), 1);
 							break;
 						case "socketCnt" :
-							
-							//int socketCnt = 0;
-							//for( ShareUser shareuser : tempShareData.getShareUsers()) {
-							//	socketCnt += shareuser.getShareUserSocketList().size();						
-							//}
-							ShareUser shareuser = data.getShareUsers().stream()
-													.filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
-							field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
+
+							field.put(each.trim(), 1);
 							break;
 						
 						default :
@@ -105,10 +99,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 						field.put( each.trim(), -1);
 						break;
 					case "socketCnt" :
-
-						ShareUser shareuser = data.getShareUsers().stream()
-												.filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
-						field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
+						field.put(each.trim(), -1);
 						break;
 					
 					default :
