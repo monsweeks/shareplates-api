@@ -42,9 +42,10 @@ public class StatController {
 	
 	@DisableLogin
 	@GetMapping(path="/get")
-	public Object testget(@RequestParam(value = "amount", defaultValue = "1", required = true) int amount) {
+	public Object testget(@RequestParam(value = "amount", defaultValue = "1", required = true) int amount,
+			              @RequestParam(value = "groupby", defaultValue = "shareId", required = true) String groupby ) {
 		
-		return mainService.getData(TimeUnit.DAYS, amount);
+		return mainService.getData(TimeUnit.DAYS, amount, groupby);
  
 	}
 	

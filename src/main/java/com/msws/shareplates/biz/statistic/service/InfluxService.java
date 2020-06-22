@@ -69,45 +69,46 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 
 		
 		switch(data.getClass().getSimpleName().toLowerCase()) {
-		case "share" :
-			Share tempShareData = (Share) data;
-			
-			tags.put("shareId", tempShareData.getId().toString());
-			tags.put("topicId", tempShareData.getTopic().getId().toString());
-			tags.put("chapterId", tempShareData.getCurrentChapter().getId().toString());
-			tags.put("pageId", tempShareData.getCurrentPage().getId().toString());
-			tags.put("adminUserEmail", tempShareData.getAdminUser().getEmail());
-			tags.put("joinId", userId.toString());
-
-			for(String each : FIELD_NAME.split(",")) {
 				
-				switch(each.trim()) {
-				case "pv" :
-					//field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
-					field.put( each.trim(), 1);
-					break;
-				case "socketCnt" :
+			case "share" :
+					Share tempShareData = (Share) data;
 					
-					//int socketCnt = 0;
-					//for( ShareUser shareuser : tempShareData.getShareUsers()) {
-					//	socketCnt += shareuser.getShareUserSocketList().size();						
-					//}
-					ShareUser shareuser = tempShareData.getShareUsers().stream()
-											.filter(e -> e.getId() == userId).findFirst().orElse(null);
-					field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
+					tags.put("shareId", tempShareData.getId().toString());
+					tags.put("topicId", tempShareData.getTopic().getId().toString());
+					tags.put("chapterId", tempShareData.getCurrentChapter().getId().toString());
+					tags.put("pageId", tempShareData.getCurrentPage().getId().toString());
+					tags.put("adminUserEmail", tempShareData.getAdminUser().getEmail());
+					tags.put("joinId", userId.toString());
+		
+					for(String each : FIELD_NAME.split(",")) {
+						
+						switch(each.trim()) {
+						case "pv" :
+							//field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
+							field.put( each.trim(), 1);
+							break;
+						case "socketCnt" :
+							
+							//int socketCnt = 0;
+							//for( ShareUser shareuser : tempShareData.getShareUsers()) {
+							//	socketCnt += shareuser.getShareUserSocketList().size();						
+							//}
+							ShareUser shareuser = tempShareData.getShareUsers().stream()
+													.filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+							field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
+							break;
+						
+						default :
+								break;
+						}
+					}
+					
+					
 					break;
 				
-				default :
-						break;
-				}
-			}
-			
-			
-			break;
-			
-		default :
-			tags.put("shareId", "DN");  // dont know
-			break;
+			default :
+					tags.put("shareId", "DN");  // dont know
+					break;
 		}
 				
 
@@ -138,10 +139,11 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	}
 
 
-	@Override
-	public List<UserAccessCount> getData(String key, TimeUnit timeunit, int amount) {
-		
-		key = String.format("and %s = '%s'", TAG_NAME, key);
+	
+	public List<UserAccessCount> getData(String key, TimeUnit timeunit, int amount, String tag) {
+	
+		//query base = "SELECT %s as count FROM %s where time > %s %s group by \"%s\"";
+		key = String.format("and %s = '%s'", tag, key);
 		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key, TAG_NAME);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
