@@ -1,10 +1,7 @@
 package com.msws.shareplates.biz.share.service;
 
 import com.msws.shareplates.biz.share.entity.*;
-import com.msws.shareplates.biz.share.repository.ChatRepository;
-import com.msws.shareplates.biz.share.repository.ShareRepository;
-import com.msws.shareplates.biz.share.repository.ShareUserRepository;
-import com.msws.shareplates.biz.share.repository.ShareUserSocketRepository;
+import com.msws.shareplates.biz.share.repository.*;
 import com.msws.shareplates.biz.share.vo.request.ShareSearchConditions;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.ChatTypeCode;
@@ -39,15 +36,19 @@ public class ShareService {
     @Autowired
     private ChatRepository chatRepository;
 
+    @Autowired
+    private ShareTimeBucketRepository shareTimeBucketRepository;
+
     public Share createShare(Share share, Long userId) {
         share.setOpenYn(true);
         share.setAdminUser(User.builder().id(userId).build());
-        share.setLastOpenDate(LocalDateTime.now());
-        share.setShareDuration(0L);
+
+        ShareTimeBucket shareTimeBucket = ShareTimeBucket.builder().share(share).openDate(LocalDateTime.now()).build();
+        shareTimeBucket.setShare(share);
+        share.getShareTimeBuckets().add(shareTimeBucket);
 
         AccessCode accessCode = accessCodeService.selectAccessCodeByCode(share.getAccessCode());
         accessCode.setShare(share);
-
         accessCodeService.updateAccessCode(accessCode);
 
         return shareRepository.save(share);
@@ -57,7 +58,11 @@ public class ShareService {
         share.setStartedYn(false);
         share.setOpenYn(true);
         share.setAdminUser(User.builder().id(userId).build());
-        share.setLastOpenDate(LocalDateTime.now());
+
+        ShareTimeBucket shareTimeBucket = ShareTimeBucket.builder().share(share).openDate(LocalDateTime.now()).build();
+        shareTimeBucket.setShare(share);
+        share.getShareTimeBuckets().add(shareTimeBucket);
+
         return shareRepository.save(share);
     }
 
@@ -66,19 +71,15 @@ public class ShareService {
     }
 
     public Share updateShareStop(Share share) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime openDate = share.getLastOpenDate();
-        Long endTime = now.atZone(ZoneId.systemDefault()).toEpochSecond();
-        Long startTime = openDate.atZone(ZoneId.systemDefault()).toEpochSecond();
-        share.setShareDuration(share.getShareDuration() + (endTime - startTime));
         share.setStartedYn(false);
         share.setOpenYn(false);
-        share.setLastCloseDate(now);
+        share.getShareTimeBuckets().get(share.getShareTimeBuckets().size()-1).setCloseDate(LocalDateTime.now());
         return shareRepository.save(share);
     }
 
     public List<Share> selectShareListByTopicId(Long topicId) {
-        return shareRepository.selectShareListByTopicId(topicId);
+        // return shareRepository.selectShareListByTopicId(topicId);
+        return shareRepository.findAllByTopicId(topicId);
     }
 
     public Share selectShare(long shareId) {
@@ -103,7 +104,7 @@ public class ShareService {
     }
 
     public List<Share> selectOpenShareList(Long userId, ShareSearchConditions conditions) {
-        return shareRepository.selectOpenShareList(userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
+        return shareRepository.findAllByOpenYnTrueAndPrivateYnFalseOrAdminUserIdAndNameLike(userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
     }
 
     public Long selectOpenShareCount(Long userId) {

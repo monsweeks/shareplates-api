@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,6 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private String currentChapterTitle;
     private Long currentPageId;
     private String currentPageTitle;
-    private LocalDateTime lastOpenDate;
-    private LocalDateTime lastCloseDate;
     private Long topicId;
     private String topicName;
     private Boolean startedYn;
@@ -37,8 +34,8 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private String adminUserInfo;
     private Long onLineUserCount;
     private Long offLineUserCount;
-    private Long shareDuration;
     private List<ShareUserResponse> shareUsers;
+    private List<ShareTimeBucketResponse> shareTimeBuckets;
 
     public ShareResponse(com.msws.shareplates.biz.share.entity.Share share) {
         this.id = share.getId();
@@ -50,8 +47,6 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.currentChapterTitle = share.getCurrentChapter() != null ? share.getCurrentChapter().getTitle() : null;
         this.currentPageId = share.getCurrentPage() != null ? share.getCurrentPage().getId() : null;
         this.currentPageTitle = share.getCurrentPage() != null ? share.getCurrentPage().getTitle() : null;
-        this.lastOpenDate = share.getLastOpenDate();
-        this.lastCloseDate = share.getLastCloseDate();
         this.topicId = share.getTopic().getId();
         this.topicName = share.getTopic().getName();
         this.startedYn = share.getStartedYn();
@@ -61,11 +56,6 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.adminUserInfo = share.getAdminUser().getInfo();
         this.onLineUserCount = share.getOnLineUserCount();
         this.offLineUserCount = share.getOffLineUserCount();
-        if (share.getShareDuration() == null) {
-            this.shareDuration = 0L;
-        } else {
-            this.shareDuration = share.getShareDuration();
-        }
         if (share.getShareUsers() != null) {
             this.setShareUsers(share.getShareUsers().stream()
                     .map(shareUser -> ShareUserResponse.builder()
@@ -79,6 +69,16 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
                             .build())
                     .collect(Collectors.toList()));
         }
+
+        if (share.getShareTimeBuckets() != null) {
+            this.setShareTimeBuckets(share.getShareTimeBuckets().stream()
+                    .map(shareTimeBucket -> ShareTimeBucketResponse.builder()
+                            .id(shareTimeBucket.getId())
+                            .openDate(shareTimeBucket.getOpenDate())
+                            .closeDate(shareTimeBucket.getCloseDate()).build())
+                    .collect(Collectors.toList()));
+        }
+
 
     }
 
