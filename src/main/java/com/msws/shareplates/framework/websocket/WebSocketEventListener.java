@@ -15,6 +15,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.msws.shareplates.biz.share.entity.ShareUserSocket;
 import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.statistic.service.StatService;
 import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.message.service.ShareMessageService;
 import com.msws.shareplates.framework.session.vo.UserInfo;
@@ -26,6 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebSocketEventListener {
 
+	
+	@Autowired
+    private StatService statService;
+	
     @Autowired
     private ShareService shareService;
 
@@ -73,10 +78,16 @@ public class WebSocketEventListener {
                     shareMessageService.sendUserStatusChange(shareUserSocket.getShareUser().getShare().getId(), info, SocketStatusCode.OFFLINE);
                 }
             }
+            
+            //when disconnect event, write stat disconnect info. 
+            statService.writeDisconnectData( shareService.selectShare(shareUserSocket.getShareUser().getShare().getId()), info.getId());
 
         } else {
             shareService.deleteShareUserSocket(event.getSessionId());
         }
+        
         log.info("[Disconnected] websocket");
+        
+        
     }
 }

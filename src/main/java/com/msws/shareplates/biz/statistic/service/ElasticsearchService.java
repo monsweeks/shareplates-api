@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.logging.MDC;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,21 +21,10 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 		return Stat_database.elasticsearch;
 	}
 
-	@Async
-	@Override
-	public void setData(Object data) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 	@Override
-	public List<Object> getData(String key, TimeUnit timeunit, int value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public List<Object> getData(TimeUnit timeunit, int value) {
+	public List<Object> getData(String key, String value, TimeUnit timeunit, int amount) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -54,16 +43,14 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 		MDC.clear();
 	}
 
+
+
 	@Override
-	public void setData(Object data, Long userId) {
+	public void setData(Share data, Long userId, String flag) {
 		// TODO Auto-generated method stub
 		
 	}
 
-
-
-
-
-
+	
 
 }
