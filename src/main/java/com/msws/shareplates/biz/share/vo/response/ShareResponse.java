@@ -1,5 +1,6 @@
 package com.msws.shareplates.biz.share.vo.response;
 
+import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
@@ -35,6 +38,7 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private Long onLineUserCount;
     private Long offLineUserCount;
     private Long shareDuration;
+    private List<ShareUserResponse> shareUsers;
 
     public ShareResponse(com.msws.shareplates.biz.share.entity.Share share) {
         this.id = share.getId();
@@ -61,6 +65,19 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
             this.shareDuration = 0L;
         } else {
             this.shareDuration = share.getShareDuration();
+        }
+        if (share.getShareUsers() != null) {
+            this.setShareUsers(share.getShareUsers().stream()
+                    .map(shareUser -> ShareUserResponse.builder()
+                            .id(shareUser.getId())
+                            .email(shareUser.getUser().getEmail())
+                            .name(shareUser.getUser().getName())
+                            .info(shareUser.getUser().getInfo())
+                            .shareRoleCode(shareUser.getRole())
+                            .status(shareUser.getStatus())
+                            .banYn(shareUser.getBanYn())
+                            .build())
+                    .collect(Collectors.toList()));
         }
 
     }
