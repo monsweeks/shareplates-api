@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -69,17 +69,11 @@ public class Share extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<ShareUser> shareUsers;
 
-    @Column(name = "last_open_date")
-    private LocalDateTime lastOpenDate;
-
-    @Column(name = "last_close_date")
-    private LocalDateTime lastCloseDate;
-
     @Column(name = "started_yn")
     private Boolean startedYn;
 
-    @Column(name = "share_duration")
-    private Long shareDuration;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "share", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShareTimeBucket> shareTimeBuckets = new ArrayList<>();
 
     @Transient
     private Long onLineUserCount;
@@ -87,7 +81,7 @@ public class Share extends CommonEntity {
     @Transient
     private Long offLineUserCount;
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startedYn, Long topicId, Long adminUserId) {
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, Boolean startedYn, Long topicId, Long adminUserId) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
@@ -97,13 +91,11 @@ public class Share extends CommonEntity {
         this.currentChapter = Chapter.builder().id(currentChapterId).title(chapterTitle).build();
         this.currentPage = Page.builder().id(currentPageId).title(pageTitle).build();
         this.topic = Topic.builder().id(topicId).build();
-        this.lastOpenDate = lastOpenDate;
-        this.lastCloseDate = lastCloseDate;
         this.startedYn = startedYn;
         this.adminUser = User.builder().id(adminUserId).build();
     }
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startedYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo) {
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, Boolean startedYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
@@ -113,13 +105,11 @@ public class Share extends CommonEntity {
         this.currentChapter = Chapter.builder().id(currentChapterId).title(chapterTitle).build();
         this.currentPage = Page.builder().id(currentPageId).title(pageTitle).build();
         this.topic = Topic.builder().id(topicId).name(topicName).build();
-        this.lastOpenDate = lastOpenDate;
-        this.lastCloseDate = lastCloseDate;
         this.startedYn = startedYn;
         this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
     }
 
-    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, LocalDateTime lastOpenDate, LocalDateTime lastCloseDate, Boolean startedYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo, Long onLineUserCount, Long offLineUserCount, Long shareDuration) {
+    public Share(Long id, String name, Boolean openYn, Boolean privateYn, String memo, String accessCode, Long currentChapterId, String chapterTitle, Long currentPageId, String pageTitle, Boolean startedYn, Long topicId, String topicName, Long adminUserId, String adminUserEmail, String adminUserName, String adminUserInfo, Long onLineUserCount, Long offLineUserCount) {
         this.id = id;
         this.name = name;
         this.openYn = openYn;
@@ -129,13 +119,10 @@ public class Share extends CommonEntity {
         this.currentChapter = Chapter.builder().id(currentChapterId).title(chapterTitle).build();
         this.currentPage = Page.builder().id(currentPageId).title(pageTitle).build();
         this.topic = Topic.builder().id(topicId).name(topicName).build();
-        this.lastOpenDate = lastOpenDate;
-        this.lastCloseDate = lastCloseDate;
         this.startedYn = startedYn;
         this.adminUser = User.builder().id(adminUserId).email(adminUserEmail).name(adminUserName).info(adminUserInfo).build();
         this.onLineUserCount = onLineUserCount;
         this.offLineUserCount = offLineUserCount;
-        this.shareDuration = shareDuration;
     }
 
     public Share(ShareRequest shareRequest) {
