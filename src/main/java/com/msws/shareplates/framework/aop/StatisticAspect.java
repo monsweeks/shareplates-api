@@ -2,11 +2,15 @@ package com.msws.shareplates.framework.aop;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.service.ShareService;
@@ -14,6 +18,7 @@ import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 import com.msws.shareplates.biz.statistic.service.StatServiceIF;
 import com.msws.shareplates.common.exception.StatDBException;
+import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 public class StatisticAspect {
 	
 	private final StatServiceIF<?> mainService;
+	
+	@Autowired
+	private SessionUtil sessionUtil;
 	
 	@Autowired
     private ShareService shareService;
@@ -44,8 +52,12 @@ public class StatisticAspect {
 	public void logShareInfo(Object retVal) throws Throwable {
 		
 		try {
+			
+			HttpServletRequest request = 
+			        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			
 			ShareInfo data = (ShareInfo)retVal;
-			mainService.setData(shareService.selectShare(data.getShare().getId()));
+			mainService.setData(shareService.selectShare(data.getShare().getId()), sessionUtil.getUserId(request));
 		}catch(Exception e) {
 			log.error("fail to write statistical data : {}", e.getMessage());
 		}
@@ -56,8 +68,12 @@ public class StatisticAspect {
 	public void logShareResponse(long shareId, UserInfo userInfo, Object retVal) throws Throwable {
 		
 		try {
+			
+			HttpServletRequest request = 
+			        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			
 	        Share share = shareService.selectShare(shareId);
-			mainService.setData(share);			
+			mainService.setData(share, sessionUtil.getUserId(request));			
 		}catch(Exception e) {
 			log.error("fail to write statistical data : {}", e.getMessage());
 		}

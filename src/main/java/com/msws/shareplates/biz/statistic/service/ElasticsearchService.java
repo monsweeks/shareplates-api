@@ -54,6 +54,12 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 		MDC.clear();
 	}
 
+	@Override
+	public void setData(Object data, Long userId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 
