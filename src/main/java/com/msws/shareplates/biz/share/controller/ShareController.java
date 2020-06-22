@@ -126,6 +126,19 @@ public class ShareController {
                 .build();
     }
 
+    @ApiOperation(value = "공유 상세 정보 조회")
+    @GetMapping("/{shareId}/detail")
+    public ShareInfo selectShareDetail(@PathVariable Long shareId, UserInfo userInfo) {
+
+        Share share = shareService.selectShare(shareId);
+        // 토픽의 읽기 권한 체크
+        authService.checkUserHasReadRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
+
+        return ShareInfo.builder()
+                .accessCode(new AccessCodeResponse(accessCodeService.selectAccessCodeByCode(share.getAccessCode())))
+                .share(new ShareResponse(share)).build();
+    }
+
     @ApiOperation(value = "공유 정보 생성")
     @PostMapping("")
     public ShareResponse createShare(@RequestBody ShareRequest shareRequest, UserInfo userInfo) {

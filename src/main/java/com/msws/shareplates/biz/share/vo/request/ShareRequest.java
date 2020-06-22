@@ -17,7 +17,5 @@ public class ShareRequest {
     private String accessCode;
     private Long accessCodeId;
     private Long adminUserId;
-    private LocalDateTime lastOpenDate;
-    private LocalDateTime lastCloseDate;
 
 }
