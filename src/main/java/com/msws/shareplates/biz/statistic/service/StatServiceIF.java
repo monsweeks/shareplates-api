@@ -11,5 +11,6 @@ public interface StatServiceIF<T> {
 	public List<T> getData(String key, TimeUnit timeunit, int value);
 	public List<T> getData(TimeUnit timeunit, int value);
 	public void setData(Object data);
+	public void setData(Object data, Long userId);
 
 }

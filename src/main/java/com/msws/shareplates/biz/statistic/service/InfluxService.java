@@ -20,8 +20,6 @@ import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
-import com.msws.shareplates.common.code.RoleCode;
-import com.msws.shareplates.common.code.SocketStatusCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,9 +54,14 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		return Stat_database.influxdb;				
 	}	
 
-	@Async
 	@Override
 	public void setData(Object data) {
+		
+	}
+	
+	@Async
+	@Override
+	public void setData(Object data, Long userId) {
 		
 		Map<String, String> tags = new HashMap<String, String>();
 		Map<String, Object> field = new HashMap<String, Object>();			
@@ -74,20 +77,24 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 			tags.put("chapterId", tempShareData.getCurrentChapter().getId().toString());
 			tags.put("pageId", tempShareData.getCurrentPage().getId().toString());
 			tags.put("adminUserEmail", tempShareData.getAdminUser().getEmail());
+			tags.put("joinId", userId.toString());
 
 			for(String each : FIELD_NAME.split(",")) {
 				
 				switch(each.trim()) {
 				case "pv" :
-					field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
+					//field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
+					field.put( each.trim(), 1);
 					break;
 				case "socketCnt" :
 					
-					int socketCnt = 0;
-					for( ShareUser shareuser : tempShareData.getShareUsers()) {
-						socketCnt += shareuser.getShareUserSocketList().size();						
-					}
-					field.put(each.trim(), socketCnt);
+					//int socketCnt = 0;
+					//for( ShareUser shareuser : tempShareData.getShareUsers()) {
+					//	socketCnt += shareuser.getShareUserSocketList().size();						
+					//}
+					ShareUser shareuser = tempShareData.getShareUsers().stream()
+											.filter(e -> e.getId() == userId).findFirst().orElse(null);
+					field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
 					break;
 				
 				default :
