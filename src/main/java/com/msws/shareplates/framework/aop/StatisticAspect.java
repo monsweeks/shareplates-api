@@ -1,13 +1,10 @@
 package com.msws.shareplates.framework.aop;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,9 +12,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
-import com.msws.shareplates.biz.statistic.enums.Stat_database;
-import com.msws.shareplates.biz.statistic.service.StatServiceIF;
-import com.msws.shareplates.common.exception.StatDBException;
+import com.msws.shareplates.biz.statistic.service.StatService;
 import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 
@@ -29,24 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class StatisticAspect {
 	
-	private final StatServiceIF<?> mainService;
+	@Autowired
+	private StatService statService;
 	
 	@Autowired
 	private SessionUtil sessionUtil;
 	
 	@Autowired
     private ShareService shareService;
-
-	@Autowired
-	public StatisticAspect(List<StatServiceIF<?>> services, @Value("${stat.database}") Stat_database database) {
-		
-		this.mainService = services.stream().filter( e -> e.getName() == database)
-				.findFirst()
-				.orElseThrow( () ->
-						new StatDBException("no stat database selected")
-		);
- 
-	}
 
 	@AfterReturning(value = "execution(* com.msws.shareplates..controller.ShareContentsHttpController.selectShareContent(..))", returning = "retVal")
 	public void logShareInfo(Object retVal) throws Throwable {
@@ -57,7 +42,7 @@ public class StatisticAspect {
 			        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 			
 			ShareInfo data = (ShareInfo)retVal;
-			mainService.setData(shareService.selectShare(data.getShare().getId()), sessionUtil.getUserId(request));
+			statService.writeJoinData(shareService.selectShare(data.getShare().getId()), sessionUtil.getUserId(request));
 		}catch(Exception e) {
 			log.error("fail to write statistical data : {}", e.getMessage());
 		}
@@ -73,7 +58,7 @@ public class StatisticAspect {
 			        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 			
 	        Share share = shareService.selectShare(shareId);
-			mainService.setData(share, sessionUtil.getUserId(request));			
+	        statService.writeJoinData(share, sessionUtil.getUserId(request));			
 		}catch(Exception e) {
 			log.error("fail to write statistical data : {}", e.getMessage());
 		}

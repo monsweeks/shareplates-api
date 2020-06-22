@@ -13,7 +13,6 @@ import org.influxdb.impl.InfluxDBResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.influxdb.InfluxDBTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.msws.shareplates.biz.share.entity.Share;
@@ -53,61 +52,76 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	public Stat_database getName() {
 		return Stat_database.influxdb;				
 	}	
-
-	@Override
-	public void setData(Object data) {
-		
-	}
 	
-	@Async
 	@Override
-	public void setData(Object data, Long userId) {
+	public void setData(Share data, Long userId, String flag) {
 		
 		Map<String, String> tags = new HashMap<String, String>();
-		Map<String, Object> field = new HashMap<String, Object>();			
+		Map<String, Object> field = new HashMap<String, Object>();
 
-
+		tags.put("shareId", data.getId().toString());
+		tags.put("topicId", data.getTopic().getId().toString());
+		tags.put("chapterId", data.getCurrentChapter().getId().toString());
+		tags.put("pageId", data.getCurrentPage().getId().toString());
+		tags.put("adminUserEmail", data.getAdminUser().getEmail());
+		tags.put("joinId", userId.toString());
 		
-		switch(data.getClass().getSimpleName().toLowerCase()) {
-		case "share" :
-			Share tempShareData = (Share) data;
-			
-			tags.put("shareId", tempShareData.getId().toString());
-			tags.put("topicId", tempShareData.getTopic().getId().toString());
-			tags.put("chapterId", tempShareData.getCurrentChapter().getId().toString());
-			tags.put("pageId", tempShareData.getCurrentPage().getId().toString());
-			tags.put("adminUserEmail", tempShareData.getAdminUser().getEmail());
-			tags.put("joinId", userId.toString());
-
-			for(String each : FIELD_NAME.split(",")) {
+		switch(flag) {
 				
-				switch(each.trim()) {
-				case "pv" :
-					//field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
-					field.put( each.trim(), 1);
-					break;
-				case "socketCnt" :
+			case "join" :
+		
+					for(String each : FIELD_NAME.split(",")) {
+						
+						switch(each.trim()) {
+						case "pv" :
+							//field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
+							field.put( each.trim(), 1);
+							break;
+						case "socketCnt" :
+							
+							//int socketCnt = 0;
+							//for( ShareUser shareuser : tempShareData.getShareUsers()) {
+							//	socketCnt += shareuser.getShareUserSocketList().size();						
+							//}
+							ShareUser shareuser = data.getShareUsers().stream()
+													.filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+							field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
+							break;
+						
+						default :
+								break;
+						}
+					}
 					
-					//int socketCnt = 0;
-					//for( ShareUser shareuser : tempShareData.getShareUsers()) {
-					//	socketCnt += shareuser.getShareUserSocketList().size();						
-					//}
-					ShareUser shareuser = tempShareData.getShareUsers().stream()
-											.filter(e -> e.getId() == userId).findFirst().orElse(null);
-					field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
+					
 					break;
-				
-				default :
+					
+			case "out" :
+	
+				for(String each : FIELD_NAME.split(",")) {
+					
+					switch(each.trim()) {
+					case "pv" :
+						field.put( each.trim(), -1);
 						break;
+					case "socketCnt" :
+
+						ShareUser shareuser = data.getShareUsers().stream()
+												.filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+						field.put(each.trim(), shareuser == null ? 1 : shareuser.getShareUserSocketList().size());
+						break;
+					
+					default :
+							break;
+					}
 				}
-			}
-			
-			
-			break;
-			
-		default :
-			tags.put("shareId", "DN");  // dont know
-			break;
+				
+				
+				break;
+				
+			default :
+					tags.put("shareId", "DN");  // dont know
+					break;
 		}
 				
 
@@ -122,26 +136,9 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 
 	}
 	
-	@Override
-	public List<UserAccessCount> getData(TimeUnit timeunit, int amount) {
+	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount) {
 		
-		
-		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount)  , "", TAG_NAME);
-		log.error("query : {}", revised_query);
-		Query query = QueryBuilder.newQuery(revised_query)
-		        .forDatabase("stat")
-		        .create();
-
-		QueryResult queryResult = influxDBTemplate.query(query);
-		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
-
-	}
-
-
-	@Override
-	public List<UserAccessCount> getData(String key, TimeUnit timeunit, int amount) {
-		
-		key = String.format("and %s = '%s'", TAG_NAME, key);
+		key = String.format("and %s = '%s'", key, value);
 		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key, TAG_NAME);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
@@ -160,7 +157,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		for(String each : FIELD_NAME.split(",")) {
 			count_field.append(prefix);
 			prefix = ",";
-			count_field.append(String.format("count(%s)", each));
+			count_field.append(String.format("count(%s) as %s", each, each));
 		}
 
 		return count_field.toString();

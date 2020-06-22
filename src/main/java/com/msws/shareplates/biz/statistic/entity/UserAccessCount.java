@@ -12,8 +12,11 @@ import lombok.Setter;
 @Measurement(name = "test")
 public class UserAccessCount {
 	
-	@Column(name = "count")
-	private Double count;
+	@Column(name = "socketCnt")
+	private Double socketCnt;
+	
+	@Column(name = "pv")
+	private Double pv;
 	
 	@Column(name = "time")
 	private String time;
@@ -29,6 +32,9 @@ public class UserAccessCount {
 	
 	@Column(name = "pageId", tag = true )
 	private String pageId;
+	
+	@Column(name = "joinId", tag = true )
+	private String joinId;
 	
 	@Column(name = "adminUserEmail", tag = true )
 	private String 	adminUserEmail;
