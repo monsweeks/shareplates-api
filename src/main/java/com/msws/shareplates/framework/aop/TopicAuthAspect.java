@@ -21,7 +21,7 @@ public class TopicAuthAspect {
 	private void createOperator() {};
 	
 	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..update*(..))")
-	private void chapterUpdateOperator() {};
+	private void updateOperator() {};
 	
 	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..delete*(..))")
 	private void deleteOperator() {};
@@ -29,7 +29,7 @@ public class TopicAuthAspect {
 	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..select*(..))")
 	private void selectOperator() {};
 	
-	@Pointcut("createOperator() || chapterUpdateOperator() || selectOperator()")
+	@Pointcut("createOperator() || updateOperator() || deleteOperator()")
 	private void cudOperator() {};
 
 	@Before("cudOperator() && args(topicId, .., userInfo)")
