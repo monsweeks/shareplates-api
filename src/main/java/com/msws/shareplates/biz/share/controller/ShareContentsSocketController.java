@@ -6,6 +6,7 @@ import com.msws.shareplates.biz.share.entity.ShareUserSocket;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.common.code.ScreenTypeCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.exception.ServiceException;
 import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
@@ -54,12 +55,11 @@ public class ShareContentsSocketController {
         Share share = shareService.selectShareInfo(shareId);
         UserInfo userInfo = this.getUserInfo(headerAccessor);
 
-        // TODO privateY인 경우, 코드가 입력되었는지 확인 (코드 입력 화면이 아직 없음)
         if (!share.getOpenYn()) {
             throw new ServiceException(ServiceExceptionCode.SHARE_NOT_OPENED);
         }
 
-        if (shareService.selectIsBanUser(shareId, userInfo.getId())){
+        if (shareService.selectIsBanUser(shareId, userInfo.getId())) {
             // TODO 이 소켓에 대해서 BAN 처리되었음을 알리는 오류를 전송해야함
             throw new ServiceException(ServiceExceptionCode.SHARE_BANNED_USER);
         }
@@ -80,6 +80,30 @@ public class ShareContentsSocketController {
             shareUserSocket.setShareUser(shareUser);
             shareService.updateShareUserSocket(shareUserSocket);
             shareMessageService.sendUserJoined(shareId, userInfo, info.getRole());
+        }
+
+        return shareUser.getId();
+    }
+
+    // 토픽 매니저만 가능하도록 권한 처리
+    @MessageMapping("/screenType")
+    public Long screenType(@DestinationVariable(value = "shareId") long shareId, String screenType, SimpMessageHeaderAccessor headerAccessor) {
+
+        Share share = shareService.selectShareInfo(shareId);
+        UserInfo userInfo = this.getUserInfo(headerAccessor);
+
+        if (!share.getOpenYn()) {
+            throw new ServiceException(ServiceExceptionCode.SHARE_NOT_OPENED);
+        }
+
+        ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId());
+
+        String sessionId = headerAccessor.getSessionId();
+        ShareUserSocket shareUserSocket = shareService.selectShareUserSocket(sessionId);
+        shareUserSocket.setScreenTypeCode(ScreenTypeCode.valueOf(screenType));
+        if (shareUserSocket != null) {
+            shareService.updateShareUserSocket(shareUserSocket);
+            shareMessageService.sendScreenTypeRegistered(shareId, userInfo, ScreenTypeCode.valueOf(screenType));
         }
 
         return shareUser.getId();
