@@ -51,7 +51,6 @@ public class ShareContentsSocketController {
     @MessageMapping("/join")
     public Long join(@DestinationVariable(value = "shareId") long shareId, SimpMessageHeaderAccessor headerAccessor) {
 
-
         Share share = shareService.selectShareInfo(shareId);
         UserInfo userInfo = this.getUserInfo(headerAccessor);
 
@@ -85,7 +84,6 @@ public class ShareContentsSocketController {
         return shareUser.getId();
     }
 
-    // 토픽 매니저만 가능하도록 권한 처리
     @MessageMapping("/screenType")
     public Long screenType(@DestinationVariable(value = "shareId") long shareId, String screenType, SimpMessageHeaderAccessor headerAccessor) {
 
@@ -94,6 +92,10 @@ public class ShareContentsSocketController {
 
         if (!share.getOpenYn()) {
             throw new ServiceException(ServiceExceptionCode.SHARE_NOT_OPENED);
+        }
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
         }
 
         ShareUser shareUser = shareService.selectShareUser(shareId, userInfo.getId());
