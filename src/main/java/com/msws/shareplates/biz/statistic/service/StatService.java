@@ -42,6 +42,5 @@ public class StatService {
 	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount) {
 		return (List<UserAccessCount>) mainService.getData(key, value, TimeUnit.DAYS, amount);
 	}
-		
 	
 }
