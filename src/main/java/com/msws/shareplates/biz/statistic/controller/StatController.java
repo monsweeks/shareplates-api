@@ -13,9 +13,7 @@ import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.service.StatService;
 import com.msws.shareplates.framework.annotation.DisableLogin;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RequestMapping("stat")
 @RestController
 public class StatController {
