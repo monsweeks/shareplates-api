@@ -12,10 +12,12 @@ import java.util.List;
 
 public interface GrpRepository extends JpaRepository<Grp, Long> {
     Long countByUseYnTrueAndPublicYnTrue();
-
+    
+    @Cacheable(value="groupCache")
     @Query("select new Grp(o.id, o.name, o.publicYn) from Grp o where o.useYn = 1 and o.publicYn = 1")
     List<Grp> findPublicGrp();
 
+    @Cacheable(value="groupCache")
     @Query("SELECT new Grp(o.id, o.name, o.publicYn) FROM GrpUser ou INNER JOIN ou.user u INNER JOIN ou.grp o where o.useYn = :useYn and u.id = :userId")
     List<Grp> findUserGrp(@Param("useYn") Boolean useYn, @Param("userId") Long userId);
 
@@ -28,7 +30,6 @@ public interface GrpRepository extends JpaRepository<Grp, Long> {
     @Query("SELECT new java.lang.Boolean(o.publicYn) FROM Grp o WHERE id = :grpId")
     Boolean isPublicGrp(@Param("grpId") Long grpId);
 
-    @Cacheable(value="groupCache")
     @Query("SELECT ou.role FROM Grp o INNER JOIN GrpUser ou ON o.id = ou.grp.id WHERE  o.id = :grpId AND ou.user.id = :userId")
     String findUserGrpRole(@Param("grpId") Long grpId, @Param("userId") Long userId);
 }
