@@ -40,8 +40,11 @@ public class StatService {
 	}
 	
 	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount) {
-		return (List<UserAccessCount>) mainService.getData(key, value, TimeUnit.DAYS, amount);
+		return (List<UserAccessCount>) mainService.getData(key, value, timeunit, amount);
 	}
-		
+	
+	public List<UserAccessCount> getDetailData(String key, String value, TimeUnit timeunit, int amount) {
+		return (List<UserAccessCount>) mainService.getDetailData(key, value, timeunit, amount);
+	}
 	
 }

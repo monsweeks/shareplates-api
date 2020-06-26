@@ -10,6 +10,7 @@ public interface StatServiceIF<T> {
 	
 	public Stat_database getName();
 	public List<T> getData(String key, String value, TimeUnit timeunit, int amount);
+	public List<T> getDetailData(String key, String value, TimeUnit timeunit, int amount);
 	public void setData(Share data, Long userId, String flag);
 
 }

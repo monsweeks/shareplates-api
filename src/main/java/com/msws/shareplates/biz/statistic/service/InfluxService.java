@@ -16,7 +16,6 @@ import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.stereotype.Service;
 
 import com.msws.shareplates.biz.share.entity.Share;
-import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
@@ -40,7 +39,8 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Autowired
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
-	private final String QUERY_BASE = "SELECT %s as count FROM %s where time > %s %s group by \"%s\"";
+	private final String QUERY_BASE = "SELECT %s FROM %s where time > %s %s GROUP BY time(1m),joinId,shareId order by time asc";
+	private final String QUERY_DETAIL_BASE = "SELECT * FROM %s where time > %s %s";
 	
 	
 	public InfluxService() {
@@ -129,8 +129,14 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	
 	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount) {
 		
-		key = String.format("and %s = '%s'", key, value);
-		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key, TAG_NAME);
+		if( key == null || key.isEmpty()) {
+			key = "";
+		}else {
+			key = String.format("and %s = '%s'", key, value);
+		}
+		
+		//SELECT %s FROM %s where time > %s %s GROUP BY time(1m) order by time asc
+		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase("stat")
@@ -140,6 +146,25 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
 	}
 	
+	public List<UserAccessCount> getDetailData(String key, String value, TimeUnit timeunit, int amount) {
+		
+		if( key == null || key.isEmpty()) {
+			key = "";
+		}else {
+			key = String.format("and %s = '%s'", key, value);
+		}
+		
+		//SELECT * FROM %s where time > %s %s
+		String revised_query = String.format(QUERY_BASE, TABLE_NAME, getTimeStamp(timeunit, amount) , key);
+		log.error("query : {}", revised_query);
+		Query query = QueryBuilder.newQuery(revised_query)
+		        .forDatabase("stat")
+		        .create();
+
+		QueryResult queryResult = influxDBTemplate.query(query);
+		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
+	}
+
 	private String getCountFieldSentence() {
 		
 		StringBuilder count_field = new StringBuilder();
@@ -148,7 +173,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		for(String each : FIELD_NAME.split(",")) {
 			count_field.append(prefix);
 			prefix = ",";
-			count_field.append(String.format("count(%s) as %s", each, each));
+			count_field.append(String.format("sum(%s) as %s", each, each));
 		}
 
 		return count_field.toString();
