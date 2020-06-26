@@ -26,12 +26,27 @@ public class StatController {
 	
 	@DisableLogin
 	@GetMapping(path="/get")
-	public List<UserAccessCount> testget(@RequestParam(value = "amount", defaultValue = "1", required = true) int amount,
+	public List<UserAccessCount> get(
+			              @RequestParam(value = "timeunit", required = true) TimeUnit timeunit,
+						  @RequestParam(value = "amount", defaultValue = "1", required = true) int amount,
 			              @RequestParam(value = "search_key", required = false) String search_key,
 			              @RequestParam(value = "search_value", required = false) String search_value ) {
 		
 		
-		return statService.getData(search_key, search_value, TimeUnit.DAYS, amount);
+		return statService.getData(search_key, search_value, timeunit, amount);
+ 
+	}
+	
+	@DisableLogin
+	@GetMapping(path="/getDetail")
+	public List<UserAccessCount> getDetail(
+			              @RequestParam(value = "timeunit", required = true) TimeUnit timeunit,
+						  @RequestParam(value = "amount", defaultValue = "1", required = true) int amount,
+			              @RequestParam(value = "search_key", required = false) String search_key,
+			              @RequestParam(value = "search_value", required = false) String search_value ) {
+		
+		
+		return statService.getDetailData(search_key, search_value, timeunit, amount);
  
 	}
 	
