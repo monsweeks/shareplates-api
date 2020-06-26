@@ -19,4 +19,5 @@ public class ShareInfo extends RepresentationModel<ShareInfo> {
     private ShareResponse share;
     private List<ShareUserResponse> users;
     private Boolean access;
+    private List<ChatResponse> messages;
 }
