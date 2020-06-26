@@ -24,7 +24,7 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 	
 	
 	@Override
-	public List<Object> getData(String key, String value, TimeUnit timeunit, int amount) {
+	public List<Object> getData(String key, String value, TimeUnit timeunit, int amount, String timespan) {
 		// TODO Auto-generated method stub
 		return null;
 	}
