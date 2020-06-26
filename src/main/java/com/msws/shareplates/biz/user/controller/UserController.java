@@ -9,6 +9,7 @@ import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.service.UserService;
 import com.msws.shareplates.biz.user.vo.request.UserRequest;
+import com.msws.shareplates.biz.user.vo.response.MyInfoResponse;
 import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.exception.ServiceException;
@@ -115,29 +116,47 @@ public class UserController {
 
     @DisableLogin
     @GetMapping("/my-info")
-    public Map selectMyInfo(UserInfo userInfo) {
-        Map<String, Object> info = new HashMap<>();
+    public MyInfoResponse selectMyInfo(UserInfo userInfo) {
 
         Long shareCount = shareService.selectOpenShareCount(userInfo != null ? userInfo.getId() : null);
-        info.put("shareCount", shareCount);
 
         if (userInfo == null) {
-            info.put("user", null);
-            info.put("grps", grpService.selectPublicGrpList());
+            
+            return MyInfoResponse.builder()
+            		.shareCount(shareCount)
+            		.grps(grpService.selectPublicGrpList().stream().map(group 
+            				-> MyInfoResponse.GroupInfo.builder()
+            					.id(group.getId())
+            					.build())
+            				.collect(Collectors.toList()))
+            		.build();
 
-        } else {
-            User user = userService.selectUser(userInfo.getId());
-            info.put("user", user);
-            List<Grp> grps = grpService.selectUserGrpList(userInfo.getId(), true);
-            info.put("grps", grps);
+        } else {            
+            
+            return MyInfoResponse.builder()
+            		.shareCount(shareCount)
+            		.user(Optional.ofNullable(userService.selectUser(userInfo.getId())).map(user 
+			            		-> MyInfoResponse.UserInfo.builder()
+			            			.id(user.getId())
+			            			.email(user.getEmail())
+			            			.info(user.getInfo())
+			            			.name(user.getName())
+			            			.roleCode(user.getRoleCode())
+			            			.activeRoleCode(user.getActiveRoleCode())
+			            			.language(user.getLanguage())
+			            			.build())
+			            .orElseThrow(() -> new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER)))
+            		.grps(grpService.selectUserGrpList(userInfo.getId(), true).stream().map(group 
+            				-> MyInfoResponse.GroupInfo.builder()
+            					.id(group.getId())
+            					.build())
+            				.collect(Collectors.toList()))
+            		.build();
         }
-
-        return info;
     }
 
     @PutMapping("/my-info")
-    public Map updateMyInfo(@Validated(User.ValidationUpdate.class) @RequestBody User user, HttpServletRequest request) {
-        Map<String, Object> info = new HashMap<>();
+    public MyInfoResponse updateMyInfo(@Validated(User.ValidationUpdate.class) @RequestBody User user, HttpServletRequest request) {
         Long userId = SessionUtil.getUserId(request);
         if (!user.getId().equals(userId)) {
             throw new BizException(messageSourceAccessor.getMessage("common.error.badRequest"));
@@ -161,12 +180,25 @@ public class UserController {
         }
 
         userService.updateUser(currentUser);
-        List<Grp> grps = grpService.selectUserGrpList(userId, true);
 
-        info.put("user", currentUser);
-        info.put("grps", grps);
-
-        return info;
+        return MyInfoResponse.builder()
+        		.user(Optional.ofNullable(currentUser).map(userInfo 
+		            		-> MyInfoResponse.UserInfo.builder()
+		            			.id(user.getId())
+		            			.email(user.getEmail())
+		            			.info(user.getInfo())
+		            			.name(user.getName())
+		            			.roleCode(user.getRoleCode())
+		            			.activeRoleCode(user.getActiveRoleCode())
+		            			.language(userInfo.getLanguage())
+		            			.build())
+		            .orElseThrow(() -> new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER)))
+        		.grps(grpService.selectUserGrpList(userId, true).stream().map(group 
+        				-> MyInfoResponse.GroupInfo.builder()
+        					.id(group.getId())
+        					.build())
+        				.collect(Collectors.toList()))
+        		.build();
     }
 
     @DisableLogin
