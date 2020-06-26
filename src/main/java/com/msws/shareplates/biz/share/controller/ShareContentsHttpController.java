@@ -12,12 +12,15 @@ import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
+import com.msws.shareplates.biz.share.vo.response.AccessCodeResponse;
+import com.msws.shareplates.biz.share.vo.response.ChatResponse;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.share.vo.response.ShareResponse;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
+import com.msws.shareplates.biz.user.vo.response.UserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
@@ -89,14 +92,23 @@ public class ShareContentsHttpController {
             }
         }
 
-        return ShareInfo.builder().topic(new TopicResponse(topicService.selectTopic(share.getTopic().getId())))
+        return ShareInfo.builder()
+                .topic(new TopicResponse(topicService.selectTopic(share.getTopic().getId())))
                 .chapters(chapterService.selectChapters(share.getTopic().getId()).stream()
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
                         .collect(Collectors.toList()))
                 .share(new ShareResponse(share))
+                .accessCode(AccessCodeResponse.builder().code(share.getAccessCode()).build())
                 .users(share.getShareUsers().stream()
                         .filter(distinctByKey(shareUser -> shareUser.getUser().getId()))
                         .map(shareUser -> new ShareUserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage(), shareUser.getBanYn())).collect(Collectors.toList()))
+                .messages(shareService.selectShareChatList(shareId)
+                        .stream()
+                        .map(chat -> ChatResponse.builder()
+                                .message(chat.getMessage())
+                                .creationDate(chat.getCreationDate())
+                                .user(UserResponse.User.builder().id(chat.getUser().getId()).name(chat.getUser().getName()).info(chat.getUser().getInfo()).build())
+                                .build()).collect(Collectors.toList()))
                 .build();
     }
 

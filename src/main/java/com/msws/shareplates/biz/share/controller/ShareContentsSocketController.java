@@ -85,7 +85,7 @@ public class ShareContentsSocketController {
     }
 
     @MessageMapping("/screenType")
-    public Long screenType(@DestinationVariable(value = "shareId") long shareId, String screenType, SimpMessageHeaderAccessor headerAccessor) {
+    public void screenType(@DestinationVariable(value = "shareId") long shareId, String screenType, SimpMessageHeaderAccessor headerAccessor) {
 
         Share share = shareService.selectShareInfo(shareId);
         UserInfo userInfo = this.getUserInfo(headerAccessor);
@@ -107,8 +107,6 @@ public class ShareContentsSocketController {
             shareService.updateShareUserSocket(shareUserSocket);
             shareMessageService.sendScreenTypeRegistered(shareId, userInfo, ScreenTypeCode.valueOf(screenType));
         }
-
-        return shareUser.getId();
     }
 
 
