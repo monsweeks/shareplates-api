@@ -1,5 +1,6 @@
 package com.msws.shareplates.biz.share.entity;
 
+import com.msws.shareplates.common.code.ScreenTypeCode;
 import com.msws.shareplates.common.data.domain.CommonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,4 +28,8 @@ public class ShareUserSocket extends CommonEntity {
 
     @Column(name = "session_id")
     private String sessionId;
+
+    @Column(name="screen_type_code", columnDefinition = "VARCHAR(15)")
+    @Enumerated(EnumType.STRING)
+    private ScreenTypeCode screenTypeCode;
 }

@@ -6,6 +6,7 @@ import com.msws.shareplates.biz.user.service.UserService;
 import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
 import com.msws.shareplates.common.code.RoleCode;
+import com.msws.shareplates.common.code.ScreenTypeCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.message.vo.MessageData;
 import com.msws.shareplates.framework.session.vo.UserInfo;
@@ -50,6 +51,19 @@ public class ShareMessageService {
         MessageData data = MessageData.builder().type(MessageData.MessageType.USER_JOINED).build();
         data.addData("user", user);
         messageSendService.sendToShare(shareId, data, userInfo);
+    }
+
+    public void sendScreenTypeRegistered(long shareId, UserInfo userInfo, ScreenTypeCode screenTypeCode) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.SCREEN_TYPE_REGISTERED).build();
+        data.addData("screenType", screenTypeCode);
+
+        // TODO 양일동
+        // 1. 어드민에게 메세지 보내기 (동작안함)
+        messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
+        // 2. 어드민이면서, 특정 ScreenType에만 메세지 보내기 (없는데 추가), ScreenTypeCode는 소켓별로 등록되며, ShareUserSocket에 속성으로 추가되어 있음
+        // messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, screenTypeCode, data, userInfo);
+        // 3. 아래 메소드는 언제사용하는거임??
+        //messageSendService.sendToShareGroup
     }
 
     public void sendUserStatusChange(long shareId, UserInfo userInfo, SocketStatusCode statusCode) {
