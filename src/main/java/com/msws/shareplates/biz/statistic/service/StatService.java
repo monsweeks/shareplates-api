@@ -39,8 +39,8 @@ public class StatService {
 		mainService.setData(selectShare, userId, "out");
 	}
 	
-	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount) {
-		return (List<UserAccessCount>) mainService.getData(key, value, timeunit, amount);
+	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount, String timespan) {
+		return (List<UserAccessCount>) mainService.getData(key, value, timeunit, amount,timespan);
 	}
 	
 	public List<UserAccessCount> getDetailData(String key, String value, TimeUnit timeunit, int amount) {

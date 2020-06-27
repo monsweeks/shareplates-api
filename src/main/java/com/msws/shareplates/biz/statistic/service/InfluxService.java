@@ -39,7 +39,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Autowired
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
-	private final String QUERY_BASE = "SELECT %s FROM %s where time > %s %s GROUP BY time(1m),joinId,shareId order by time asc";
+	private final String QUERY_BASE = "SELECT %s FROM %s where time > %s %s GROUP BY time(%s),joinId,shareId order by time asc";
 	private final String QUERY_DETAIL_BASE = "SELECT * FROM %s where time > %s %s";
 	
 	
@@ -127,7 +127,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 
 	}
 	
-	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount) {
+	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount, String timespan) {
 		
 		if( key == null || key.isEmpty()) {
 			key = "";
@@ -136,7 +136,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		}
 		
 		//SELECT %s FROM %s where time > %s %s GROUP BY time(1m) order by time asc
-		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key);
+		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key, timespan);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase("stat")
@@ -155,7 +155,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		}
 		
 		//SELECT * FROM %s where time > %s %s
-		String revised_query = String.format(QUERY_BASE, TABLE_NAME, getTimeStamp(timeunit, amount) , key);
+		String revised_query = String.format(QUERY_DETAIL_BASE, TABLE_NAME, getTimeStamp(timeunit, amount) , key);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase("stat")
