@@ -10,7 +10,9 @@ import com.msws.shareplates.biz.page.vo.response.PageResponse;
 import com.msws.shareplates.biz.share.entity.Chat;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
+import com.msws.shareplates.biz.share.repository.ShareChapterResponse;
 import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.share.vo.ScrollInfo;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.AccessCodeResponse;
 import com.msws.shareplates.biz.share.vo.response.ChatResponse;
@@ -33,6 +35,7 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -84,7 +87,7 @@ public class ShareContentsHttpController {
                 ShareUser info = ShareUser.builder().user(User.builder().id(userInfo.getId()).build())
                         .share(Share.builder().id(share.getId()).build())
                         .status(SocketStatusCode.OFFLINE)
-                        .role(RoleCode.ADMIN )
+                        .role(RoleCode.ADMIN)
                         .banYn(false).build();
                 shareService.createOrUpdateShareUser(info);
             } else if (shareUser == null) {
@@ -92,8 +95,11 @@ public class ShareContentsHttpController {
             }
         }
 
+        List<ShareChapterResponse> chapterPageList = chapterService.selectChapters(share.getTopic().getId()).stream().map(chapter -> ShareChapterResponse.builder().build().buildChapterModel(chapter)).collect(Collectors.toList());
+
         return ShareInfo.builder()
                 .topic(new TopicResponse(topicService.selectTopic(share.getTopic().getId())))
+                .chapterPageList(share.getAdminUser().getId().equals(userInfo.getId()) ? chapterPageList : null)
                 .chapters(chapterService.selectChapters(share.getTopic().getId()).stream()
                         .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
                         .collect(Collectors.toList()))
@@ -117,7 +123,6 @@ public class ShareContentsHttpController {
     @GetMapping("/chapters/{chapterId}/pages")
     public PageResponse selectSharePageList(@PathVariable(value = "share-id") long shareId, @PathVariable Long chapterId, UserInfo userInfo) {
 
-        // TODO private인 경우, 코드가 입력되었는지 확인해야 한다.
         Share share = shareService.selectShare(shareId);
 
         if (shareService.selectIsBanUser(shareId, userInfo.getId())) {
@@ -130,7 +135,6 @@ public class ShareContentsHttpController {
                         .collect(Collectors.toList()))
                 .build();
     }
-
 
     @ApiOperation(value = "공유 시작")
     @PutMapping("/start")
@@ -148,6 +152,7 @@ public class ShareContentsHttpController {
 
         return new ShareResponse(share);
     }
+
 
     @ApiOperation(value = "공유 중지")
     @PutMapping("/stop")
@@ -241,6 +246,34 @@ public class ShareContentsHttpController {
         shareMessageService.sendUserKickOut(shareId, userId, userInfo);
 
         return true;
+    }
+
+    @ApiOperation(value = "스크롤 정보 변경")
+    @PutMapping("/scroll")
+    public ShareResponse updateScrollInfo(@PathVariable(value = "share-id") long shareId, @RequestBody ScrollInfo scrollInfo, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+
+        shareMessageService.sendScrollInfoChange(shareId, scrollInfo, userInfo);
+
+        return new ShareResponse(share);
+    }
+
+    @ApiOperation(value = "스크롤 위치 이동")
+    @PutMapping("/scroll/{dir}")
+    public ShareResponse moveScroll(@PathVariable(value = "share-id") long shareId, @PathVariable String dir, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+
+        shareMessageService.sendMoveScroll(shareId, dir, userInfo);
+
+        return new ShareResponse(share);
     }
 
 

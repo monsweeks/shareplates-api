@@ -2,6 +2,7 @@ package com.msws.shareplates.common.message.service;
 
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.share.vo.ScrollInfo;
 import com.msws.shareplates.biz.user.service.UserService;
 import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
 import com.msws.shareplates.common.code.ChatTypeCode;
@@ -94,5 +95,17 @@ public class ShareMessageService {
         data.addData("message", message);
         data.addData("senderId", userInfo.getId());
         messageSendService.sendToShare(shareId, data, userInfo);
+    }
+
+    public void sendScrollInfoChange(long shareId, ScrollInfo scrollInfo, UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.SCROLL_INFO_CHANGED).build();
+        data.addData("scrollInfo", scrollInfo);
+        messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
+    }
+
+    public void sendMoveScroll(long shareId, String dir , UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.MOVE_SCROLL).build();
+        data.addData("dir", dir);
+        messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
     }
 }
