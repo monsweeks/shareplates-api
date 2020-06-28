@@ -45,6 +45,8 @@ public class MessageData {
         USER_KICK_OUT("사용자 제거"),
         USER_BAN("사용자 차단"),
         USER_ALLOWED("사용자 차단 해제"),
+        SCROLL_INFO_CHANGED("프로젝터 스크롤 정보 변경"),
+        MOVE_SCROLL("스크롤 위치 이동"),
         CHAT_MESSAGE("채팅");
     	
     	String desc;

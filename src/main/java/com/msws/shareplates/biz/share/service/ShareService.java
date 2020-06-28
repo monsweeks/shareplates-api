@@ -40,6 +40,7 @@ public class ShareService {
 
     public Share createShare(Share share, Long userId) {
         share.setOpenYn(true);
+        share.setStartedYn(false);
         share.setAdminUser(User.builder().id(userId).build());
 
         ShareTimeBucket shareTimeBucket = ShareTimeBucket.builder().share(share).openDate(LocalDateTime.now()).build();

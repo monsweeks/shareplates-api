@@ -1,6 +1,7 @@
 package com.msws.shareplates.biz.share.vo.response;
 
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
+import com.msws.shareplates.biz.share.repository.ShareChapterResponse;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
 import lombok.Builder;
@@ -20,4 +21,5 @@ public class ShareInfo extends RepresentationModel<ShareInfo> {
     private List<ShareUserResponse> users;
     private Boolean access;
     private List<ChatResponse> messages;
+    private List<ShareChapterResponse> chapterPageList;
 }
