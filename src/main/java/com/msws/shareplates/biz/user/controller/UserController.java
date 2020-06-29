@@ -3,7 +3,6 @@ package com.msws.shareplates.biz.user.controller;
 import com.msws.shareplates.biz.file.entity.FileInfo;
 import com.msws.shareplates.biz.file.service.FileInfoService;
 import com.msws.shareplates.biz.file.vo.FileInfoResponse;
-import com.msws.shareplates.biz.grp.entity.Grp;
 import com.msws.shareplates.biz.grp.service.GrpService;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.user.entity.User;
@@ -30,7 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -121,37 +123,41 @@ public class UserController {
         Long shareCount = shareService.selectOpenShareCount(userInfo != null ? userInfo.getId() : null);
 
         if (userInfo == null) {
-            
-            return MyInfoResponse.builder()
-            		.shareCount(shareCount)
-            		.grps(grpService.selectPublicGrpList().stream().map(group 
-            				-> MyInfoResponse.GroupInfo.builder()
-            					.id(group.getId())
-            					.build())
-            				.collect(Collectors.toList()))
-            		.build();
 
-        } else {            
-            
             return MyInfoResponse.builder()
-            		.shareCount(shareCount)
-            		.user(Optional.ofNullable(userService.selectUser(userInfo.getId())).map(user 
-			            		-> MyInfoResponse.UserInfo.builder()
-			            			.id(user.getId())
-			            			.email(user.getEmail())
-			            			.info(user.getInfo())
-			            			.name(user.getName())
-			            			.roleCode(user.getRoleCode())
-			            			.activeRoleCode(user.getActiveRoleCode())
-			            			.language(user.getLanguage())
-			            			.build())
-			            .orElseThrow(() -> new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER)))
-            		.grps(grpService.selectUserGrpList(userInfo.getId(), true).stream().map(group 
-            				-> MyInfoResponse.GroupInfo.builder()
-            					.id(group.getId())
-            					.build())
-            				.collect(Collectors.toList()))
-            		.build();
+                    .shareCount(shareCount)
+                    .grps(grpService.selectPublicGrpList().stream().map(group
+                            -> MyInfoResponse.GroupInfo.builder()
+                            .id(group.getId())
+                            .name(group.getName())
+                            .publicYn(group.getPublicYn())
+                            .build())
+                            .collect(Collectors.toList()))
+                    .build();
+
+        } else {
+
+            return MyInfoResponse.builder()
+                    .shareCount(shareCount)
+                    .user(Optional.ofNullable(userService.selectUser(userInfo.getId())).map(user
+                            -> MyInfoResponse.UserInfo.builder()
+                            .id(user.getId())
+                            .email(user.getEmail())
+                            .info(user.getInfo())
+                            .name(user.getName())
+                            .roleCode(user.getRoleCode())
+                            .activeRoleCode(user.getActiveRoleCode())
+                            .language(user.getLanguage())
+                            .build())
+                            .orElseThrow(() -> new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER)))
+                    .grps(grpService.selectUserGrpList(userInfo.getId(), true).stream().map(group
+                            -> MyInfoResponse.GroupInfo.builder()
+                            .id(group.getId())
+                            .name(group.getName())
+                            .publicYn(group.getPublicYn())
+                            .build())
+                            .collect(Collectors.toList()))
+                    .build();
         }
     }
 
@@ -182,23 +188,23 @@ public class UserController {
         userService.updateUser(currentUser);
 
         return MyInfoResponse.builder()
-        		.user(Optional.ofNullable(currentUser).map(userInfo 
-		            		-> MyInfoResponse.UserInfo.builder()
-		            			.id(user.getId())
-		            			.email(user.getEmail())
-		            			.info(user.getInfo())
-		            			.name(user.getName())
-		            			.roleCode(user.getRoleCode())
-		            			.activeRoleCode(user.getActiveRoleCode())
-		            			.language(userInfo.getLanguage())
-		            			.build())
-		            .orElseThrow(() -> new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER)))
-        		.grps(grpService.selectUserGrpList(userId, true).stream().map(group 
-        				-> MyInfoResponse.GroupInfo.builder()
-        					.id(group.getId())
-        					.build())
-        				.collect(Collectors.toList()))
-        		.build();
+                .user(Optional.ofNullable(currentUser).map(userInfo
+                        -> MyInfoResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .info(user.getInfo())
+                        .name(user.getName())
+                        .roleCode(user.getRoleCode())
+                        .activeRoleCode(user.getActiveRoleCode())
+                        .language(userInfo.getLanguage())
+                        .build())
+                        .orElseThrow(() -> new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER)))
+                .grps(grpService.selectUserGrpList(userId, true).stream().map(group
+                        -> MyInfoResponse.GroupInfo.builder()
+                        .id(group.getId())
+                        .build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @DisableLogin

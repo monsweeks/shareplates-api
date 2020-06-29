@@ -1,14 +1,9 @@
 package com.msws.shareplates.biz.user.vo.response;
 
-import java.util.List;
-
 import com.msws.shareplates.common.code.RoleCode;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -36,6 +31,9 @@ public class MyInfoResponse {
 	@Getter
 	public static class GroupInfo{
 		private long id;
+		private String name;
+		private boolean publicYn;
+
 	}
 	
 
