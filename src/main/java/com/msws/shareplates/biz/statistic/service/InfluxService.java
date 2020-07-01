@@ -12,6 +12,7 @@ import org.influxdb.dto.QueryResult;
 import org.influxdb.impl.InfluxDBResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Profile("production")
 @Slf4j
 @Service
 public class InfluxService implements StatServiceIF<UserAccessCount>{
