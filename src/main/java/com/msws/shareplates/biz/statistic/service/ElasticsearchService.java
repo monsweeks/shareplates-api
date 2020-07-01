@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.logging.MDC;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -12,6 +13,7 @@ import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Profile("production")
 @Slf4j
 @Service
 public class ElasticsearchService implements StatServiceIF<Object> {

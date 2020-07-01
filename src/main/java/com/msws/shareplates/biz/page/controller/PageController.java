@@ -1,5 +1,6 @@
 package com.msws.shareplates.biz.page.controller;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.msws.shareplates.biz.chapter.entity.Chapter;
 import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.chapter.vo.ChapterModel;
 import com.msws.shareplates.biz.file.entity.FileInfo;
@@ -107,12 +109,14 @@ public class PageController {
     @GetMapping("")
     public PageResponse selectPages(@PathVariable(value = "topic-id") long topicId, @PathVariable(value = "chapter-id") long chapterId, UserInfo userInfo) {
 
+    	Chapter chapter = chapterService.selectChapter(chapterId, topicId);
+    	
         return PageResponse.builder()
-                .topic(TopicModel.builder().build().buildTopicModel(topicService.selectTopic(topicId)))
-                .pages(pageService.selectPages(topicId, chapterId).stream()
+                .topic(TopicModel.builder().build().buildTopicModel(chapter.getTopic()))
+                .pages(chapter.getPages().stream()
                         .map(page -> PageModel.builder().build().buildPageModel(page))
                         .collect(Collectors.toList()))
-                .chapter(ChapterModel.builder().build().buildChapterModel(chapterService.selectChapter(chapterId, topicId)))
+                .chapter(ChapterModel.builder().build().buildChapterModel(chapter))
                 .build();
     }
 
