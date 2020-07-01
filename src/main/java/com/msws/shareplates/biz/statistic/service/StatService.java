@@ -13,20 +13,22 @@ import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 import com.msws.shareplates.common.exception.StatDBException;
 
+
 @Service
 public class StatService {
 	
 	private final StatServiceIF<?> mainService;
 	
 	@Autowired
-	public StatService(List<StatServiceIF<?>> services, @Value("${stat.database}") Stat_database database) {
+	public StatService(List<StatServiceIF<?>> services, 
+			@Value("${stat.database}") Stat_database database) {
 		
 		this.mainService = services.stream().filter( e -> e.getName() == database)
-				.findFirst()
-				.orElseThrow( () ->
-						new StatDBException("no stat database selected")
+					.findFirst()
+					.orElseThrow( () ->
+							new StatDBException("no stat database selected")
 		);
- 
+		
 	}
 
 	@Async
