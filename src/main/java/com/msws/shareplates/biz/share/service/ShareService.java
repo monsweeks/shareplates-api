@@ -104,7 +104,7 @@ public class ShareService {
     }
 
     public List<Share> selectOpenShareList(Long userId, ShareSearchConditions conditions) {
-        return shareRepository.findAllByOpenYnTrueAndPrivateYnFalseOrAdminUserIdAndNameLike(userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
+        return shareRepository.findAllByOpenYnTrueAndPrivateYnFalseAndNameContainingIgnoreCaseOrOpenYnTrueAndPrivateYnTrueAndAdminUserIdAndNameContainingIgnoreCase(conditions.getSearchWord(), userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
     }
 
     public Long selectOpenShareCount(Long userId) {
