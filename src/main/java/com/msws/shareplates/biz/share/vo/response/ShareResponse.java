@@ -1,14 +1,18 @@
 package com.msws.shareplates.biz.share.vo.response;
 
 import com.msws.shareplates.biz.user.vo.response.ShareUserResponse;
+import com.msws.shareplates.common.code.SocketStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Builder
 @NoArgsConstructor
@@ -54,31 +58,24 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.adminUserEmail = share.getAdminUser().getEmail();
         this.adminUserName = share.getAdminUser().getName();
         this.adminUserInfo = share.getAdminUser().getInfo();
-        this.onLineUserCount = share.getOnLineUserCount();
-        this.offLineUserCount = share.getOffLineUserCount();
-        if (share.getShareUsers() != null) {
-            this.setShareUsers(share.getShareUsers().stream()
-                    .map(shareUser -> ShareUserResponse.builder()
-                            .id(shareUser.getId())
-                            .email(shareUser.getUser().getEmail())
-                            .name(shareUser.getUser().getName())
-                            .info(shareUser.getUser().getInfo())
-                            .shareRoleCode(shareUser.getRole())
-                            .status(shareUser.getStatus())
-                            .banYn(shareUser.getBanYn())
-                            .build())
-                    .collect(Collectors.toList()));
-        }
+        this.onLineUserCount = Optional.ofNullable(share.getShareUsers()).map(Collection::stream).orElseGet(Stream::empty).filter((shareUser -> shareUser.getStatus() == SocketStatusCode.ONLINE)).count();
+        this.offLineUserCount = Optional.ofNullable(share.getShareUsers()).map(Collection::stream).orElseGet(Stream::empty).filter((shareUser -> shareUser.getStatus() == SocketStatusCode.OFFLINE)).count();
+        this.shareUsers = Optional.ofNullable(share.getShareUsers()).map(Collection::stream).orElseGet(Stream::empty).map(shareUser -> ShareUserResponse.builder()
+                .id(shareUser.getId())
+                .email(shareUser.getUser().getEmail())
+                .name(shareUser.getUser().getName())
+                .info(shareUser.getUser().getInfo())
+                .shareRoleCode(shareUser.getRole())
+                .status(shareUser.getStatus())
+                .banYn(shareUser.getBanYn())
+                .build())
+                .collect(Collectors.toList());
 
-        if (share.getShareTimeBuckets() != null) {
-            this.setShareTimeBuckets(share.getShareTimeBuckets().stream()
-                    .map(shareTimeBucket -> ShareTimeBucketResponse.builder()
-                            .id(shareTimeBucket.getId())
-                            .openDate(shareTimeBucket.getOpenDate())
-                            .closeDate(shareTimeBucket.getCloseDate()).build())
-                    .collect(Collectors.toList()));
-        }
-
+        this.shareTimeBuckets = Optional.ofNullable(share.getShareTimeBuckets()).map(Collection::stream).orElseGet(Stream::empty).map(shareTimeBucket -> ShareTimeBucketResponse.builder()
+                .id(shareTimeBucket.getId())
+                .openDate(shareTimeBucket.getOpenDate())
+                .closeDate(shareTimeBucket.getCloseDate()).build())
+                .collect(Collectors.toList());
 
     }
 
