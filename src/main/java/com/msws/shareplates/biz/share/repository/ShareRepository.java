@@ -36,8 +36,7 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     List<Share> findAllByOpenYnTrueAndPrivateYnFalseOrAdminUserIdAndNameLike(@Param("adminUserId") Long userId, @Param("name") String name, Sort sort);
 
     @Query(" SELECT new java.lang.Long(count(s.id)) " +
-            " FROM Share s LEFT OUTER JOIN ShareUser su ON s.id = su.share.id " +
-            " WHERE s.openYn = true AND (s.privateYn = false OR s.adminUser.id = :userId) "
+            " FROM Share s WHERE s.openYn = true AND (s.privateYn = false OR s.adminUser.id = :userId) "
     )
     Long selectOpenShareCount(@Param("userId") Long userId);
 
