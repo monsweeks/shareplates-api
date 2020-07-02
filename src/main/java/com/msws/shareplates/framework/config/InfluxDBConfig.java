@@ -11,7 +11,6 @@ import org.springframework.data.influxdb.InfluxDBProperties;
 import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.data.influxdb.converter.PointConverter;
 
-@Profile("production")
 @Configuration
 @EnableConfigurationProperties(InfluxDBProperties.class)
 public class InfluxDBConfig {
