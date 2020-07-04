@@ -29,6 +29,9 @@ public class ShareUserSocket extends CommonEntity {
     @Column(name = "session_id")
     private String sessionId;
 
+    @Column(name = "focus_yn")
+    private Boolean focusYn;
+
     @Column(name="screen_type_code", columnDefinition = "VARCHAR(15)")
     @Enumerated(EnumType.STRING)
     private ScreenTypeCode screenTypeCode;

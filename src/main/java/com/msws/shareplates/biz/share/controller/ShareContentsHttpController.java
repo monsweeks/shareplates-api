@@ -18,6 +18,7 @@ import com.msws.shareplates.biz.share.vo.response.AccessCodeResponse;
 import com.msws.shareplates.biz.share.vo.response.ChatResponse;
 import com.msws.shareplates.biz.share.vo.response.ShareInfo;
 import com.msws.shareplates.biz.share.vo.response.ShareResponse;
+import com.msws.shareplates.biz.statistic.service.StatService;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.user.entity.User;
@@ -61,6 +62,9 @@ public class ShareContentsHttpController {
 
     @Autowired
     private ShareMessageService shareMessageService;
+
+    @Autowired
+    private StatService statService;
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> map = new ConcurrentHashMap<>();
@@ -107,7 +111,7 @@ public class ShareContentsHttpController {
                 .accessCode(AccessCodeResponse.builder().code(share.getAccessCode()).build())
                 .users(share.getShareUsers().stream()
                         .filter(distinctByKey(shareUser -> shareUser.getUser().getId()))
-                        .map(shareUser -> new ShareUserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage(), shareUser.getBanYn())).collect(Collectors.toList()))
+                        .map(shareUser -> new ShareUserResponse(shareUser.getUser(), share.getAdminUser().getId().equals(shareUser.getUser().getId()) ? RoleCode.ADMIN : RoleCode.MEMBER, shareUser.getStatus(), shareService.selectLastReadyChat(shareId, shareUser.getUser().getId()).getMessage(), shareUser.getBanYn(), shareUser.getFocusYn())).collect(Collectors.toList()))
                 .messages(shareService.selectShareChatList(shareId)
                         .stream()
                         .map(chat -> ChatResponse.builder()
@@ -186,10 +190,13 @@ public class ShareContentsHttpController {
 
         shareMessageService.sendCurrentPageChange(shareId, chapterId, pageId, userInfo);
 
+        // 통계 정보, 페이지 이동됨
+        statService.writePageChanged(share.getTopic().getId(), shareId, chapterId, pageId);
+
         return new ShareResponse(share);
     }
 
-    @ApiOperation(value = "페이지 이동")
+    @ApiOperation(value = "채팅 메세지 생성")
     @PostMapping("/chats/ready")
     public Boolean createReadyChat(@PathVariable(value = "share-id") long shareId, @RequestBody ChatRequest chatRequest, UserInfo userInfo) {
 

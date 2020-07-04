@@ -1,29 +1,16 @@
 package com.msws.shareplates.biz.share.entity;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
 import com.msws.shareplates.common.data.domain.CommonEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Builder
@@ -45,12 +32,15 @@ public class ShareUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "share_id")
     private Share share;
-    
-    @Column(name="status")
+
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private SocketStatusCode status;
-    
-    @Column(name="role")
+
+    @Column(name = "focus_yn")
+    private Boolean focusYn;
+
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private RoleCode role;
 

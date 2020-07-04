@@ -40,6 +40,37 @@ public class StatService {
 	public void writeDisconnectData(Share selectShare, Long userId) {
 		mainService.setData(selectShare, userId, "out");
 	}
+
+	@Async
+	public void writePageChanged(Long topicId, Long shareId, Long chapterId, Long pageId) {
+		// 챕터, 페이지 이동됨
+	}
+
+	@Async
+	public void writeJoinUser(Long topicId, Long shareId, Long userId) {
+		// 새로운 사용자가 참여함
+	}
+
+	@Async
+	public void writeDisconnectUser(Long topicId, Long shareId, Long userId) {
+		// 사용자가 나감
+	}
+
+	@Async
+	public void writeAddUserSession(Long topicId, Long shareId, Long userId) {
+		// 사용자의 세션 추가됨
+	}
+
+	@Async
+	public void writeDisconnectUserSession(Long topicId, Long shareId, Long userId) {
+		// 사용자의 세션이 나감
+	}
+
+	@Async
+	public void writeUserFocusChange(Long topicId, Long shareId, Long userId, Boolean focus) {
+		// 사용자의 포커스 여부가 변경됨
+	}
+
 	
 	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount, String timespan) {
 		return (List<UserAccessCount>) mainService.getData(key, value, timeunit, amount,timespan);

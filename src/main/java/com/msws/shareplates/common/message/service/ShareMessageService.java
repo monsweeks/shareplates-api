@@ -108,4 +108,11 @@ public class ShareMessageService {
         data.addData("dir", dir);
         messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
     }
+
+    public void sendUserFocusChange(long shareId, long userid, boolean focus, UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.USER_FOCUS_CHANGE).build();
+        data.addData("userId", userid);
+        data.addData("focus", focus);
+        messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
+    }
 }
