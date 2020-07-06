@@ -25,6 +25,7 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
     private Boolean openYn;
     private Boolean privateYn;
     private String memo;
+    private String description;
     private Long currentChapterId;
     private String currentChapterTitle;
     private Long currentPageId;
@@ -47,6 +48,7 @@ public class ShareResponse extends RepresentationModel<ShareResponse> {
         this.openYn = share.getOpenYn();
         this.privateYn = share.getPrivateYn();
         this.memo = share.getMemo();
+        this.description = share.getDescription();
         this.currentChapterId = share.getCurrentChapter() != null ? share.getCurrentChapter().getId() : null;
         this.currentChapterTitle = share.getCurrentChapter() != null ? share.getCurrentChapter().getTitle() : null;
         this.currentPageId = share.getCurrentPage() != null ? share.getCurrentPage().getId() : null;
