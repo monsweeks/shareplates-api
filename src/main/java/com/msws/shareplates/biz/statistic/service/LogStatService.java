@@ -38,6 +38,12 @@ public class LogStatService implements StatServiceIF<UserAccessCount>{@Override
 		log.info("stat setData : data -> {} , userId -> {}, flag -> {}", data, userId, flag);
 		
 	}
+
+	@Override
+	public void setData(Long topicId, Long shareId, Long chapterId, Long pageId) {
+		log.info("stat setData : topicId -> {} , shareId -> {}, chapterId -> {, pageId -> {}}", topicId, shareId, chapterId, pageId);
+		
+	}
 	
 
 
