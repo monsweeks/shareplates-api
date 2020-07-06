@@ -19,6 +19,8 @@ public interface ShareUserSocketRepository extends JpaRepository<ShareUserSocket
     @Query("SELECT new java.lang.Long(count(sus.id)) FROM ShareUserSocket sus WHERE sus.shareUser.share.id = :shareId AND sus.shareUser.user.id = :userId")
     Long countSessionByShareIdAndUserId(@Param("shareId") Long shareId, @Param("userId") Long userId);
 
+    Long countByShareUserShareIdAndShareUserUserIdAndFocusYnTrue(Long shareId, Long userId);
+
     ShareUserSocket findBySessionId(String sessionId);
 
 }

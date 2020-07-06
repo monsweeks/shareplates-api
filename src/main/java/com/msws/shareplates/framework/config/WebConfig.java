@@ -11,7 +11,6 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -26,93 +25,94 @@ import com.msws.shareplates.framework.interceptor.LoginCheckInterceptor;
 import com.msws.shareplates.framework.resolver.MethodArgumentResolver;
 
 @Configuration
-@EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
+	@Autowired
+	SessionUtil sessionUtil;
+	@Autowired
+	MessageSourceAccessor messageSourceAccessor;
+	@Autowired
+	GrpService grpService;
+	@Value("${spring.profiles.active}")
+	private String activeProfile;
+	@Value("${shareplates.corsUrls}")
+	private String[] corsUrls;
 
-    @Autowired
-    SessionUtil sessionUtil;
-    @Autowired
-    MessageSourceAccessor messageSourceAccessor;
-    @Autowired
-    GrpService grpService;
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
-    @Value("${shareplates.corsUrls}")
-    private String[] corsUrls;
+	@Bean
+	public ReloadableResourceBundleMessageSource messageSource() {
 
-    @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
+		ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
 
-        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
+		source.setBasename("classpath:/messages/message");
+		source.setDefaultEncoding("UTF-8");
+		source.setCacheSeconds(60);
+		source.setUseCodeAsDefaultMessage(true);
+		return source;
 
-        source.setBasename("classpath:/messages/message");
-        source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(60);
-        source.setUseCodeAsDefaultMessage(true);
-        return source;
+	}
 
-    }
+	@Bean
+	public SessionLocaleResolver localeResolver() {
+		return new SessionLocaleResolver();
 
-    @Bean
-    public SessionLocaleResolver localeResolver() {
-        return new SessionLocaleResolver();
+	}
 
-    }
+	@Bean
+	public LocaleChangeInterceptor localeChangeInterceptor() {
+		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+		interceptor.setParamName("lang");
+		return interceptor;
+	}
 
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-        interceptor.setParamName("lang");
-        return interceptor;
-    }
+	@Bean
+	public MessageSourceAccessor messageSourceAccessor() {
+		MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource());
+		return messageSourceAccessor;
+	}
 
-    @Bean
-    public MessageSourceAccessor messageSourceAccessor() {
-        MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource());
-        return messageSourceAccessor;
-    }
+	@Bean
+	public InitService initService() {
+		InitService initService = new InitService(grpService);
+		initService.init();
+		return initService;
+	}
 
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**").allowedOrigins(this.corsUrls)
+				.allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
+	}
 
-    @Bean
-    public InitService initService() {
-        InitService initService = new InitService(grpService);
-        initService.init();
-        return initService;
-    }
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(this.corsUrls).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
-    }
-    
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+	}
 
-        registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-    }
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(localeChangeInterceptor());
+		
+		registry.addInterceptor(
+				new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
+				.addPathPatterns("/**")
+				.excludePathPatterns("/test/**/")
+				.excludePathPatterns("/v3/**")
+				.excludePathPatterns("/webjars/**")
+				.excludePathPatterns("/swagger-ui/**")
+				.excludePathPatterns("/swagger**")
+				.excludePathPatterns("/swagger-resources/**")
+				.excludePathPatterns("/error");
+	}
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(localeChangeInterceptor());
-        registry.addInterceptor(new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
-                .addPathPatterns("/**")
-                .excludePathPatterns("/test/**/")
-                .excludePathPatterns("/swagger-ui.html")
-                .excludePathPatterns("/webjars/**")
-                .excludePathPatterns("/swagger-resources/**")
-                .excludePathPatterns("/error");
-    }
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		resolvers.add(new MethodArgumentResolver());
+	}
 
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new MethodArgumentResolver());
-    }
-
-    @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new StringToOAuthVendorConverter());
-    }
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		registry.addConverter(new StringToOAuthVendorConverter());
+	}
 
 }

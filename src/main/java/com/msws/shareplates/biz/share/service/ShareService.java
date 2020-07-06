@@ -73,7 +73,7 @@ public class ShareService {
     public Share updateShareStop(Share share) {
         share.setStartedYn(false);
         share.setOpenYn(false);
-        share.getShareTimeBuckets().get(share.getShareTimeBuckets().size()-1).setCloseDate(LocalDateTime.now());
+        share.getShareTimeBuckets().get(share.getShareTimeBuckets().size() - 1).setCloseDate(LocalDateTime.now());
         return shareRepository.save(share);
     }
 
@@ -104,23 +104,24 @@ public class ShareService {
     }
 
     public List<Share> selectOpenShareList(Long userId, ShareSearchConditions conditions) {
-        return shareRepository.findAllByOpenYnTrueAndPrivateYnFalseOrAdminUserIdAndNameLike(userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
+        return shareRepository.findAllByOpenYnTrueAndPrivateYnFalseAndNameContainingIgnoreCaseOrOpenYnTrueAndPrivateYnTrueAndAdminUserIdAndNameContainingIgnoreCase(conditions.getSearchWord(), userId, conditions.getSearchWord(), conditions.getDirection().equals("asc") ? Sort.by(conditions.getOrder()).ascending() : Sort.by(conditions.getOrder()).descending());
     }
 
     public Long selectOpenShareCount(Long userId) {
         return shareRepository.selectOpenShareCount(userId);
     }
 
-    public ShareUser createOrUpdateShareUser(ShareUser shareUser) {
+    public boolean createOrUpdateShareUser(ShareUser shareUser) {
         ShareUser sUser = shareUserRepository.findByShareIdAndUserId(shareUser.getShare().getId(), shareUser.getUser().getId());
         if (sUser == null) {
             shareUser.setStatus(SocketStatusCode.ONLINE);
             shareUserRepository.save(shareUser);
-            return shareUser;
+            return true;
         } else {
             sUser.setStatus(SocketStatusCode.ONLINE);
+            sUser.setFocusYn(shareUser.getFocusYn());
             shareUserRepository.save(sUser);
-            return sUser;
+            return false;
         }
     }
 
@@ -178,10 +179,16 @@ public class ShareService {
         shareUserRepository.updateStatusById(id, code);
     }
 
+    public void updateFocusById(Long id, Boolean focus) {
+        shareUserRepository.updateFocusById(id, focus);
+    }
+
+
     public ShareUser updateShareUserBan(long shareId, long userId) {
         ShareUser shareUser = this.selectShareUser(shareId, userId);
         shareUser.setBanYn(true);
         shareUser.setStatus(SocketStatusCode.OFFLINE);
+        shareUser.setFocusYn(false);
         this.deleteShareUserSocket(shareId, userId);
         this.updateShareUser(shareUser);
 
@@ -206,11 +213,7 @@ public class ShareService {
     }
 
     public Boolean selectIsBanUser(long shareId, long userId) {
-        if (shareUserRepository.countByShareUserBan(shareId, userId) > 0L) {
-            return true;
-        }
-
-        return false;
+        return shareUserRepository.countByShareUserBan(shareId, userId) > 0L;
     }
 
     public void deleteAllUserShareInfo(Long userId) {
@@ -220,6 +223,10 @@ public class ShareService {
 
     public List<Chat> selectShareChatList(Long shareId) {
         return chatRepository.findAllByShareIdOrderByCreationDateAsc(shareId);
+    }
+
+    public Long selectFocusedSocketCount(Long shareId, Long userId) {
+        return shareUserSocketRepository.countByShareUserShareIdAndShareUserUserIdAndFocusYnTrue(shareId, userId);
     }
 
 }

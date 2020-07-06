@@ -22,6 +22,10 @@ public interface ShareUserRepository extends JpaRepository<ShareUser, Long> {
 	void updateStatusById(@Param("id") Long id, @Param("status") SocketStatusCode status);
 
 	@Modifying
+	@Query("UPDATE ShareUser s SET s.focusYn = :focus WHERE s.id = :id ")
+	void updateFocusById(@Param("id") Long id, @Param("focus") Boolean focus);
+
+	@Modifying
 	@Query("DELETE FROM ShareUser su WHERE su.id= :id ")
 	void deleteShareUserById(@Param("id") Long id);
 

@@ -13,7 +13,6 @@ import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Profile("production")
 @Slf4j
 @Service
 public class ElasticsearchService implements StatServiceIF<Object> {
@@ -60,6 +59,18 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+
+	@Override
+	public void setData(Long topicId, Long shareId, Long chapterId, Long pageId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	
 
 	
 

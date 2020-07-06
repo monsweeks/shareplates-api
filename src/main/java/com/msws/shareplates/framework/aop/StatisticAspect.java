@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Aspect
-@Profile("production")
 @Component
 public class StatisticAspect {
 	
@@ -35,7 +33,7 @@ public class StatisticAspect {
 	@Autowired
     private ShareService shareService;
 
-	@AfterReturning(value = "execution(* com.msws.shareplates..controller.ShareContentsHttpController.selectShareContent(..))", returning = "retVal")
+	@AfterReturning(value = "execution(* com.msws.shareplates..controller.ShareContentsHttpController.disable.selectShareContent(..))", returning = "retVal")
 	public void logShareInfo(Object retVal) throws Throwable {
 		
 		try {
@@ -51,7 +49,7 @@ public class StatisticAspect {
 
 	}
 	
-	@AfterReturning(value = "execution(* com.msws.shareplates..controller.ShareContentsHttpController.updateCurrentPosition(..)) && args(shareId, .., userInfo)", returning = "retVal")
+	@AfterReturning(value = "execution(* com.msws.shareplates..controller.ShareContentsHttpController.disable.updateCurrentPosition(..)) && args(shareId, .., userInfo)", returning = "retVal")
 	public void logShareResponse(long shareId, UserInfo userInfo, Object retVal) throws Throwable {
 		
 		try {
