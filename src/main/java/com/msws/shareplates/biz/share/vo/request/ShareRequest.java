@@ -10,6 +10,7 @@ public class ShareRequest {
     private Long topicId;
     private String name;
     private String memo;
+    private String description;
     private Boolean privateYn;
     private Boolean openYn;
     private Long currentChapterId;

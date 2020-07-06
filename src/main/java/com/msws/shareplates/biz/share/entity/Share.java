@@ -43,6 +43,10 @@ public class Share extends CommonEntity {
     @Column(name = "private_yn")
     private Boolean privateYn;
 
+    @Length(max = 255)
+    @Column(name = "description")
+    private String description;
+
     @Column(columnDefinition = "text", name = "memo")
     private String memo;
 
@@ -135,6 +139,7 @@ public class Share extends CommonEntity {
         this.openYn = shareRequest.getOpenYn();
         this.privateYn = shareRequest.getPrivateYn();
         this.memo = shareRequest.getMemo();
+        this.description = shareRequest.getDescription();
         this.accessCode = shareRequest.getAccessCode();
         this.currentChapter = Chapter.builder().id(shareRequest.getCurrentChapterId()).build();
         this.currentPage = Page.builder().id(shareRequest.getCurrentPageId()).build();
