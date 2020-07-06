@@ -60,6 +60,18 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 		return null;
 	}
 
+
+
+	@Override
+	public void setData(Long topicId, Long shareId, Long chapterId, Long pageId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	
+
 	
 
 }
