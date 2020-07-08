@@ -1,10 +1,10 @@
 package com.msws.shareplates.biz.statistic.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.logging.MDC;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -21,15 +21,7 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 	public Stat_database getName() {
 		return Stat_database.elasticsearch;
 	}
-
 	
-	
-	@Override
-	public List<Object> getData(String key, String value, TimeUnit timeunit, int amount, String timespan) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@SuppressWarnings("unchecked")
 	public synchronized void setData(Object data, String index_name) {
 		
@@ -47,7 +39,7 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 
 
 	@Override
-	public void setData(Share data, Long userId, String flag) {
+	public void setData(Share data, Long userId, String flag, Object additional_value) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -63,15 +55,9 @@ public class ElasticsearchService implements StatServiceIF<Object> {
 
 
 	@Override
-	public void setData(Long topicId, Long shareId, Long chapterId, Long pageId) {
+	public List<Object> getData(String value, Timestamp from, Timestamp to) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
-
-
-
-	
-
-	
 
 }
