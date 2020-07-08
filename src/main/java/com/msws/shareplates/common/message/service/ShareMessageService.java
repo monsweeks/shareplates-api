@@ -115,4 +115,13 @@ public class ShareMessageService {
         data.addData("focus", focus);
         messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
     }
+
+    public void sendOptionChange(long shareId, String optionsKey, Object optionValue, UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.OPTION_CHANGE).build();
+        data.addData("optionKey", optionsKey);
+        data.addData("optionValue", optionValue);
+        messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
+    }
+
+
 }
