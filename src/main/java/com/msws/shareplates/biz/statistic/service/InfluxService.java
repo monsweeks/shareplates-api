@@ -45,7 +45,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Autowired
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
-	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= '%s' AND time <= '%s' AND shareId = %s GROUP BY time(%s),shareId order by time asc";
+	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s' GROUP BY time(%s),shareId order by time asc";
 	private final String QUERY_DETAIL_BASE = "SELECT * FROM %s where time > %s %s";
 	
 	
@@ -188,7 +188,9 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		long gap = to.getTime() - from.getTime();
 		int seconds = (int) gap / 1000;
 		int minutes =  ( seconds % 3600 ) / 60;
-		return minutes < 50 ? "1m" : String.valueOf(minutes / 50);
+		log.error("seconds : {}", seconds);
+		log.error("minutes : {}", minutes);
+		return minutes < 50 ? "30m" : String.valueOf(minutes / 50);
 	}
 
 }
