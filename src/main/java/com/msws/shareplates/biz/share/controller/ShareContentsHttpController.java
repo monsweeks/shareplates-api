@@ -12,6 +12,7 @@ import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.repository.ShareChapterResponse;
 import com.msws.shareplates.biz.share.service.ShareService;
+import com.msws.shareplates.biz.share.vo.OptionInfo;
 import com.msws.shareplates.biz.share.vo.ScrollInfo;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.AccessCodeResponse;
@@ -279,6 +280,20 @@ public class ShareContentsHttpController {
         }
 
         shareMessageService.sendMoveScroll(shareId, dir, userInfo);
+
+        return new ShareResponse(share);
+    }
+
+    @ApiOperation(value = "옵션 변경")
+    @PutMapping("/option")
+    public ShareResponse updateOption(@PathVariable(value = "share-id") long shareId, @RequestBody OptionInfo optionInfo, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+
+        shareMessageService.sendOptionChange(shareId, optionInfo.getOptionKey(), optionInfo.getOptionValue(), userInfo);
 
         return new ShareResponse(share);
     }
