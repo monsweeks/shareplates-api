@@ -45,7 +45,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Autowired
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
-	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= %s AND time <= %s AND shareId = %s GROUP BY time(%s),joinId,shareId order by time asc";
+	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= '%s' AND time <= '%s' AND shareId = %s GROUP BY time(%s),shareId order by time asc";
 	private final String QUERY_DETAIL_BASE = "SELECT * FROM %s where time > %s %s";
 	
 	
@@ -76,10 +76,12 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 				
 			case "join" :
 					field.put( "sessionCnt", 1);
+					field.put( "pageChangedCnt", 0);
 					break;
 
 			case "out" :
 					field.put( "sessionCnt", -1);
+					field.put( "pageChangedCnt", 0);
 				break;
 			
 			case "page_changed":
@@ -89,6 +91,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 				
 			case "focus_changed":
 					field.put( "focusChangedCnt", 1);
+					field.put( "pageChangedCnt", 0);
 					tags.put("focusChanged", additional_value == null ? "DN" : additional_value.toString());
 				break;
 			default :
@@ -118,7 +121,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase(DB_NAME)
 		        .create();
-		
+		log.error("sql {}",revised_query );
 		QueryResult queryResult = influxDBTemplate.query(query);
 		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
 	}
@@ -139,7 +142,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		Query query = QueryBuilder.newQuery(revised_query)
 		        .forDatabase(DB_NAME)
 		        .create();
-
+		
 		QueryResult queryResult = influxDBTemplate.query(query);
 		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
 	}
