@@ -1,5 +1,6 @@
 package com.msws.shareplates.biz.statistic.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -10,10 +11,9 @@ public interface StatServiceIF<T> {
 	
 	public Stat_database getName();
 	
-	public List<T> getData(String key, String value, TimeUnit timeunit, int amount, String timespan);
+	public List<T> getData(String value, Timestamp from, Timestamp to);
 	public List<T> getDetailData(String key, String value, TimeUnit timeunit, int amount);
 	
-	public void setData(Share data, Long userId, String flag);
-	public void setData(Long topicId, Long shareId, Long chapterId, Long pageId);
+	public void setData(Share data, Long userId, String flag, Object additional_value);
 	
 }

@@ -1,5 +1,6 @@
 package com.msws.shareplates.biz.statistic.service;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,9 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	
 	private final InfluxDBResultMapper resultMapper;
 
+	@Value("${stat.databaseName}")
+	private String DB_NAME;
+	
 	@Value("${stat.table}")
 	private String TABLE_NAME;
 	
@@ -41,7 +45,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	@Autowired
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
-	private final String QUERY_BASE = "SELECT %s FROM %s where time > %s %s GROUP BY time(%s),joinId,shareId order by time asc";
+	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= %s AND time <= %s AND shareId = %s GROUP BY time(%s),joinId,shareId order by time asc";
 	private final String QUERY_DETAIL_BASE = "SELECT * FROM %s where time > %s %s";
 	
 	
@@ -56,7 +60,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	}	
 	
 	@Override
-	public void setData(Share data, Long userId, String flag) {
+	public void setData(Share data, Long userId, String flag, Object additional_value) {
 		
 		Map<String, String> tags = new HashMap<String, String>();
 		Map<String, Object> field = new HashMap<String, Object>();
@@ -66,52 +70,27 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		tags.put("chapterId", data.getCurrentChapter().getId().toString());
 		tags.put("pageId", data.getCurrentPage().getId().toString());
 		tags.put("adminUserEmail", data.getAdminUser().getEmail());
-		tags.put("joinId", userId.toString());
+		tags.put("userId", userId.toString());
 		
 		switch(flag) {
 				
 			case "join" :
-		
-					for(String each : FIELD_NAME.split(",")) {
-						
-						switch(each.trim()) {
-						case "pv" :
-							//field.put( each.trim(), tempShareData.getShareUsers().stream().filter(e -> RoleCode.MEMBER.equals(e.getRole()) && SocketStatusCode.ONLINE.equals(e.getStatus())).count());
-							field.put( each.trim(), 1);
-							break;
-						case "socketCnt" :
-
-							field.put(each.trim(), 1);
-							break;
-						
-						default :
-								break;
-						}
-					}
-					
-					
+					field.put( "sessionCnt", 1);
 					break;
-					
+
 			case "out" :
-	
-				for(String each : FIELD_NAME.split(",")) {
-					
-					switch(each.trim()) {
-					case "pv" :
-						field.put( each.trim(), -1);
-						break;
-					case "socketCnt" :
-						field.put(each.trim(), -1);
-						break;
-					
-					default :
-							break;
-					}
-				}
-				
-				
+					field.put( "sessionCnt", -1);
+				break;
+			
+			case "page_changed":
+					field.put( "pageChangedCnt", 1);
+					tags.put("pageChanged", "true");
 				break;
 				
+			case "focus_changed":
+					field.put( "focusChangedCnt", 1);
+					tags.put("focusChanged", additional_value == null ? "DN" : additional_value.toString());
+				break;
 			default :
 					tags.put("shareId", "DN");  // dont know
 					break;
@@ -129,24 +108,22 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 
 	}
 	
-	public List<UserAccessCount> getData(String key, String value, TimeUnit timeunit, int amount, String timespan) {
+	public List<UserAccessCount> getData(String shareId, Timestamp from , Timestamp to) {
 		
-		if( key == null || key.isEmpty()) {
-			key = "";
-		}else {
-			key = String.format("and %s = '%s'", key, value);
-		}
+		//"SELECT %s FROM %s where time >= %s AND time <= %s AND shareId = %s GROUP BY time(%s),joinId,shareId order by time asc";
+		String revised_query = String.format(QUERY_FROM_TO_BASE, getCountFieldSentence(), TABLE_NAME, 
+											from, to, shareId,
+											calculateTimeSpan(from , to));
 		
-		//SELECT %s FROM %s where time > %s %s GROUP BY time(1m) order by time asc
-		String revised_query = String.format(QUERY_BASE, getCountFieldSentence(), TABLE_NAME, getTimeStamp(timeunit, amount) , key, timespan);
-		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
-		        .forDatabase("stat")
+		        .forDatabase(DB_NAME)
 		        .create();
-
+		
 		QueryResult queryResult = influxDBTemplate.query(query);
 		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
 	}
+	
+	
 	
 	public List<UserAccessCount> getDetailData(String key, String value, TimeUnit timeunit, int amount) {
 		
@@ -160,7 +137,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		String revised_query = String.format(QUERY_DETAIL_BASE, TABLE_NAME, getTimeStamp(timeunit, amount) , key);
 		log.error("query : {}", revised_query);
 		Query query = QueryBuilder.newQuery(revised_query)
-		        .forDatabase("stat")
+		        .forDatabase(DB_NAME)
 		        .create();
 
 		QueryResult queryResult = influxDBTemplate.query(query);
@@ -203,14 +180,12 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		return time_query;
 		
 	}
-
-	@Override
-	public void setData(Long topicId, Long shareId, Long chapterId, Long pageId) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	
-
+	private String calculateTimeSpan(Timestamp from, Timestamp to) {
+		long gap = to.getTime() - from.getTime();
+		int seconds = (int) gap / 1000;
+		int minutes =  ( seconds % 3600 ) / 60;
+		return minutes < 50 ? "1m" : String.valueOf(minutes / 50);
+	}
 
 }

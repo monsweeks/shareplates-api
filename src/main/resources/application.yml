@@ -111,8 +111,9 @@ slack:
 stat:
   database: ${statDatabase:log} #//log = stdout, influxdb = influxdb
   key: ${statKey:shareId}
-  value: ${statValue:pv,socketCnt}
+  value: ${statValue:sessionCnt,pageChangedCnt,focusChangedCnt}
   table: ${statTable:test}
+  databaseName: stat
   
     
 ---
@@ -158,5 +159,6 @@ oauth:
 stat:
   database: ${statDatabase:influxdb}
   key: ${statKey:shareId}
-  value: ${statValue:pv,socketCnt}
+  value: ${statValue:sessionCnt,pageChangedCnt,focusChangedCnt}
   table: ${statTable:test}
+  databaseName: stat

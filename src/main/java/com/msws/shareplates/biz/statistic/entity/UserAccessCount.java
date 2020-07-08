@@ -12,14 +12,23 @@ import lombok.Setter;
 @Measurement(name = "test")
 public class UserAccessCount {
 	
-	@Column(name = "socketCnt")
-	private Double socketCnt;
-	
-	@Column(name = "pv")
-	private Double pv;
+	@Column(name = "sessionCnt")
+	private Double sessionCnt;
 	
 	@Column(name = "time")
 	private String time;
+	
+	@Column(name = "pageChangedCnt")
+	private Double pageChangedCnt;
+	
+	@Column(name = "focusChangedCnt")
+	private Double focusChangedCnt;
+	
+	@Column(name = "pageChanged", tag = true)
+	private Double pageChanged;
+	
+	@Column(name = "focusChanged", tag = true)
+	private Double focusChanged;
 	
 	@Column(name = "shareId", tag = true )
 	private String shareId;
@@ -33,8 +42,8 @@ public class UserAccessCount {
 	@Column(name = "pageId", tag = true )
 	private String pageId;
 	
-	@Column(name = "joinId", tag = true )
-	private String joinId;
+	@Column(name = "userId", tag = true )
+	private String userId;
 	
 	@Column(name = "adminUserEmail", tag = true )
 	private String 	adminUserEmail;
