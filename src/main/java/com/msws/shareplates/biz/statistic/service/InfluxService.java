@@ -187,10 +187,10 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	private String calculateTimeSpan(Timestamp from, Timestamp to) {
 		long gap = to.getTime() - from.getTime();
 		int seconds = (int) gap / 1000;
-		int minutes =  ( seconds % 3600 ) / 60;
+		int minutes =  seconds / 60;
 		log.error("seconds : {}", seconds);
 		log.error("minutes : {}", minutes);
-		return minutes < 50 ? "30m" : String.valueOf(minutes / 50);
+		return minutes < 50 ? "30m" : String.valueOf(minutes / 50) + "m";
 	}
 
 }
