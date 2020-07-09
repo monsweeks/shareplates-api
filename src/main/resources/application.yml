@@ -147,13 +147,13 @@ shareplates:
 
 
 oauth:
-  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=863525fbdd02a15ac03536bbfcf0151d&redirect_uri=http://mindplates.com/oauth/kakao/token&response_type=code&state=hyunseok
+  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=863525fbdd02a15ac03536bbfcf0151d&redirect_uri=http://mindplates.com:30000/oauth/kakao/token&response_type=code&state=hyunseok
     redirect-uri: http://mindplates.com/oauth/kakao/token
-  facebook:   # https://www.facebook.com/v3.2/dialog/oauth?client_id=212487773500466&redirect_uri=http://mindplates.com/oauth/facebook/token&state=test&scope=email
+  facebook:   # https://www.facebook.com/v3.2/dialog/oauth?client_id=212487773500466&redirect_uri=http://mindplates.com:30000/oauth/facebook/token&state=test&scope=email
     redirect-uri: http://mindplates.com/oauth/facebook/token
-  naver: # https://nid.naver.com/oauth2.0/authorize?client_id=FYKlwGmkoKaH8XSh3q6F&redirect_uri=http://mindplates.com/oauth/naver/token&response_type=code
+  naver: # https://nid.naver.com/oauth2.0/authorize?client_id=FYKlwGmkoKaH8XSh3q6F&redirect_uri=http://mindplates.com:30000/oauth/naver/token&response_type=code
     redirect-uri: http://mindplates.com/oauth/naver/token  
-  google: # https://accounts.google.com/o/oauth2/v2/auth?scope=email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://mindplates.com/oauth/google/token&client_id=766766390358-u4v4i9huft470ol689enfi9mq3gppbs6.apps.googleusercontent.com
+  google: # https://accounts.google.com/o/oauth2/v2/auth?scope=email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://mindplates.com:30000/oauth/google/token&client_id=766766390358-u4v4i9huft470ol689enfi9mq3gppbs6.apps.googleusercontent.com
     redirect-uri: http://mindplates.com/oauth/google/token
     
 stat:
