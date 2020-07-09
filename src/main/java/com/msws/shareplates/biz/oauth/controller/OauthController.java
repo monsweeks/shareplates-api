@@ -52,7 +52,9 @@ public class OauthController {
 
         String result = service.getToken(code);
         TokenInfo ti = new Gson().fromJson(result, TokenInfo.class);
-
+        
+        log.info("received token info is {}", ti);
+        
         OauthUserInfo user_info = service.getUserInfo(ti.getAccess_token());
 
         User user = User.builder()
@@ -72,8 +74,6 @@ public class OauthController {
         }
 
         sessionUtil.login(req, siteUser, siteUser.getRegistered());
-
-        log.info("received token info is {}", ti);
 
         // 비밀번호가 등록되었다면
         if (siteUser.getRegistered() != null && siteUser.getRegistered() == true) {
