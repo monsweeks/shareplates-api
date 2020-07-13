@@ -109,7 +109,7 @@ slack:
   url: https://hooks.slack.com/services/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
   
 stat:
-  database: ${statDatabase:log} #//log = stdout, influxdb = influxdb
+  database: ${statDatabase:influxdb}
   key: ${statKey:shareId}
   value: ${statValue:sessionCnt,pageChangedCnt,focusChangedCnt}
   table: ${statTable:test}
