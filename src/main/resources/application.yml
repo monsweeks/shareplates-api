@@ -73,12 +73,12 @@ server:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
       
 oauth:
-  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=863525fbdd02a15ac03536bbfcf0151d&redirect_uri=http://localhost:8080/api/oauth/kakao/token&response_type=code&state=hyunseok
+  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=1ba583809df9ceeba9305df8e05fe532&redirect_uri=http://localhost:8080/api/oauth/kakao/token&response_type=code&state=hyunseok
     host: https://kauth.kakao.com
     api-host: https://kapi.kakao.com
     token-endpoint: /oauth/token
     userinfo-endpoint: /v2/user/me
-    client-id: 863525fbdd02a15ac03536bbfcf0151d
+    client-id: 1ba583809df9ceeba9305df8e05fe532
     redirect-uri: http://localhost:8080/api/oauth/kakao/token
   facebook:   # https://www.facebook.com/v3.2/dialog/oauth?client_id=212487773500466&redirect_uri=http://localhost:8080/api/oauth/facebook/token&state=test&scope=email
     host: https://graph.facebook.com
@@ -147,8 +147,9 @@ shareplates:
 
 
 oauth:
-  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=863525fbdd02a15ac03536bbfcf0151d&redirect_uri=http://www.mindplates.com/api/oauth/kakao/token&response_type=code&state=hyunseok
+  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=1ba583809df9ceeba9305df8e05fe532&redirect_uri=http://www.mindplates.com/api/oauth/kakao/token&response_type=code&state=hyunseok
     redirect-uri: http://www.mindplates.com/api/oauth/kakao/token
+    client-id: 1ba583809df9ceeba9305df8e05fe532
   facebook:   # https://www.facebook.com/v3.2/dialog/oauth?client_id=212487773500466&redirect_uri=http://www.mindplates.com/api/oauth/facebook/token&state=test&scope=email
     redirect-uri: http://www.mindplates.com/api/oauth/facebook/token
   naver: # https://nid.naver.com/oauth2.0/authorize?client_id=FYKlwGmkoKaH8XSh3q6F&redirect_uri=http://www.mindplates.com/api/oauth/naver/token&response_type=code
