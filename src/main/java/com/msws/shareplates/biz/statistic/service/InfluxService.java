@@ -17,6 +17,7 @@ import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.stereotype.Service;
 
 import com.msws.shareplates.biz.share.entity.Share;
+import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 
@@ -46,7 +47,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
 	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s' GROUP BY time(%s),shareId order by time asc";
-	private final String QUERY_DETAIL_BASE = "SELECT * FROM %s where time > %s %s";
+	private final String QUERY_DETAIL_BASE = "SELECT chapterId, pageId FROM %s where time > %s %s AND shareId = '%s'";
 	
 	
 	public InfluxService() {
@@ -72,33 +73,39 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		tags.put("adminUserEmail", data.getAdminUser().getEmail());
 		tags.put("userId", userId.toString());
 		
+		ShareUser shareuser = data.getShareUsers().stream()
+				.filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+		
 		switch(flag) {
 				
+		    //================  field ============================  sessionCnt, userCnt, focusCnt
 			case "join" :
 					field.put( "sessionCnt", 1);
-					field.put( "pageChangedCnt", 0);
+					if(shareuser == null )
+						field.put( "userCnt", 1);
+					
 					break;
 
 			case "out" :
 					field.put( "sessionCnt", -1);
-					field.put( "pageChangedCnt", 0);
-				break;
-			
-			case "page_changed":
-					field.put( "pageChangedCnt", 1);
-					tags.put("pageChanged", "true");
+					field.put( "userCnt", -1);
 				break;
 				
 			case "focus_changed":
-					field.put( "focusChangedCnt", 1);
-					field.put( "pageChangedCnt", 0);
-					tags.put("focusChanged", additional_value == null ? "DN" : additional_value.toString());
+				field.put( "focusCnt", 1);
+				tags.put("focusChanged", "true");
+				
+			break;
+			
+			//================  tag ============================
+			case "page_changed":
+					tags.put("pageChanged", "true");
 				break;
+
 			default :
-					tags.put("shareId", "DN");  // dont know
+					tags.put("shareId", "ERROR");  // dont know
 					break;
 		}
-				
 
 
 		Point insert_point = Point.measurement(TABLE_NAME)
@@ -128,23 +135,19 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	
 	
 	
-	public List<UserAccessCount> getDetailData(String key, String value, TimeUnit timeunit, int amount) {
+	public List<UserAccessCount> getDetailData(String shareId, Timestamp from , Timestamp to) {
 		
-		if( key == null || key.isEmpty()) {
-			key = "";
-		}else {
-			key = String.format("and %s = '%s'", key, value);
-		}
-		
-		//SELECT * FROM %s where time > %s %s
-		String revised_query = String.format(QUERY_DETAIL_BASE, TABLE_NAME, getTimeStamp(timeunit, amount) , key);
-		log.error("query : {}", revised_query);
+		//SELECT chapterId, pageId FROM %s where time > %s %s AND shareId = '%s'
+		String revised_query = String.format(QUERY_DETAIL_BASE, TABLE_NAME, 
+													from, to, shareId);
+				
 		Query query = QueryBuilder.newQuery(revised_query)
-		        .forDatabase(DB_NAME)
-		        .create();
-		
+				        .forDatabase(DB_NAME)
+				        .create();
+		log.error("sql {}",revised_query );
 		QueryResult queryResult = influxDBTemplate.query(query);
 		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
+		
 	}
 
 	private String getCountFieldSentence() {
@@ -188,9 +191,10 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		long gap = to.getTime() - from.getTime();
 		int seconds = (int) gap / 1000;
 		int minutes =  seconds / 60;
-		log.error("seconds : {}", seconds);
-		log.error("minutes : {}", minutes);
-		return minutes < 50 ? "1m" : String.valueOf(minutes / 50) + "m";
+		int result = minutes / 50;
+		int remain = (minutes % 50) == 0 ? 0 : 1;
+		
+		return String.valueOf( result + remain) + "m";
 	}
 
 }

@@ -12,7 +12,7 @@ public interface StatServiceIF<T> {
 	public Stat_database getName();
 	
 	public List<T> getData(String value, Timestamp from, Timestamp to);
-	public List<T> getDetailData(String key, String value, TimeUnit timeunit, int amount);
+	public List<T> getDetailData(String value, Timestamp from, Timestamp to);
 	
 	public void setData(Share data, Long userId, String flag, Object additional_value);
 	

@@ -8,17 +8,13 @@ public class SimpleTest {
 	@Test
 	public void test() {
 		
-		String [] input = {"abc", "cde"};
+		int a = 100;
+		int b = 50;
 		
-		StringBuilder sb = new StringBuilder();
-		String prefix = "";
-		for(String each : input) {
-			sb.append(prefix);
-			prefix = ",";
-			sb.append(each);
-		}
-		
-		System.out.println(sb.toString());
+		int result = a/b;
+		int result2 = a%b;
+		System.out.println(result);
+		System.out.println(result2);
 		
 	}
 

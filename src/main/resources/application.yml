@@ -111,7 +111,7 @@ slack:
 stat:
   database: ${statDatabase:influxdb}
   key: ${statKey:shareId}
-  value: ${statValue:sessionCnt,pageChangedCnt,focusChangedCnt}
+  value: ${statValue:sessionCnt,userCnt,focusCnt}
   table: ${statTable:test}
   databaseName: stat
   
@@ -159,6 +159,6 @@ oauth:
 stat:
   database: ${statDatabase:influxdb}
   key: ${statKey:shareId}
-  value: ${statValue:sessionCnt,pageChangedCnt,focusChangedCnt}
+  value: ${statValue:sessionCnt,userCnt,focusCnt}
   table: ${statTable:test}
   databaseName: stat

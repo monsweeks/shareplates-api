@@ -2,7 +2,6 @@ package com.msws.shareplates.biz.statistic.service;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,8 @@ public class LogStatService implements StatServiceIF<UserAccessCount>{@Override
 	}
 
 	@Override
-	public List<UserAccessCount> getDetailData(String key, String value, TimeUnit timeunit, int amount) {
-		log.info("stat getDetailData : key -> {} , value -> {}, timeunit -> {}, amount -> {}", key, value, timeunit, amount);
+	public List<UserAccessCount> getDetailData(String value, Timestamp from, Timestamp to){
+		log.info("stat getDetailData : value -> {} , from -> {}, to -> {}", value, from, to);
 		return null;
 	}
 
