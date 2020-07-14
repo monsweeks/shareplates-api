@@ -1,5 +1,29 @@
 package com.msws.shareplates.biz.user.controller;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.msws.shareplates.biz.file.entity.FileInfo;
 import com.msws.shareplates.biz.file.service.FileInfoService;
 import com.msws.shareplates.biz.file.vo.FileInfoResponse;
@@ -20,21 +44,10 @@ import com.msws.shareplates.framework.annotation.DisableLogin;
 import com.msws.shareplates.framework.aop.annotation.AdminOnly;
 import com.msws.shareplates.framework.exception.BizException;
 import com.msws.shareplates.framework.session.vo.UserInfo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -118,8 +131,9 @@ public class UserController {
 
     @DisableLogin
     @GetMapping("/my-info")
-    public MyInfoResponse selectMyInfo(UserInfo userInfo) {
+    public MyInfoResponse selectMyInfo(UserInfo userInfo,HttpServletRequest req) {
 
+    	log.info("session logined : {}", SessionUtil.getUserId(req));
         Long shareCount = shareService.selectOpenShareCount(userInfo != null ? userInfo.getId() : null);
 
         if (userInfo == null) {
