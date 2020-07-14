@@ -47,7 +47,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
 	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s' GROUP BY time(%s),shareId order by time asc";
-	private final String QUERY_DETAIL_BASE = "SELECT chapterId, pageId FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s'";
+	private final String QUERY_DETAIL_BASE = "SELECT chapterId, pageId FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s' AND pageChanged = 'true'";
 	
 	
 	public InfluxService() {
