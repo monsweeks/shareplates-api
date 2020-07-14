@@ -1,16 +1,11 @@
 package com.msws.shareplates.biz.oauth.controller;
 
-import com.google.gson.Gson;
-import com.msws.shareplates.biz.oauth.entity.OauthUserInfo;
-import com.msws.shareplates.biz.oauth.service.IF.OauthServiceIF;
-import com.msws.shareplates.biz.oauth.service.OauthServiceFactory;
-import com.msws.shareplates.biz.oauth.vo.OauthVendor;
-import com.msws.shareplates.biz.oauth.vo.response.TokenInfo;
-import com.msws.shareplates.biz.user.entity.User;
-import com.msws.shareplates.biz.user.service.UserService;
-import com.msws.shareplates.common.util.SessionUtil;
-import com.msws.shareplates.framework.annotation.DisableLogin;
-import lombok.extern.slf4j.Slf4j;
+import java.util.UUID;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,8 +14,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
+import com.google.gson.Gson;
+import com.msws.shareplates.biz.oauth.entity.OauthUserInfo;
+import com.msws.shareplates.biz.oauth.service.OauthServiceFactory;
+import com.msws.shareplates.biz.oauth.service.IF.OauthServiceIF;
+import com.msws.shareplates.biz.oauth.vo.OauthVendor;
+import com.msws.shareplates.biz.oauth.vo.response.TokenInfo;
+import com.msws.shareplates.biz.user.entity.User;
+import com.msws.shareplates.biz.user.service.UserService;
+import com.msws.shareplates.common.util.SessionUtil;
+import com.msws.shareplates.framework.annotation.DisableLogin;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
@@ -43,7 +48,7 @@ public class OauthController {
     @DisableLogin
     @GetMapping(value = "/{oauth-vendor}/token")
     public String selectAuthorizationCode(@PathVariable(name = "oauth-vendor") OauthVendor oauthVendor,
-                                          HttpServletRequest req,
+                                          HttpServletRequest req, HttpServletResponse res,
                                           String code) {
 
         log.info("received authorization code is {}", code);
@@ -77,6 +82,10 @@ public class OauthController {
         
         log.info("session logined : {}", SessionUtil.getUserId(req));
 
+        Cookie customCookie = new Cookie("JSESSIONID", req.getSession(false).getId());
+        customCookie.setDomain("www.mindplates.com");
+        customCookie.setPath("/");
+        res.addCookie(customCookie);
         // 비밀번호가 등록되었다면
         if (siteUser.getRegistered() != null && siteUser.getRegistered() == true) {
             return "redirect:" + redirectUrl;
