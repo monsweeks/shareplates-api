@@ -74,6 +74,8 @@ public class OauthController {
         }
 
         sessionUtil.login(req, siteUser, siteUser.getRegistered());
+        
+        log.info("session logined : {}", SessionUtil.getUserId(req));
 
         // 비밀번호가 등록되었다면
         if (siteUser.getRegistered() != null && siteUser.getRegistered() == true) {
