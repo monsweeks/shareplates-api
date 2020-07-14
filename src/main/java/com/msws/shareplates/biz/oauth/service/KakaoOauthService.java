@@ -89,6 +89,8 @@ public class KakaoOauthService implements OauthServiceIF {
             String api_result = requestUtil.sendRequest(apiHost + getUserinfoEndpoint, null, headers, values, HttpMethod.POST, MediaType.APPLICATION_FORM_URLENCODED);
             KakaoOauthUserInfo result = new Gson().fromJson(api_result, KakaoOauthUserInfo.class);
 
+            
+            log.info("user info is  {}", result);
             return new OauthUserInfo(result.getId(),
                     result.getProperties().getNickname(),
                     result.getKakao_account().getEmail());
