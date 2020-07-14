@@ -51,6 +51,10 @@
       		<appender-ref ref="ELASTIC" />
       </logger>
       
+       <logger name="com.msws.shareplates.biz.oauth" level="info"/>
+      
+      <logger name="com.msws.shareplates.biz.user.controller.UserController" level="info"/>
+      
       <logger name="com.msws.shareplates"/>
       
       <root level="error">
@@ -60,9 +64,13 @@
     
     <springProfile name="production">
     
+    
+    
       <logger name="com.msws.shareplates.Application" level="info"/>
       
       <logger name="com.msws.shareplates.biz.oauth" level="info"/>
+      
+      <logger name="com.msws.shareplates.biz.user.controller.UserController" level="info"/>
       
       <logger name="com.msws.shareplates.biz.statistic.service.ElasticsearchService" level="info">
       		<appender-ref ref="ELASTIC" />
