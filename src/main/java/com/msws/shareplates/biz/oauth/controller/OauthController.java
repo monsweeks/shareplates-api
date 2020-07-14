@@ -24,7 +24,7 @@ import java.util.UUID;
 
 
 @Slf4j
-@RequestMapping("/oauth")
+@RequestMapping("/api/oauth")
 @Controller
 public class OauthController {
 
