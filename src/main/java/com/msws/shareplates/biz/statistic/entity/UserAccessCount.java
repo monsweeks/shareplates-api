@@ -18,17 +18,14 @@ public class UserAccessCount {
 	@Column(name = "time")
 	private String time;
 	
-	@Column(name = "pageChangedCnt")
-	private Double pageChangedCnt;
+	@Column(name = "userCnt")
+	private Double userCnt;
 	
-	@Column(name = "focusChangedCnt")
-	private Double focusChangedCnt;
+	@Column(name = "focusCnt")
+	private Double focusCnt;
 	
 	@Column(name = "pageChanged", tag = true)
 	private Double pageChanged;
-	
-	@Column(name = "focusChanged", tag = true)
-	private Double focusChanged;
 	
 	@Column(name = "shareId", tag = true )
 	private String shareId;
