@@ -190,7 +190,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		int minutes =  seconds / 60;
 		log.error("seconds : {}", seconds);
 		log.error("minutes : {}", minutes);
-		return minutes < 50 ? "30m" : String.valueOf(minutes / 50) + "m";
+		return minutes < 50 ? "1m" : String.valueOf(minutes / 50) + "m";
 	}
 
 }
