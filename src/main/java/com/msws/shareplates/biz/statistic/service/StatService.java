@@ -2,7 +2,6 @@ package com.msws.shareplates.biz.statistic.service;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -104,5 +103,10 @@ public class StatService {
 	@SuppressWarnings("unchecked")
 	public List<UserAccessCount> getDataBetweenSpecificTime(Long shareId, Timestamp from, Timestamp to) {
 		return (List<UserAccessCount>) mainService.getData(shareId.toString(), from, to);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<UserAccessCount> getDetailDataBetweenSpecificTime(Long shareId, Timestamp from, Timestamp to) {
+		return (List<UserAccessCount>) mainService.getDetailData(shareId.toString(), from, to);
 	}
 }
