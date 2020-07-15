@@ -15,14 +15,15 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("default")
 @Slf4j
 @Service
-public class LogStatService implements StatServiceIF<UserAccessCount>{@Override
-	
+public class LogStatService implements StatServiceIF<UserAccessCount>{
+
+	@Override
 	public Stat_database getName() {
 		return Stat_database.log;
 	}
 
 	@Override
-	public List<UserAccessCount> getDetailData(String value, Timestamp from, Timestamp to){
+	public List<Object> getDetailData(String value, Timestamp from, Timestamp to){
 		log.info("stat getDetailData : value -> {} , from -> {}, to -> {}", value, from, to);
 		return null;
 	}
@@ -34,9 +35,14 @@ public class LogStatService implements StatServiceIF<UserAccessCount>{@Override
 	}
 
 	@Override
-	public List<UserAccessCount> getData(String value, Timestamp from, Timestamp to) {
+	public List<Object> getData(String value, Timestamp from, Timestamp to) {
 		log.info("stat getData : value -> {} , from -> {}, to -> {}", value, from, to);
 		return null;
+	}
+
+	@Override
+	public void setData(UserAccessCount inputData) {
+		log.info("stat setData : data -> {} ", inputData);
 	}
 
 }

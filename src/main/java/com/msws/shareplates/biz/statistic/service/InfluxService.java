@@ -20,6 +20,8 @@ import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
+import com.msws.shareplates.biz.statistic.vo.response.PageChangedInfo;
+import com.msws.shareplates.biz.statistic.vo.response.ShareAccessInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +49,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 	private InfluxDBTemplate<Point> influxDBTemplate;
 	
 	private final String QUERY_FROM_TO_BASE = "SELECT %s FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s' GROUP BY time(%s),shareId order by time asc";
-	private final String QUERY_DETAIL_BASE = "SELECT chapterId, pageId FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s' AND pageChanged = 'true'";
+	private final String QUERY_DETAIL_BASE = "SELECT * FROM %s where time >= '%s' AND time <= '%s' AND shareId = '%s' AND pageChanged = 'true'";
 	
 	
 	public InfluxService() {
@@ -124,7 +126,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 
 	}
 	
-	public List<UserAccessCount> getData(String shareId, Timestamp from , Timestamp to) {
+	public List<ShareAccessInfo> getData(String shareId, Timestamp from , Timestamp to) {
 		
 		//"SELECT %s FROM %s where time >= %s AND time <= %s AND shareId = %s GROUP BY time(%s),joinId,shareId order by time asc";
 		String revised_query = String.format(QUERY_FROM_TO_BASE, getCountFieldSentence(), TABLE_NAME, 
@@ -136,12 +138,12 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		        .create();
 		log.error("sql {}",revised_query );
 		QueryResult queryResult = influxDBTemplate.query(query);
-		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
+		return resultMapper.toPOJO(queryResult, ShareAccessInfo.class);
 	}
 	
 	
 	
-	public List<UserAccessCount> getDetailData(String shareId, Timestamp from , Timestamp to) {
+	public List<PageChangedInfo> getDetailData(String shareId, Timestamp from , Timestamp to) {
 		
 		//SELECT chapterId, pageId FROM %s where time > %s %s AND shareId = '%s'
 		String revised_query = String.format(QUERY_DETAIL_BASE, TABLE_NAME, 
@@ -152,7 +154,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 				        .create();
 		log.error("sql {}",revised_query );
 		QueryResult queryResult = influxDBTemplate.query(query);
-		return resultMapper.toPOJO(queryResult, UserAccessCount.class);
+		return resultMapper.toPOJO(queryResult, PageChangedInfo.class);
 		
 	}
 
@@ -201,6 +203,10 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		int remain = (minutes % 50) == 0 ? 0 : 1;
 		
 		return String.valueOf( result + remain) + "m";
+	}
+
+	@Override
+	public void setData(UserAccessCount inputData) {
 	}
 
 }
