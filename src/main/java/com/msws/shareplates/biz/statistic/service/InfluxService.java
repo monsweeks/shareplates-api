@@ -100,10 +100,16 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 			//================  tag ============================
 			case "page_changed":
 					tags.put("pageChanged", "true");
+					field.put( "sessionCnt", 0);
+					field.put( "userCnt", 0);
+					field.put( "focusCnt", 0);
 				break;
 
 			default :
 					tags.put("shareId", "ERROR");  // dont know
+					field.put( "sessionCnt", 0);
+					field.put( "userCnt", 0);
+					field.put( "focusCnt", 0);
 					break;
 		}
 
