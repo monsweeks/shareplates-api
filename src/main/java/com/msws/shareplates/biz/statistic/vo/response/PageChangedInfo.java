@@ -11,6 +11,9 @@ import lombok.Setter;
 @Measurement(name = "test")
 public class PageChangedInfo {
 	
+	@Column(name = "time")
+	private String time;
+	
 	@Column(name = "chapterId", tag = true )
 	private String chapterId;
 	
