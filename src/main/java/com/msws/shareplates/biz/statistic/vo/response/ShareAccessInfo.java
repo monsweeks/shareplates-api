@@ -11,6 +11,9 @@ import lombok.Setter;
 @Measurement(name = "test")
 public class ShareAccessInfo {
 	
+	@Column(name = "time")
+	private String time;
+	
 	@Column(name = "sessionCnt")
 	private Double sessionCnt = 0D;
 	
