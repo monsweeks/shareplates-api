@@ -12,6 +12,8 @@ import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
+import com.msws.shareplates.biz.statistic.vo.response.PageChangedInfo;
+import com.msws.shareplates.biz.statistic.vo.response.ShareAccessInfo;
 import com.msws.shareplates.common.exception.StatDBException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -101,12 +103,12 @@ public class StatService {
 	
 	
 	@SuppressWarnings("unchecked")
-	public List<UserAccessCount> getDataBetweenSpecificTime(Long shareId, Timestamp from, Timestamp to) {
-		return (List<UserAccessCount>) mainService.getData(shareId.toString(), from, to);
+	public List<ShareAccessInfo> getDataBetweenSpecificTime(Long shareId, Timestamp from, Timestamp to) {
+		return (List<ShareAccessInfo>) mainService.getData(shareId.toString(), from, to);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<UserAccessCount> getDetailDataBetweenSpecificTime(Long shareId, Timestamp from, Timestamp to) {
-		return (List<UserAccessCount>) mainService.getDetailData(shareId.toString(), from, to);
+	public List<PageChangedInfo> getDetailDataBetweenSpecificTime(Long shareId, Timestamp from, Timestamp to) {
+		return (List<PageChangedInfo>) mainService.getDetailData(shareId.toString(), from, to);
 	}
 }

@@ -13,16 +13,16 @@ import lombok.Setter;
 public class UserAccessCount {
 	
 	@Column(name = "sessionCnt")
-	private Double sessionCnt;
+	private Double sessionCnt = 0D;
 	
 	@Column(name = "time")
 	private String time;
 	
 	@Column(name = "userCnt")
-	private Double userCnt;
+	private Double userCnt = 0D;
 	
 	@Column(name = "focusCnt")
-	private Double focusCnt;
+	private Double focusCnt = 0D;
 	
 	@Column(name = "pageChanged", tag = true)
 	private Double pageChanged;
