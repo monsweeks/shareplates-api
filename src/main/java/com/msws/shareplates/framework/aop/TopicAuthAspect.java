@@ -13,35 +13,44 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class TopicAuthAspect {
-	
-	@Autowired
-	private AuthService authService;
-	
-	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..create*(..))")
-	private void createOperator() {};
-	
-	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..update*(..))")
-	private void updateOperator() {};
-	
-	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..delete*(..))")
-	private void deleteOperator() {};
 
-	@Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..select*(..))")
-	private void selectOperator() {};
-	
-	@Pointcut("createOperator() || updateOperator() || deleteOperator()")
-	private void cudOperator() {};
+    @Autowired
+    private AuthService authService;
 
-	@Before("cudOperator() && args(topicId, .., userInfo)")
-	public void checkUserHasWriteRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
-		if(RoleCode.SUPER_MAN != userInfo.getRoleCode()) {
-			authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
-		}
-	}
+    @Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..create*(..))")
+    private void createOperator() {
+    }
 
-	@Before("selectOperator() && args(topicId, .., userInfo)")
-	public void checkUserHasReadRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
-		if(RoleCode.SUPER_MAN != userInfo.getRoleCode())
-		 authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
-	}
+    @Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..update*(..))")
+    private void updateOperator() {
+    }
+
+    @Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..delete*(..))")
+    private void deleteOperator() {
+    }
+
+    @Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && !(@target(com.msws.shareplates.framework.aop.annotation.WriteAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.WriteAuth)) && execution(* com.msws.shareplates..select*(..))")
+    private void selectOperator() {
+    }
+
+    @Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && (@target(com.msws.shareplates.framework.aop.annotation.WriteAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.WriteAuth)) && execution(* com.msws.shareplates..select*(..))")
+    private void writeOperator() {
+    }
+
+    @Pointcut("createOperator() || updateOperator() || deleteOperator() || writeOperator()")
+    private void cudOperator() {
+    }
+
+    @Before("cudOperator() && args(topicId, .., userInfo)")
+    public void checkUserHasWriteRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
+        if (RoleCode.SUPER_MAN != userInfo.getRoleCode()) {
+            authService.checkUserHasWriteRoleAboutTopic(topicId, userInfo.getId());
+        }
+    }
+
+    @Before("selectOperator() && args(topicId, .., userInfo)")
+    public void checkUserHasReadRoleAboutTopic(JoinPoint joinPoint, long topicId, UserInfo userInfo) throws Throwable {
+        if (RoleCode.SUPER_MAN != userInfo.getRoleCode())
+            authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
+    }
 }

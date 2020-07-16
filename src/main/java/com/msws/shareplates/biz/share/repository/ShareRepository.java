@@ -58,5 +58,11 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     Optional<Share> findByIdAndAccessCode(long shareId, String accessCode);
 
 
+    @Query("SELECT new java.lang.Long(s.adminUser.id) FROM Share s WHERE s.id = :shareId")
+    Long selectShareAdminUserId(@Param("shareId") Long shareId);
+
+    @Query("SELECT new java.lang.Long(s.topic.id) FROM Share s WHERE s.id = :shareId")
+    Long selectShareTopicId(@Param("shareId") Long shareId);
+
 }
 
