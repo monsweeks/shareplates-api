@@ -49,7 +49,7 @@ public class TopicService {
 
 
     public List<Topic> selectTopicList(Long userId, Long grpId, String searchWord, String order, String direction) {
-        return topicRepository.findTopicList(userId, grpId, searchWord, direction.equals("asc") ? Sort.by(order).ascending() : Sort.by(order).descending());
+        return topicRepository.findTopicList(userId, grpId, searchWord, direction.equals("asc") ?  Sort.by(order).ascending() : Sort.by(order).descending());
     }
 
     public Topic createTopic(Topic topic) {
