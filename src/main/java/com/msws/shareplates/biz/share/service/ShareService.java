@@ -73,7 +73,10 @@ public class ShareService {
     public Share updateShareStop(Share share) {
         share.setStartedYn(false);
         share.setOpenYn(false);
-        share.getShareTimeBuckets().get(share.getShareTimeBuckets().size() - 1).setCloseDate(LocalDateTime.now());
+        if (share.getShareTimeBuckets().size() > 0) {
+            share.getShareTimeBuckets().get(share.getShareTimeBuckets().size() - 1).setCloseDate(LocalDateTime.now());
+        }
+
         return shareRepository.save(share);
     }
 
@@ -227,6 +230,14 @@ public class ShareService {
 
     public Long selectFocusedSocketCount(Long shareId, Long userId) {
         return shareUserSocketRepository.countByShareUserShareIdAndShareUserUserIdAndFocusYnTrue(shareId, userId);
+    }
+
+    public Long selectShareAdminUserId(Long shareId) {
+        return shareRepository.selectShareAdminUserId(shareId);
+    }
+
+    public Long selectShareTopicId(Long shareId) {
+        return shareRepository.selectShareTopicId(shareId);
     }
 
 }

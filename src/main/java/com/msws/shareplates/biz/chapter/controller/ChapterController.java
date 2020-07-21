@@ -10,6 +10,7 @@ import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.vo.EmptyResponse;
 import com.msws.shareplates.framework.aop.annotation.CheckTopicAuth;
 import com.msws.shareplates.framework.session.vo.UserInfo;
@@ -91,6 +92,7 @@ public class ChapterController {
     @GetMapping("")
     public ChapterResponse selectChapters(@PathVariable(value = "topic-id") long topicId, ChapterRequest chapterRequest, UserInfo userInfo) {
         AuthCode role = topicService.selectUserTopicRole(chapterRequest.getTopicId(), userInfo.getId());
+        if (RoleCode.SUPER_MAN == userInfo.getRoleCode()) role = AuthCode.WRITE;
 
         return ChapterResponse.builder()
                 .chapters(chapterService.selectChapters(chapterRequest.buildChapterEntity()).stream()

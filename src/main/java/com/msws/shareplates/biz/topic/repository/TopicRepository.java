@@ -20,7 +20,7 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
 
     Optional<Topic> findByIdAndUseYnTrue(Long id);
 
-    @Query(" SELECT new Topic(t.id, t.name, t.summary, t.privateYn, t.chapterCount, t.pageCount) " +
+    @Query(" SELECT new Topic(t.id, t.name, t.summary, t.privateYn, t.chapterCount, t.pageCount, (SELECT COUNT(id) FROM TopicUser WHERE topic.id = t.id AND user.id = :userId) ) " +
             " FROM Topic t " +
             " WHERE t.useYn = 1 AND t.grpId = :grpId AND t.name LIKE CONCAT(:searchWord, '%') AND (t.id in (SELECT tu.topic.id FROM TopicUser tu WHERE tu.user.id = :userId) OR t.privateYn = 0)")
     List<Topic> findTopicList(@Param("userId") Long userId, @Param("grpId") Long grpId, @Param("searchWord") String searchWord, Sort sort);

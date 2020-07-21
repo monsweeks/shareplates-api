@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.msws.shareplates.common.code.AuthCode;
+import com.msws.shareplates.common.code.RoleCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -108,6 +110,8 @@ public class PageController {
     @ApiOperation(value = "페이지 목록")
     @GetMapping("")
     public PageResponse selectPages(@PathVariable(value = "topic-id") long topicId, @PathVariable(value = "chapter-id") long chapterId, UserInfo userInfo) {
+        AuthCode role = topicService.selectUserTopicRole(topicId, userInfo.getId());
+        if (RoleCode.SUPER_MAN == userInfo.getRoleCode()) role = AuthCode.WRITE;
 
     	Chapter chapter = chapterService.selectChapter(chapterId, topicId);
     	
@@ -117,6 +121,7 @@ public class PageController {
                         .map(page -> PageModel.builder().build().buildPageModel(page))
                         .collect(Collectors.toList()))
                 .chapter(ChapterModel.builder().build().buildChapterModel(chapter))
+                .role(role)
                 .build();
     }
 

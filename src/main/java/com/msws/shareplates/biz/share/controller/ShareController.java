@@ -1,25 +1,25 @@
 package com.msws.shareplates.biz.share.controller;
 
 import com.msws.shareplates.biz.chapter.service.ChapterService;
-import com.msws.shareplates.biz.chapter.vo.ChapterModel;
 import com.msws.shareplates.biz.common.service.AuthService;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
+import com.msws.shareplates.biz.share.repository.ShareChapterResponse;
 import com.msws.shareplates.biz.share.service.AccessCodeService;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ShareRequest;
 import com.msws.shareplates.biz.share.vo.request.ShareSearchConditions;
 import com.msws.shareplates.biz.share.vo.response.*;
+import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
 import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
-import com.msws.shareplates.common.exception.ServiceException;
-import com.msws.shareplates.common.exception.code.ServiceExceptionCode;
 import com.msws.shareplates.common.message.service.ShareMessageService;
 import com.msws.shareplates.common.util.SessionUtil;
 import com.msws.shareplates.framework.annotation.DisableLogin;
+import com.msws.shareplates.framework.aop.annotation.CheckShareAuth;
 import com.msws.shareplates.framework.session.vo.UserInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Log
@@ -53,13 +54,10 @@ public class ShareController {
     @Autowired
     private ShareMessageService shareMessageService;
 
-    @ApiOperation(value = "열린 (+ 본인 프라이빗) 공유 리스트 조회")
-    @DisableLogin
-    @GetMapping("")
-    public SharesResponse selectOpenShareList(HttpServletRequest request, UserInfo userInfo, ShareSearchConditions conditions) {
-        Long userId = SessionUtil.getUserId(request);
-        return new SharesResponse(shareService.selectOpenShareList(userId, conditions));
-    }
+    // 공유를 오픈하는 것은 토픽의 쓰기 권한이 있어야 하고,
+    // 공유를 닫는 것은 공유에 권한이 있어야 하고,
+    // 공유 정보를 변경하는 것은 토픽의 쓰기 권한이 있어야 한다.
+    // 공유 정보를 조회하는 것은 토픽의 읽기 권한이 있어야 한다.
 
     private ShareResponse getShareResponse(UserInfo userInfo, Share share) {
 
@@ -74,106 +72,35 @@ public class ShareController {
         return new ShareResponse(share);
     }
 
+    @ApiOperation(value = "열린 (+ 본인 프라이빗) 공유 리스트 조회")
+    @DisableLogin
+    @GetMapping("")
+    public SharesResponse selectOpenShareList(HttpServletRequest request, UserInfo userInfo, ShareSearchConditions conditions) {
+        Long userId = SessionUtil.getUserId(request);
+        return new SharesResponse(shareService.selectOpenShareList(userId, conditions));
+    }
+
     @ApiOperation(value = "엑세스 코드로 공유 정보 조회")
     @PostMapping("/code")
-    public ShareResponse joinShareByAccessCode(@RequestParam("accessCode") String accessCode, UserInfo userInfo) {
+    public ShareResponse selectShareByAccessCode(@RequestParam("accessCode") String accessCode, UserInfo userInfo) {
         Share share = shareService.selectShare(accessCode);
         return getShareResponse(userInfo, share);
     }
 
     @ApiOperation(value = "공유 ID와 엑세스 코드로 공유 정보 조회 ")
     @PostMapping("/{shareId}/register")
-    public ShareResponse registerUserToPrivateShare(@PathVariable Long shareId, @RequestParam("accessCode") String accessCode, UserInfo userInfo) {
+    public ShareResponse selectAndRegisterAccessCodeOfPrivateShare(@PathVariable Long shareId, @RequestParam("accessCode") String accessCode, UserInfo userInfo) {
         Share share = shareService.selectShare(shareId, accessCode);
         return getShareResponse(userInfo, share);
     }
 
     @ApiOperation(value = "토픽 공유 상태 조회 (ID, 열림, 프라이빗)")
     @GetMapping("/{shareId}/status")
-    public ShareStatusResponse shareStatus(@PathVariable Long shareId) {
+    public ShareStatusResponse selectShareStatus(@PathVariable Long shareId) {
         Share share = shareService.selectShare(shareId);
         return new ShareStatusResponse(share);
     }
 
-    @ApiOperation(value = "토픽 정보 조회 (공유 생성을 위한 기초 정보")
-    @GetMapping("/topics/{topicId}")
-    public ShareInfo selectTopicShareInfo(@PathVariable Long topicId, UserInfo userInfo) throws NoSuchProviderException, NoSuchAlgorithmException {
-        // 토픽의 읽기 권한 체크
-        authService.checkUserHasReadRoleAboutTopic(topicId, userInfo.getId());
-
-        return ShareInfo.builder().topic(new TopicResponse(topicService.selectTopic(topicId)))
-                .chapters(chapterService.selectChapters(topicId).stream()
-                        .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
-                        .collect(Collectors.toList()))
-                .accessCode(new AccessCodeResponse(accessCodeService.createAccessCode(userInfo.getId())))
-                .build();
-    }
-
-    @ApiOperation(value = "공유 정보 조회 (편집)")
-    @GetMapping("/{shareId}/info")
-    public ShareInfo selectShare(@PathVariable Long shareId, UserInfo userInfo) {
-
-        Share share = shareService.selectShare(shareId);
-        // 토픽의 읽기 권한 체크
-        authService.checkUserHasReadRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
-
-        return ShareInfo.builder().topic(new TopicResponse(topicService.selectTopic(share.getTopic().getId())))
-                .chapters(chapterService.selectChapters(share.getTopic().getId()).stream()
-                        .map(chapter -> ChapterModel.builder().build().buildChapterModel(chapter))
-                        .collect(Collectors.toList()))
-                .accessCode(new AccessCodeResponse(accessCodeService.selectAccessCodeByCode(share.getAccessCode())))
-                .share(new ShareResponse(share))
-                .build();
-    }
-
-    @ApiOperation(value = "공유 상세 정보 조회")
-    @GetMapping("/{shareId}/detail")
-    public ShareInfo selectShareDetail(@PathVariable Long shareId, UserInfo userInfo) {
-
-        Share share = shareService.selectShare(shareId);
-        // 토픽의 읽기 권한 체크
-        authService.checkUserHasReadRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
-
-        return ShareInfo.builder()
-                .accessCode(new AccessCodeResponse(accessCodeService.selectAccessCodeByCode(share.getAccessCode())))
-                .share(new ShareResponse(share)).build();
-    }
-
-    @ApiOperation(value = "공유 정보 생성")
-    @PostMapping("")
-    public ShareResponse createShare(@RequestBody ShareRequest shareRequest, UserInfo userInfo) {
-        // 토픽을 작성하려는 그룹의 쓰기 권한 확인
-        authService.checkUserHasWriteRoleAboutTopic(shareRequest.getTopicId(), userInfo.getId());
-        Share share = shareService.createShare(new Share(shareRequest), userInfo.getId());
-        return new ShareResponse(share);
-    }
-
-    @ApiOperation(value = "공유 정보 수정")
-    @PutMapping("/{shareId}")
-    public ShareResponse updateShare(@PathVariable Long shareId, @RequestBody ShareRequest shareRequest, UserInfo userInfo) {
-        Share share = shareService.selectShare(shareRequest.getId());
-
-        // 토픽을 작성하려는 그룹의 쓰기 권한 확인
-        authService.checkUserHasWriteRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
-
-        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
-            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-        }
-
-        share.merge(shareRequest);
-        shareService.updateShare(share);
-        return new ShareResponse(shareService.selectShareInfo(shareRequest.getId()));
-    }
-
-    @ApiOperation(value = "공유 정보 삭제")
-    @DeleteMapping("/{shareId}")
-    public ShareResponse deleteShare(@PathVariable Long shareId, UserInfo userInfo) {
-        Share share = shareService.selectShare(shareId);
-        // 토픽을 작성하려는 그룹의 쓰기 권한 확인
-        authService.checkUserHasWriteRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
-        shareService.deleteShare(share);
-        return new ShareResponse(share);
-    }
 
     @ApiOperation(value = "엑세스 코드 변경")
     @PutMapping("/codes/{accessCodeId}")
@@ -181,27 +108,58 @@ public class ShareController {
         return new AccessCodeResponse(accessCodeService.updateAccessCode(accessCodeId, userInfo.getId()));
     }
 
+    @ApiOperation(value = "공유 상세 정보 조회")
+    @GetMapping("/{shareId}/detail")
+    @CheckShareAuth
+    public ShareInfo selectShareDetail(@PathVariable Long shareId, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+        Topic topic = topicService.selectTopic(share.getTopic().getId());
+        List<ShareChapterResponse> chapterPageList = chapterService.selectChapters(share.getTopic().getId()).stream().map(chapter -> ShareChapterResponse.builder().build().buildChapterModel(chapter)).collect(Collectors.toList());
+        return ShareInfo.builder()
+                .accessCode(new AccessCodeResponse(accessCodeService.selectAccessCodeByCode(share.getAccessCode())))
+                .chapterPageList(chapterPageList)
+                .topic(new TopicResponse(topic))
+                .share(new ShareResponse(share)).build();
+    }
+
+
+    @ApiOperation(value = "공유 정보 수정")
+    @PutMapping("/{shareId}")
+    @CheckShareAuth
+    public ShareResponse updateShare(@PathVariable Long shareId, @RequestBody ShareRequest shareRequest, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareRequest.getId());
+        share.merge(shareRequest);
+        shareService.updateShare(share);
+        return new ShareResponse(shareService.selectShareInfo(shareRequest.getId()));
+    }
+
+    @ApiOperation(value = "공유 정보 삭제")
+    @DeleteMapping("/{shareId}")
+    @CheckShareAuth
+    public ShareResponse deleteShare(@PathVariable Long shareId, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+        shareService.deleteShare(share);
+        return new ShareResponse(share);
+    }
+
+
+
     @ApiOperation(value = "공유 열기")
     @PutMapping("/{shareId}/open")
-    public ShareResponse updateOpenShare(@RequestBody ShareRequest shareRequest, UserInfo userInfo) {
+    @CheckShareAuth
+    public ShareResponse updateOpenShare(@PathVariable Long shareId, @RequestBody ShareRequest shareRequest, UserInfo userInfo) {
         Share share = shareService.selectShare(shareRequest.getId());
-
-        // 토픽을 작성하려는 그룹의 쓰기 권한 확인
-        authService.checkUserHasWriteRoleAboutTopic(share.getTopic().getId(), userInfo.getId());
-
         share.merge(shareRequest);
         shareService.updateShareStart(share, userInfo.getId());
         return new ShareResponse(share);
     }
 
+
     @ApiOperation(value = "공유 닫기")
     @PutMapping("/{shareId}/close")
+    @CheckShareAuth
     public ShareResponse updateCloseShare(@PathVariable Long shareId, UserInfo userInfo) {
         Share share = shareService.selectShare(shareId);
-
-        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
-            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
-        }
         shareService.updateShareStop(share);
         shareMessageService.sendShareClosed(shareId, userInfo);
         return new ShareResponse(share);

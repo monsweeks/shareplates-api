@@ -15,13 +15,14 @@ public class TopicsResponse extends RepresentationModel<TopicsResponse> {
 
     public TopicsResponse(List<com.msws.shareplates.biz.topic.entity.Topic> topics) {
         this.topics = topics.stream().map(topic
-                -> TopicsResponse.Topic.builder()
+                -> Topic.builder()
                 .id(topic.getId())
                 .name(topic.getName())
                 .summary(topic.getSummary())
                 .privateYn(topic.getPrivateYn())
                 .chapterCount(topic.getChapterCount())
                 .pageCount(topic.getPageCount())
+                .isMember(topic.getIsMember())
                 .build()).collect(Collectors.toList());
     }
 
@@ -34,5 +35,6 @@ public class TopicsResponse extends RepresentationModel<TopicsResponse> {
         private Boolean privateYn;
         private Integer chapterCount;
         private Integer pageCount;
+        private Boolean isMember;
     }
 }

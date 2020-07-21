@@ -64,13 +64,17 @@ public class Topic extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<TopicUser> topicUsers;
 
-    public Topic(Long id, String name, String summary, Boolean privateYn, Integer chapterCount, Integer pageCount) {
+    @Transient
+    private Boolean isMember;
+
+    public Topic(Long id, String name, String summary, Boolean privateYn, Integer chapterCount, Integer pageCount, Long isMember) {
         this.id = id;
         this.name = name;
         this.summary = summary;
         this.privateYn = privateYn;
         this.chapterCount = chapterCount;
         this.pageCount = pageCount;
+        this.isMember = isMember > 0;
     }
 
     public Topic(TopicRequest topicRequest) {
