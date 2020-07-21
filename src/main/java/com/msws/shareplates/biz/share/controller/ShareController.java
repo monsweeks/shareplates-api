@@ -4,12 +4,15 @@ import com.msws.shareplates.biz.chapter.service.ChapterService;
 import com.msws.shareplates.biz.common.service.AuthService;
 import com.msws.shareplates.biz.share.entity.Share;
 import com.msws.shareplates.biz.share.entity.ShareUser;
+import com.msws.shareplates.biz.share.repository.ShareChapterResponse;
 import com.msws.shareplates.biz.share.service.AccessCodeService;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.request.ShareRequest;
 import com.msws.shareplates.biz.share.vo.request.ShareSearchConditions;
 import com.msws.shareplates.biz.share.vo.response.*;
+import com.msws.shareplates.biz.topic.entity.Topic;
 import com.msws.shareplates.biz.topic.service.TopicService;
+import com.msws.shareplates.biz.topic.vo.response.TopicResponse;
 import com.msws.shareplates.biz.user.entity.User;
 import com.msws.shareplates.common.code.RoleCode;
 import com.msws.shareplates.common.code.SocketStatusCode;
@@ -26,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Log
 @RestController
@@ -108,8 +113,12 @@ public class ShareController {
     @CheckShareAuth
     public ShareInfo selectShareDetail(@PathVariable Long shareId, UserInfo userInfo) {
         Share share = shareService.selectShare(shareId);
+        Topic topic = topicService.selectTopic(share.getTopic().getId());
+        List<ShareChapterResponse> chapterPageList = chapterService.selectChapters(share.getTopic().getId()).stream().map(chapter -> ShareChapterResponse.builder().build().buildChapterModel(chapter)).collect(Collectors.toList());
         return ShareInfo.builder()
                 .accessCode(new AccessCodeResponse(accessCodeService.selectAccessCodeByCode(share.getAccessCode())))
+                .chapterPageList(chapterPageList)
+                .topic(new TopicResponse(topic))
                 .share(new ShareResponse(share)).build();
     }
 
