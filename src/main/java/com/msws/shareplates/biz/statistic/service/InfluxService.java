@@ -22,6 +22,7 @@ import com.msws.shareplates.biz.statistic.entity.UserAccessCount;
 import com.msws.shareplates.biz.statistic.enums.Stat_database;
 import com.msws.shareplates.biz.statistic.vo.response.PageChangedInfo;
 import com.msws.shareplates.biz.statistic.vo.response.ShareAccessInfo;
+import com.msws.shareplates.common.code.SocketStatusCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,9 +76,15 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		tags.put("adminUserEmail", data.getAdminUser().getEmail());
 		tags.put("userId", userId.toString());
 		
-		ShareUser shareuser = data.getShareUsers().stream().filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+		ShareUser shareuser = data.getShareUsers().stream().filter(e -> e.getUser().getId().equals(userId) && e.getStatus() == SocketStatusCode.ONLINE).findFirst().orElse(null);
 		
 		int accumulate_userCnt = data.getShareUsers().size();
+		for(ShareUser i :  data.getShareUsers()) {
+			if(i.getStatus() == SocketStatusCode.ONLINE )
+				accumulate_userCnt += i.getShareUserSocketList().size();
+		}
+		
+		
 		int accumulate_sessionCnt = 0;
 		for(ShareUser i :  data.getShareUsers()) {
 			accumulate_sessionCnt += i.getShareUserSocketList().size();
