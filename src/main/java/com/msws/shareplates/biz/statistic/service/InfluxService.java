@@ -75,7 +75,7 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		tags.put("adminUserEmail", data.getAdminUser().getEmail());
 		tags.put("userId", userId.toString());
 		
-		//ShareUser shareuser = data.getShareUsers().stream().filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+		ShareUser shareuser = data.getShareUsers().stream().filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
 		
 		int accumulate_userCnt = data.getShareUsers().size();
 		int accumulate_sessionCnt = 0;
@@ -95,14 +95,18 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		    //================  field ============================  sessionCnt, userCnt, focusCnt
 			case "join" :
 					field.put( "sessionCnt", 1);
-					//if(shareuser == null )
-					field.put( "userCnt", 1);
-					
+					//many session but only one user.
+					if(shareuser == null ) {
+						field.put( "userCnt", 1);
+					}
 					break;
 
 			case "out" :
 					field.put( "sessionCnt", -1);
-					field.put( "userCnt", -1);
+					
+					if(shareuser == null ) {
+						field.put( "userCnt", -1);
+					}
 				break;
 				
 			case "focus_changed":
