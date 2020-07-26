@@ -76,14 +76,9 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		tags.put("adminUserEmail", data.getAdminUser().getEmail());
 		tags.put("userId", userId.toString());
 		
-		ShareUser shareuser = data.getShareUsers().stream().filter(e -> e.getUser().getId().equals(userId) && e.getStatus() == SocketStatusCode.ONLINE).findFirst().orElse(null);
+		ShareUser shareuser = data.getShareUsers().stream().filter(e -> e.getUser().getId().equals(userId) ).findFirst().orElse(null);
 		
 		int accumulate_userCnt = data.getShareUsers().size();
-		for(ShareUser i :  data.getShareUsers()) {
-			if(i.getStatus() == SocketStatusCode.ONLINE )
-				accumulate_userCnt += i.getShareUserSocketList().size();
-		}
-		
 		
 		int accumulate_sessionCnt = 0;
 		for(ShareUser i :  data.getShareUsers()) {
