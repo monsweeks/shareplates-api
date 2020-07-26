@@ -75,16 +75,28 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 		tags.put("adminUserEmail", data.getAdminUser().getEmail());
 		tags.put("userId", userId.toString());
 		
-		ShareUser shareuser = data.getShareUsers().stream()
-				.filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+		//ShareUser shareuser = data.getShareUsers().stream().filter(e -> e.getUser().getId() == userId).findFirst().orElse(null);
+		
+		int accumulate_userCnt = data.getShareUsers().size();
+		int accumulate_sessionCnt = 0;
+		for(ShareUser i :  data.getShareUsers()) {
+			accumulate_sessionCnt += i.getShareUserSocketList().size();
+		}
+		
+		//default set
+		field.put( "sessionCnt", 0);
+		field.put( "userCnt", 0);
+		field.put( "focusCnt", 0);
+		field.put( "accumulateUserCnt", accumulate_userCnt);
+		field.put( "accumulateSessionCnt", accumulate_sessionCnt);
 		
 		switch(flag) {
 				
 		    //================  field ============================  sessionCnt, userCnt, focusCnt
 			case "join" :
 					field.put( "sessionCnt", 1);
-					if(shareuser == null )
-						field.put( "userCnt", 1);
+					//if(shareuser == null )
+					field.put( "userCnt", 1);
 					
 					break;
 
@@ -102,16 +114,10 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 			//================  tag ============================
 			case "page_changed":
 					tags.put("pageChanged", "true");
-					field.put( "sessionCnt", 0);
-					field.put( "userCnt", 0);
-					field.put( "focusCnt", 0);
 				break;
 
 			default :
 					tags.put("shareId", "ERROR");  // dont know
-					field.put( "sessionCnt", 0);
-					field.put( "userCnt", 0);
-					field.put( "focusCnt", 0);
 					break;
 		}
 
