@@ -39,8 +39,8 @@ public class StatController {
 		List<PageChangedInfo> share_page_chagned = statService.getDetailDataBetweenSpecificTime(shareId, Timestamp.valueOf(startDate.minusHours(kr_timezone)), Timestamp.valueOf(endDate.minusHours(kr_timezone)));
 		
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("ShareAccessInfo", share_info);
-		result.put("PageChangedInfo", share_page_chagned);
+		result.put("shareStateList", share_info);
+		result.put("contentChangeList", share_page_chagned);
 		return result;
 	}
 	

@@ -112,7 +112,8 @@ public class InfluxService implements StatServiceIF<UserAccessCount>{
 				break;
 				
 			case "focus_changed":
-				field.put( "focusCnt", 1);
+				Boolean focused = (Boolean)additional_value;
+				field.put( "focusCnt", focused ? 1 : -1);
 				tags.put("focusChanged", "true");
 				
 			break;
