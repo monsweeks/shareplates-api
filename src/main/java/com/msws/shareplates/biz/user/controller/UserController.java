@@ -162,6 +162,7 @@ public class UserController {
                             .roleCode(user.getRoleCode())
                             .activeRoleCode(user.getActiveRoleCode())
                             .language(user.getLanguage())
+                            .dateTimeFormat(user.getDateTimeFormat())
                             .build())
                             .orElseThrow(() -> new ServiceException(ServiceExceptionCode.UNAUTHORIZED_USER)))
                     .grps(grpService.selectUserGrpList(userInfo.getId(), true).stream().map(group
