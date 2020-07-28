@@ -25,6 +25,7 @@ public class MyInfoResponse {
 		private RoleCode roleCode;
 		private RoleCode activeRoleCode;
 		private String language;
+		private String dateTimeFormat;
 	}
 	
 	@Builder
