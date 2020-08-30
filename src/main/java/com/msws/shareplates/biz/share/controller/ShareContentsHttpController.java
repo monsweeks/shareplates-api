@@ -13,6 +13,7 @@ import com.msws.shareplates.biz.share.entity.ShareUser;
 import com.msws.shareplates.biz.share.repository.ShareChapterResponse;
 import com.msws.shareplates.biz.share.service.ShareService;
 import com.msws.shareplates.biz.share.vo.OptionInfo;
+import com.msws.shareplates.biz.share.vo.PointerInfo;
 import com.msws.shareplates.biz.share.vo.ScrollInfo;
 import com.msws.shareplates.biz.share.vo.request.ChatRequest;
 import com.msws.shareplates.biz.share.vo.response.AccessCodeResponse;
@@ -294,6 +295,20 @@ public class ShareContentsHttpController {
         }
 
         shareMessageService.sendOptionChange(shareId, optionInfo.getOptionKey(), optionInfo.getOptionValue(), userInfo);
+
+        return new ShareResponse(share);
+    }
+
+    @ApiOperation(value = "포인터 정보 변경")
+    @PutMapping("/pointer")
+    public ShareResponse updatePointer(@PathVariable(value = "share-id") long shareId, @RequestBody PointerInfo pointerInfo, UserInfo userInfo) {
+        Share share = shareService.selectShare(shareId);
+
+        if (!share.getAdminUser().getId().equals(userInfo.getId())) {
+            throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
+        }
+
+        shareMessageService.sendPointerChange(shareId, pointerInfo.getItemId(), pointerInfo.getIndex(), pointerInfo.getStyle(), pointerInfo.getColor(),  userInfo);
 
         return new ShareResponse(share);
     }

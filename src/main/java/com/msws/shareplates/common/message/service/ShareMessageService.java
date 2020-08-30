@@ -123,5 +123,14 @@ public class ShareMessageService {
         messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
     }
 
+    public void sendPointerChange(long shareId, Long itemId, Long index , String style, String color,  UserInfo userInfo) {
+        MessageData data = MessageData.builder().type(MessageData.MessageType.POINTER_CHANGE).build();
+        data.addData("itemId", itemId);
+        data.addData("index", index);
+        data.addData("style", style);
+        data.addData("color", color);
+        messageSendService.sendToShare(shareId, data, userInfo);
+    }
+
 
 }

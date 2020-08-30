@@ -49,6 +49,7 @@ public class MessageData {
         MOVE_SCROLL("스크롤 위치 이동"),
         USER_FOCUS_CHANGE("사용자 포커스 변경"),
         OPTION_CHANGE("쉐어 관련 옵션 변경"),
+        POINTER_CHANGE("포인터 정보 변경"),
         CHAT_MESSAGE("채팅");
     	
     	String desc;
