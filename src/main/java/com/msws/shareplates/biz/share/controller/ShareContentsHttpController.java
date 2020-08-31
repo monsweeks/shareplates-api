@@ -308,7 +308,7 @@ public class ShareContentsHttpController {
             throw new ServiceException(ServiceExceptionCode.RESOURCE_NOT_AUTHORIZED);
         }
 
-        shareMessageService.sendPointerChange(shareId, pointerInfo.getItemId(), pointerInfo.getIndex(), pointerInfo.getStyle(), pointerInfo.getColor(),  userInfo);
+        shareMessageService.sendPointerChange(shareId, pointerInfo.getItemId(), pointerInfo.getIndex1(), pointerInfo.getIndex2(), pointerInfo.getStyle(), pointerInfo.getColor(),  userInfo);
 
         return new ShareResponse(share);
     }
