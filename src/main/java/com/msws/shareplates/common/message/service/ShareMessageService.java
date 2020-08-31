@@ -106,7 +106,7 @@ public class ShareMessageService {
     public void sendMoveScroll(long shareId, String dir , UserInfo userInfo) {
         MessageData data = MessageData.builder().type(MessageData.MessageType.MOVE_SCROLL).build();
         data.addData("dir", dir);
-        messageSendService.sendToShareGroup(shareId, RoleCode.ADMIN, data, userInfo);
+        messageSendService.sendToShare(shareId, data, userInfo);
     }
 
     public void sendUserFocusChange(long shareId, long userid, boolean focus, UserInfo userInfo) {
