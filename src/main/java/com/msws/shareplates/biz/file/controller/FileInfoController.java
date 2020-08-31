@@ -21,7 +21,7 @@ import java.util.List;
 
 
 @Slf4j
-@RequestMapping("/files")
+@RequestMapping("/api/files")
 @RestController
 public class FileInfoController {
 
