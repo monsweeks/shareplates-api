@@ -3,9 +3,9 @@ spring:
     active: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mindplates.com:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10
-    username: shareplates
-    password: dhao1234
+    url:
+    username:
+    password:
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,27 +20,27 @@ spring:
         format_sql: true
         enable_lazy_load_no_trans: true
   redis:
-    host: mindplates.com
-    port: 6379
-    password: dhao1234
+    host:
+    port:
+    password:
   influxdb:
-    url: http://192.168.56.102:8086
+    url:
     database: stat
     retention-policy: autogen
-    username: test
-    password: test1234
+    username:
+    password:
   mail:
-    host: mindplates.com
-    port: 20000
+    host:
+    port:
     protocol: smtp
-    username: shareplates
-    password: enterpr1se!
+    username:
+    password:
     default-encoding: UTF-8
   session:
     store-type: redis
     redis:
       cluster:
-        nodes: mindplates.com:6379
+        nodes:
       flush-mode: on-save # Sessions flush mode.
       namespace: spring:session # Namespace for keys used to store sessions.
   messages:
@@ -73,40 +73,40 @@ server:
       timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
       
 oauth:
-  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=1ba583809df9ceeba9305df8e05fe532&redirect_uri=http://localhost:8080/api/oauth/kakao/token&response_type=code&state=hyunseok
+  kakao:
     host: https://kauth.kakao.com
     api-host: https://kapi.kakao.com
     token-endpoint: /oauth/token
     userinfo-endpoint: /v2/user/me
-    client-id: 1ba583809df9ceeba9305df8e05fe532
-    redirect-uri: http://localhost:8080/api/oauth/kakao/token
-  facebook:   # https://www.facebook.com/v3.2/dialog/oauth?client_id=212487773500466&redirect_uri=http://localhost:8080/api/oauth/facebook/token&state=test&scope=email
+    client-id:
+    redirect-uri:
+  facebook:
     host: https://graph.facebook.com
     api-host: https://graph.facebook.com
     token-endpoint: /v3.2/oauth/access_token
     userinfo-endpoint: /me
-    client-id: 212487773500466
-    client-secret: 54a7e228616caa03c7a43805fa976b30
+    client-id:
+    client-secret:
     redirect-uri: http://localhost:8080/api/oauth/facebook/token
-  naver: # https://nid.naver.com/oauth2.0/authorize?client_id=FYKlwGmkoKaH8XSh3q6F&redirect_uri=http://localhost:8080/api/oauth/naver/token&response_type=code
+  naver:
     host: https://nid.naver.com
     api-host: https://openapi.naver.com
     token-endpoint: /oauth2.0/token
     userinfo-endpoint: /v1/nid/me
-    client-id: FYKlwGmkoKaH8XSh3q6F
-    client-secret: mTUlcxtCvQ
-    redirect-uri: http://localhost:8080/api/oauth/naver/token  
-  google: # https://accounts.google.com/o/oauth2/v2/auth?scope=email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://localhost:8080/api/oauth/google/token&client_id=766766390358-u4v4i9huft470ol689enfi9mq3gppbs6.apps.googleusercontent.com
+    client-id:
+    client-secret:
+    redirect-uri:
+  google:
     host: https://accounts.google.com
     api-host: https://www.googleapis.com
     token-endpoint: /o/oauth2/token
     userinfo-endpoint: /oauth2/v2/userinfo
-    client-id: 766766390358-u4v4i9huft470ol689enfi9mq3gppbs6.apps.googleusercontent.com
-    client-secret: E6CJ8_bxiCfzh0r-8-44b4KV
-    redirect-uri: http://localhost:8080/api/oauth/google/token
+    client-id:
+    client-secret:
+    redirect-uri:
     
 slack:
-  url: https://hooks.slack.com/services/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
+  url:
   
 stat:
   database: ${statDatabase:influxdb}
@@ -121,41 +121,41 @@ spring:
   profiles: production
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.56.102:3306/shareplates?serverTimezone=UTC&characterEncoding=UTF-8
+    url:
   mail:
-    host: 192.168.56.102
+    host:
   redis:
-    host: 192.168.56.101
-    port: 6379
-    password: dhao1234
+    host:
+    port:
+    password:
   influxdb:
-    url: http://192.168.56.102:8086
+    url:
     database: stat
     retention-policy: autogen
-    username: test
-    password: test1234
+    username:
+    password:
 file:
   upload-dir: /data/upload
 shareplates:
   locale:
     default: ko
   corsUrls: http://localhost:3000, http://mindplates.com:3000
-  url: http://www.mindplates.com
-  web-url: http://www.mindplates.com/
+  url:
+  web-url:
   mail:
     senderName: noreply@mindplates.com
 
 
 oauth:
-  kakao: # https://kauth.kakao.com/oauth/authorize?client_id=1ba583809df9ceeba9305df8e05fe532&redirect_uri=http://www.mindplates.com/api/oauth/kakao/token&response_type=code&state=hyunseok
-    redirect-uri: http://www.mindplates.com/api/oauth/kakao/token
-    client-id: 1ba583809df9ceeba9305df8e05fe532
-  facebook:   # https://www.facebook.com/v3.2/dialog/oauth?client_id=212487773500466&redirect_uri=http://www.mindplates.com/api/oauth/facebook/token&state=test&scope=email
-    redirect-uri: http://www.mindplates.com/api/oauth/facebook/token
-  naver: # https://nid.naver.com/oauth2.0/authorize?client_id=FYKlwGmkoKaH8XSh3q6F&redirect_uri=http://www.mindplates.com/api/oauth/naver/token&response_type=code
-    redirect-uri: http://www.mindplates.com/api/oauth/naver/token  
-  google: # https://accounts.google.com/o/oauth2/v2/auth?scope=email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://www.mindplates.com/api/oauth/google/token&client_id=766766390358-u4v4i9huft470ol689enfi9mq3gppbs6.apps.googleusercontent.com
-    redirect-uri: http://www.mindplates.com/api/oauth/google/token
+  kakao:
+    redirect-uri:
+    client-id:
+  facebook:
+    redirect-uri:
+  naver:
+    redirect-uri: 
+  google:
+    redirect-uri:
     
 stat:
   database: ${statDatabase:influxdb}
